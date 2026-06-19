@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
+import { sanity, urlFor } from '../lib/sanity'
+import PortableText from '../components/PortableText.astro'
+
+type AboutPage = {
+  title?: string
+  excerpt?: string
+  heroImage?: any
+  body?: any[]
+  aiCitation?: string
+  painTags?: string[]
+  aiContext?: string
+  seo?: {
+    title?: string
+    description?: string
+    noindex?: boolean
+    canonical?: string
+    ogImage?: any
+  }
+}
+
+const QUERY = /* groq */ `
+  *[_type == "page" && slug.current == "about"][0]{
+    title,
+    excerpt,
+    heroImage,
+    body,
+    aiCitation,
+    painTags,
+    aiContext,
+    seo{
+      title,
+      description,
+      noindex,
+      canonical,
+      ogImage
+    }
+  }
+`
+
+const page = await sanity.fetch<AboutPage | null>(QUERY)
+
+// SEO
+const metaTitle = page?.seo?.title || page?.title || `מי אני | ${site.brand}`
+const metaDescription =
+  page?.seo?.description || 'נעים להכיר. הסיפור של יוסי והדרך שבה נבנתה שיטת מ.ס.ע.'
+
+// כותרת
+const heading = page?.title?.trim() || `נעים להכיר, אני ${site.fullName}.`
+
+// פתיחה (הזהוב)
+const opening =
+  page?.excerpt?.trim() ||
+  'הייתי שם. אני יודע איך זה מרגיש כשהלב רוצה משהו אחד, והראש אומר משהו אחר.'
+
+// תמונה
+const fallbackImage = '/assets/yossi-about.jpg'
+const imageSrc = page?.heroImage
+  ? urlFor(page.heroImage).width(1000).height(1250).fit('crop').url()
+  : fallbackImage
+
+const ogImageUrl = page?.seo?.ogImage
+  ? urlFor(page.seo.ogImage).width(1200).height(630).fit('crop').url()
+  : undefined
+
+// ─── Person schema עשיר לדף האודות ("כרטיס הביקור" של יוסי) ───────
+const aboutUrl = `${site.siteUrl}/about`
+
+const toAbsolute = (v: string) =>
+  v.startsWith('http') ? v : `${site.siteUrl}${v.startsWith('/') ? '' : '/'}${v}`
+
+const personDescription =
+  page?.excerpt?.trim() ||
+  metaDescription ||
+  'יוסי מדלסי — מאמן רגשי מוסמך ICF ומייסד "מצפן הלב" ושיטת מ.ס.ע. מלווה בני נוער, הורים וזוגות בתהליכי עומק לשחרור דפוסים רגשיים.'
+
+const aboutPersonSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${site.siteUrl}/#person`,
+  name: site.fullName,
+  url: aboutUrl,
+  jobTitle: 'מאמן רגשי מוסמך ICF',
+  description: personDescription,
+  email: site.email,
+  image: toAbsolute(imageSrc),
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'נתניה',
+    addressRegion: 'מחוז המרכז',
+    addressCountry: 'IL',
+  },
+  hasCredential: [
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Professional Certification',
+      name: 'מאמן רגשי מוסמך – ICF (International Coaching Federation)',
+      recognizedBy: {
+        '@type': 'Organization',
+        name: 'International Coaching Federation',
+        url: 'https://coachingfederation.org',
+      },
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Specialized Training',
+      name: 'השתלמות מקצועית – אימון רגשי לבני נוער ומתבגרים',
+    },
+  ],
+  knowsAbout: [
+    'אימון רגשי',
+    'אינטליגנציה רגשית',
+    'הדרכת הורים',
+    'ליווי זוגות',
+    'בני נוער ומתבגרים',
+    'שיטת מ.ס.ע',
+  ],
+  sameAs: [
+    site.instagramUrl,
+    site.facebookUrl,
+    'https://www.linkedin.com/in/yossi-medalsi-2a643a397/',
+    `https://wa.me/${site.whatsAppPhone}`,
+  ],
+  worksFor: { '@id': `${site.siteUrl}/#business` },
+  mainEntityOfPage: aboutUrl,
+  ...(page?.aiCitation ? { disambiguatingDescription: page.aiCitation } : {}),
+  ...(page?.painTags?.length ? { keywords: page.painTags.join(', ') } : {}),
+}
+---
+
+<BaseLayout
+  title={metaTitle}
+  description={metaDescription}
+  canonical={page?.seo?.canonical}
+  noindex={page?.seo?.noindex}
+  ogImage={ogImageUrl}
+  schema={[aboutPersonSchema]}
+>
+  <article class="animate-fade-in py-24 bg-background">
+    <div class="max-w-6xl mx-auto px-6">
+
+      <!-- מובייל: כותרת + ציטוט זהב לפני התמונה -->
+      <div class="md:hidden bg-white/60 backdrop-blur-xl rounded-[3rem] p-8 shadow-2xl border border-white/50 mb-10">
+        <h1 class="text-5xl font-black text-primary font-display mb-8 leading-tight text-center">
+          {heading}
+        </h1>
+
+        <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none text-center">
+          <p class="mb-0 font-bold text-gold-dark text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl">
+            "{opening}"
+          </p>
+        </div>
+      </div>
+
+      <!-- הקארד הראשי: בדסקטופ נשאר אותו לייאאוט, במובייל התמונה תבוא לפני הגוף -->
+      <div class="bg-white/60 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 shadow-2xl border border-white/50 relative overflow-hidden flex flex-col md:flex-row gap-16 items-center">
+
+        <!-- תמונה -->
+        <div class="w-full md:w-5/12 relative z-10">
+          <div class="aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-all duration-700 border-[8px] border-white ring-1 ring-accent/20">
+            <img
+              src={imageSrc}
+              alt={site.fullName}
+              class="object-cover w-full h-full transform hover:scale-105 transition-transform duration-[1.5s]"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+        </div>
+
+        <!-- טקסט -->
+        <div class="w-full md:w-7/12 relative z-10 text-center md:text-right">
+
+          <!-- בדסקטופ: כותרת + ציטוט זהב בתוך הטקסט (כמו שהיה).
+             זו אינה h1 כדי שלא יהיו שני h1 בעמוד (ה-h1 היחיד הוא גרסת המובייל). -->
+          <div class="hidden md:block">
+            <div role="heading" aria-level="1" class="text-6xl md:text-7xl font-black text-primary font-display mb-10 leading-tight">
+              {heading}
+            </div>
+
+            <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none">
+              <p class="mb-8 font-bold text-gold-dark text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl">
+                "{opening}"
+              </p>
+            </div>
+          </div>
+
+          <!-- הגוף: גם מובייל וגם דסקטופ -->
+          <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none mt-10 md:mt-0">
+            {page?.body?.length ? (
+              <PortableText value={page.body} />
+            ) : (
+              <p>עדיין אין תוכן בדף אודות בסאניטי. הוסף תוכן לשדה “תוכן”.</p>
+            )}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </article>
+</BaseLayout>

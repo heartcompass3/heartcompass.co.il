@@ -1,0 +1,133 @@
+---
+import { toHTML } from '@portabletext/to-html'
+import { urlFor } from '../lib/sanity'
+
+const { value } = Astro.props
+
+const components = {
+  types: {
+    spacer: ({ value }) => {
+      const size = value?.size || 'md'
+      return `<div class="hc-spacer hc-spacer--${size}" aria-hidden="true"></div>`
+    },
+
+    // ─── תמונה בגוף המאמר ─────────────────────────────────────────
+    image: ({ value }) => {
+      if (!value?.asset) return ''
+
+      const src = urlFor(value).width(900).url()
+      const alt = value.alt || ''
+      const caption = value.caption || ''
+
+      return `
+        <figure class="hc-inline-image">
+          <img
+            src="${src}"
+            alt="${alt}"
+            loading="lazy"
+            decoding="async"
+          />
+          ${caption ? `<figcaption>${caption}</figcaption>` : ''}
+        </figure>
+      `
+    },
+    // ──────────────────────────────────────────────────────────────
+  },
+  marks: {
+    highlight: ({ children }) => `<mark class="hc-highlight">${children}</mark>`,
+    link: ({ children, value }) => {
+      const href = value?.href || '#'
+      const blank = value?.blank !== false
+      const target = blank ? ' target="_blank"' : ''
+      const rel = blank ? ' rel="noopener noreferrer"' : ''
+      return `<a href="${href}"${target}${rel}>${children}</a>`
+    },
+  },
+}
+
+const html = value ? toHTML(value, { components }) : ''
+---
+
+{html ? <div class="portabletext" set:html={html} /> : null}
+
+<style>
+  /* פסקאות */
+  .portabletext :global(p) {
+    margin: 0;
+    line-height: 1.85;
+  }
+
+  .portabletext :global(p + p) {
+    margin-top: 0.55rem;
+  }
+
+  .portabletext :global(h2) {
+    margin: 1.4rem 0 0.6rem;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .portabletext :global(h3) {
+    margin: 1.2rem 0 0.55rem;
+    line-height: 1.25;
+    font-weight: 900;
+  }
+
+  .portabletext :global(blockquote) {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-right: 3px solid rgba(41, 81, 87, 0.35);
+    background: rgba(41, 81, 87, 0.06);
+    border-radius: 14px;
+  }
+
+  .portabletext :global(ul) {
+    margin: 0.8rem 0;
+    padding-right: 1.25rem;
+  }
+
+  .portabletext :global(li) {
+    margin: 0.35rem 0;
+    line-height: 1.8;
+  }
+
+  .portabletext :global(mark.hc-highlight) {
+    background: rgba(243, 193, 74, 0.22);
+    padding: 0 0.2em;
+    border-radius: 0.35em;
+  }
+
+  .portabletext :global(a) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* רווחים גדולים בכוונה */
+  .portabletext :global(.hc-spacer) { width: 100%; }
+  .portabletext :global(.hc-spacer--sm) { height: 0.6rem; }
+  .portabletext :global(.hc-spacer--md) { height: 1.2rem; }
+  .portabletext :global(.hc-spacer--lg) { height: 2rem; }
+
+  /* ─── תמונה בגוף המאמר ─────────────────────────────────────── */
+  .portabletext :global(.hc-inline-image) {
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .portabletext :global(.hc-inline-image img) {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: block;
+  }
+
+  .portabletext :global(.hc-inline-image figcaption) {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(41, 81, 87, 0.55);
+    font-style: italic;
+    text-align: center;
+  }
+  /* ─────────────────────────────────────────────────────────── */
+</style>

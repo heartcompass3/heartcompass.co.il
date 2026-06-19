@@ -1,0 +1,24 @@
+---
+import BaseLayout from './BaseLayout.astro'
+
+const { seo } = Astro.props
+
+const clean = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
+
+const title = clean(seo?.title) || undefined
+// חשוב: לא מעבירים description ריק כדי לא לשבור SEO. BaseLayout יעשה fallback.
+const description = clean(seo?.description) || undefined
+const canonical = clean(seo?.canonical) || undefined
+const noindex = seo?.noindex === true
+const ogImage = seo?.ogImage?.asset?.url || undefined
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  noindex={noindex}
+  ogImage={ogImage}
+>
+  <slot />
+</BaseLayout>

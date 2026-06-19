@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
+import { sanity } from '../lib/sanity'
+import { TOOLS_QUERY } from '../lib/sanityQueries'
+
+const tools = await sanity.fetch(TOOLS_QUERY)
+
+const title = `כלים ומדריכים | ${site.brand}`
+const description =
+  'כלי אבחון, מדריכים ומשחקים חינמיים לשחרור דפוסים רגשיים – מצפן הלב.'
+
+// Map category → display data
+const categoryMeta = {
+  guide: { label: 'מדריך', icon: '📖', color: 'bg-accent/10 text-accent' },
+  quiz:  { label: 'שאלון אבחון', icon: '🧩', color: 'bg-primary/10 text-primary' },
+  game:  { label: 'משחק', icon: '🎮', color: 'bg-emerald-100 text-emerald-700' },
+}
+
+const brandDeep = '#295157'
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <!-- Header -->
+      <header class="mb-16 text-center">
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-white/60 px-5 py-2 text-sm font-body font-bold text-accent mb-6"
+        >
+          <span class="inline-block h-2 w-2 rounded-full bg-accent"></span>
+          חינמי לחלוטין
+        </span>
+
+        <h1
+          class="text-5xl md:text-6xl font-black font-display mb-6 drop-shadow-sm"
+          style={`color:${brandDeep}`}
+        >
+          כלים ומדריכים
+        </h1>
+        <p class="text-xl md:text-2xl text-primary/70 font-body font-medium max-w-3xl mx-auto">
+          כלים מעשיים להבנת הדפוסים שמנהלים אותך –<br class="hidden md:block" />
+          לפני שמתחילים תהליך, במהלכו, ואחריו.
+        </p>
+      </header>
+
+      <!-- Tools Grid -->
+      {tools && tools.length > 0 ? (
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {tools.map((tool) => {
+            const meta = categoryMeta[tool.toolCategory] ?? { label: 'כלי', icon: '✦', color: 'bg-accent/10 text-accent' }
+            const href = tool.externalUrl
+              ? tool.externalUrl
+              : `/guide/${tool.slug?.current}`
+            const isExternal = !!tool.externalUrl
+
+            return (
+              <a
+                href={href}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
+                class="group relative bg-white rounded-[2.5rem] shadow-lg hover:shadow-2xl border border-foreground/5 ring-1 ring-black/5 flex flex-col overflow-hidden transition-all duration-500 hover:-translate-y-2"
+              >
+                <!-- Image / placeholder -->
+                <div class="h-52 overflow-hidden relative w-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                  {tool.imageUrl ? (
+                    <img
+                      src={tool.imageUrl}
+                      alt={tool.title}
+                      class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span class="text-6xl opacity-40">{meta.icon}</span>
+                  )}
+
+                  <!-- Category badge -->
+                  <div class={`absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-body ${meta.color} backdrop-blur-sm bg-white/80`}>
+                    <span>{meta.icon}</span>
+                    {meta.label}
+                  </div>
+
+                  {isExternal && (
+                    <div class="absolute top-4 left-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-body bg-black/30 text-white backdrop-blur-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                        <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 4a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 4a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5z" clip-rule="evenodd"/>
+                        <path d="M13 5.75a.75.75 0 011.28-.53l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 01-1.28-.53V5.75z"/>
+                      </svg>
+                      אפליקציה
+                    </div>
+                  )}
+                </div>
+
+                <!-- Content -->
+                <div class="p-8 flex-1 flex flex-col">
+                  <h2
+                    class="text-2xl font-black font-display leading-tight mb-3 group-hover:text-accent transition-colors"
+                    style={`color:${brandDeep}`}
+                  >
+                    {tool.title}
+                  </h2>
+
+                  {tool.toolTagline && (
+                    <p class="text-primary/65 font-body leading-relaxed text-base mb-6 flex-1">
+                      {tool.toolTagline}
+                    </p>
+                  )}
+
+                  <div class="mt-auto flex items-center gap-2 font-body font-bold text-accent group-hover:gap-3 transition-all">
+                    <span>{isExternal ? 'פתח את הכלי' : 'קבל גישה'}</span>
+                    <span>←</span>
+                  </div>
+                </div>
+              </a>
+            )
+          })}
+        </div>
+      ) : (
+        <!-- Fallback: no tools in Sanity yet - show static cards -->
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+          <!-- Card 1: Diagnosis quiz -->
+          <a
+            href="https://heartcompass.base44.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group relative bg-white rounded-[2.5rem] shadow-lg hover:shadow-2xl border border-foreground/5 ring-1 ring-black/5 flex flex-col overflow-hidden transition-all duration-500 hover:-translate-y-2"
+          >
+            <div class="h-52 bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center relative">
+              <span class="text-6xl opacity-40">🧩</span>
+              <div class="absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-body bg-white/80 text-primary backdrop-blur-sm">
+                🧩 שאלון אבחון
+              </div>
+              <div class="absolute top-4 left-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-body bg-black/30 text-white backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                  <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 4a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 4a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5z" clip-rule="evenodd"/>
+                  <path d="M13 5.75a.75.75 0 011.28-.53l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 01-1.28-.53V5.75z"/>
+                </svg>
+                אפליקציה
+              </div>
+            </div>
+            <div class="p-8 flex-1 flex flex-col">
+              <h2 class="text-2xl font-black font-display leading-tight mb-3 group-hover:text-accent transition-colors" style={`color:${brandDeep}`}>
+                מפת הדרך הפנימית
+              </h2>
+              <p class="text-primary/65 font-body leading-relaxed text-base mb-6 flex-1">
+                שאלון אבחון קצר שמזהה את הדפוס הרגשי המרכזי שמנהל אותך – ומראה איפה להתחיל.
+              </p>
+              <div class="mt-auto flex items-center gap-2 font-body font-bold text-accent group-hover:gap-3 transition-all">
+                <span>פתח את הכלי</span><span>←</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- Card 2: Guide -->
+          <a
+            href="/guide/overthinking-release-guide"
+            class="group relative bg-white rounded-[2.5rem] shadow-lg hover:shadow-2xl border border-foreground/5 ring-1 ring-black/5 flex flex-col overflow-hidden transition-all duration-500 hover:-translate-y-2"
+          >
+            <div class="h-52 bg-gradient-to-br from-accent/10 to-amber-50 flex items-center justify-center relative">
+              <span class="text-6xl opacity-40">📖</span>
+              <div class="absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-body bg-white/80 text-accent backdrop-blur-sm">
+                📖 מדריך
+              </div>
+            </div>
+            <div class="p-8 flex-1 flex flex-col">
+              <h2 class="text-2xl font-black font-display leading-tight mb-3 group-hover:text-accent transition-colors" style={`color:${brandDeep}`}>
+                המדריך לשחרור חשיבת יתר
+              </h2>
+              <p class="text-primary/65 font-body leading-relaxed text-base mb-6 flex-1">
+                למה המחשבות לא נותנות לך מנוח – וה-3 צעדים לעצור את הלופ מהשורש.
+              </p>
+              <div class="mt-auto flex items-center gap-2 font-body font-bold text-accent group-hover:gap-3 transition-all">
+                <span>קבל גישה</span><span>←</span>
+              </div>
+            </div>
+          </a>
+
+        </div>
+      )}
+
+      <!-- Bottom CTA -->
+      <div class="mt-20 text-center bg-white rounded-[2.5rem] border border-foreground/5 shadow-lg p-12">
+        <h2 class="text-3xl font-black font-display mb-4" style={`color:${brandDeep}`}>
+          כלים טובים הם רק ההתחלה
+        </h2>
+        <p class="text-primary/65 font-body text-lg max-w-xl mx-auto mb-8">
+          אם הכלי הזה נגע במשהו – כנראה שיש שם דפוס שכדאי לפגוש לעומק.
+          שיחת היכרות קצרה, ללא עלות.
+        </p>
+        <a
+          href={site.primaryCtaHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-accent text-white font-body font-bold shadow hover:opacity-90 transition"
+        >
+          בוא נדבר ←
+        </a>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>

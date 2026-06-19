@@ -1,0 +1,242 @@
+---
+import site from '../content/pages/site.json'
+import '../styles/global.css'
+
+import SeoHead from '../components/SeoHead.astro'
+
+import Navigation from '../components/Navigation.astro'
+import Footer from '../components/Footer.astro'
+import WhatsAppFloat from '../components/WhatsAppFloat.astro'
+import Tracking from '../components/Tracking.astro'
+import CookieBanner from '../components/CookieBanner.astro'
+
+const {
+  title,
+  description,
+  canonical,
+  // תאימות לאחור: חלק מהעמודים מעבירים noindex (ישן) וחלק noIndex (חדש)
+  noindex,
+  noIndex,
+  ogImage,
+  pageType,
+  schema,
+} = Astro.props
+
+const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
+
+const resolvedCanonicalRaw =
+  clean(canonical) || new URL(Astro.url.pathname, site.siteUrl).toString()
+
+// normalize canonical to match trailingSlash: 'never'
+const normalizeCanonical = (url: string) => {
+  const u = clean(url)
+  if (!u) return u
+
+  try {
+    const parsed = new URL(u)
+    const path = parsed.pathname || '/'
+    const looksLikeFile = /\.[a-z0-9]+$/i.test(path)
+
+    // home stays /
+    if (path === '/') {
+      parsed.pathname = '/'
+      return parsed.toString()
+    }
+
+    // files keep as-is
+    if (looksLikeFile) {
+      return parsed.toString()
+    }
+
+    // remove trailing slash for all other paths
+    parsed.pathname = path.replace(/\/$/, '')
+    return parsed.toString()
+  } catch {
+    return u
+  }
+}
+
+const resolvedCanonical = normalizeCanonical(resolvedCanonicalRaw)
+
+const defaultDescription =
+  site.heroDescription ||
+  'מצפן הלב הוא תהליך ברור, רגיש ומדויק שעוזר לך לבחור מתוך תשוקה ולא מתוך הפחד.'
+
+const resolvedDescription = clean(description) || defaultDescription
+
+const resolvedNoIndex = noIndex === true || noindex === true
+
+const schemaArray = Array.isArray(schema) ? schema : []
+
+// Detect article pages reliably
+const hasArticleSchema = schemaArray.some(
+  (s) => s && (s['@type'] === 'Article' || s['@type'] === 'NewsArticle')
+)
+
+const isArticlePage =
+  pageType === 'article' ||
+  Astro.url.pathname.startsWith('/articles/') ||
+  hasArticleSchema
+
+// WebSite schema — אומר לגוגל את שם האתר (במקום "Vercel").
+// כשנעבור לדומיין משלנו: לעדכן רק את siteUrl ב-site.json — הכל מתעדכן אוטומטית.
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${site.siteUrl}/#website`,
+  name: site.brand,
+  alternateName: [site.siteName, site.fullName],
+  url: site.siteUrl,
+  inLanguage: 'he',
+  publisher: { '@id': `${site.siteUrl}/#person` },
+}
+
+// כתובת בסיס — נתניה (העסק מתנהל אונליין; כשתיפתח קליניקה נעדכן כאן בלבד).
+const businessAddress = {
+  '@type': 'PostalAddress',
+  addressLocality: 'נתניה',
+  addressRegion: 'מחוז המרכז',
+  addressCountry: 'IL',
+}
+
+// ProfessionalService הוא תת-סוג של LocalBusiness — מספיק כדי לקבל "כרטיס מקומי".
+// @id יציב (לא תלוי-עמוד) כדי שכל האתר יצביע לאותה ישות עסקית אחת.
+const defaultServiceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  '@id': `${site.siteUrl}/#business`,
+  name: site.brand,
+  url: site.siteUrl,
+  description: resolvedDescription,
+  founder: { '@id': `${site.siteUrl}/#person` },
+  address: businessAddress,
+  areaServed: [{ '@type': 'Country', name: 'ישראל' }, 'Online'],
+  availableLanguage: 'he',
+  priceRange: '₪₪',
+  slogan: site.tagline,
+  email: site.email,
+  telephone: `+${site.whatsAppPhone}`,
+  image: `${site.siteUrl}/assets/yossi-hero.jpg`,
+  logo: `${site.siteUrl}/assets/logo.png`,
+  sameAs: [site.instagramUrl, site.facebookUrl],
+  knowsAbout: [
+    'אימון רגשי',
+    'אינטליגנציה רגשית',
+    'אימון רגשי לבני נוער',
+    'הדרכת הורים',
+    'זוגיות ותקשורת',
+    'שחרור דפוסים רגשיים',
+    'שיטת מ.ס.ע',
+  ],
+}
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${site.siteUrl}/#person`,
+  name: site.fullName,
+  url: site.siteUrl,
+  jobTitle: 'מאמן רגשי מוסמך ICF',
+  email: site.email,
+  address: businessAddress,
+  worksFor: { '@id': `${site.siteUrl}/#business` },
+  // הסמכות = אות E-E-A-T מרכזי בגוגל.
+  hasCredential: [
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Professional Certification',
+      name: 'מאמן רגשי מוסמך – ICF (International Coaching Federation)',
+      recognizedBy: {
+        '@type': 'Organization',
+        name: 'International Coaching Federation',
+        url: 'https://coachingfederation.org',
+      },
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Specialized Training',
+      name: 'השתלמות מקצועית – אימון רגשי לבני נוער ומתבגרים',
+    },
+  ],
+  knowsAbout: [
+    'אימון רגשי',
+    'אינטליגנציה רגשית',
+    'הדרכת הורים',
+    'ליווי זוגות',
+    'בני נוער ומתבגרים',
+  ],
+  sameAs: [
+    site.instagramUrl,
+    site.facebookUrl,
+    'https://www.linkedin.com/in/yossi-medalsi-2a643a397/',
+    `https://wa.me/${site.whatsAppPhone}`,
+  ],
+  image: `${site.siteUrl}/assets/yossi-hero.jpg`,
+}
+
+// Do not inject ProfessionalService on article pages.
+// Also: if page already provides its own service schema, do not duplicate.
+const alreadyHasService = schemaArray.some(
+  (s) => s && s['@type'] === 'ProfessionalService'
+)
+
+// אם העמוד מספק Person משלו (למשל דף "אודות" עם ביוגרפיה) — לא מזריקים את הגנרי.
+const alreadyHasPerson = schemaArray.some((s) => s && s['@type'] === 'Person')
+
+// WebSite נכנס לכל עמוד (כולל מאמרים) — פעם אחת בלבד.
+let mergedSchema
+if (isArticlePage) {
+  mergedSchema = [websiteSchema, ...schemaArray]
+} else {
+  const injected = [websiteSchema]
+  if (!alreadyHasService) injected.push(defaultServiceSchema)
+  if (!alreadyHasPerson) injected.push(personSchema)
+  mergedSchema = [...injected, ...schemaArray]
+}
+---
+
+<!doctype html>
+<html lang="he" dir="rtl" class="bg-background text-foreground">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google Search Console verification -->
+    <meta
+      name="google-site-verification"
+      content="JnPSkMeCL51vUpC5HuP0QtTUnyHdGn6qpMpo9ZwKCrw"
+    />
+
+    <SeoHead
+      title={title}
+      description={resolvedDescription}
+      canonical={resolvedCanonical}
+      noIndex={resolvedNoIndex}
+      ogImage={ogImage}
+      pageType={pageType}
+      schema={mergedSchema}
+    />
+
+    <link rel="icon" href="/assets/logo.png" />
+
+    <!-- Tracking Layer -->
+    <Tracking />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+    />
+  </head>
+
+  <body class="min-h-screen selection:bg-accent selection:text-white">
+    <Navigation />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+    <CookieBanner />
+  </body>
+</html>

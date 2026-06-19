@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
+import { sanity } from '../lib/sanity'
+import { CONTACT_PAGE_QUERY, SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
+
+// מושכים גם Site Settings וגם Contact Page
+const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
+const contact = await sanity.fetch(CONTACT_PAGE_QUERY)
+
+// SEO
+const seoTitle = contact?.seo?.title || `צור קשר | ${site.brand}`
+const seoDescription =
+  contact?.seo?.description || 'תיאום שיחה קצרה. הדרך הכי פשוטה להתחיל היא הודעת WhatsApp.'
+const noindex = contact?.seo?.noindex
+
+// Data
+const email = settings?.contact?.email || site.email || 'heartcompass3@gmail.com'
+const whatsappHref = settings?.whatsapp?.href || site.primaryCtaHref || '#'
+
+// טקסטים מהדוקומנט, עם fallback קשיח כדי שלא יישבר אם עוד לא יצרת מסמך
+const leftTitle = contact?.left?.title || 'תיאום שיחה קצרה'
+const leftText =
+  contact?.left?.text ||
+  'כדי לא להעמיס, כרגע הדרך הכי מהירה היא WhatsApp. תכתוב לי כמה שאלות מוכנות בפתחו של הירוק למטה.'
+const leftCtaLabel = contact?.left?.ctaLabel || "בוא נדבר תכל'ס"
+const leftHelper =
+  contact?.left?.helper ||
+  'אם אתה יודע כבר מה הכאב המרכזי, תכתוב אותו במשפט אחד. זה מספיק כדי להתחיל.'
+
+const rightLine1 = contact?.right?.titleLine1 || 'בוא נפתח'
+const rightLine2 = contact?.right?.titleLine2 || 'דף חדש.'
+const mailLabel = contact?.right?.ctaLabel || 'שליחת מייל'
+const rightHelper =
+  contact?.right?.helper ||
+  'אם אתה לא בטוח מה לכתוב, פשוט רשום: “אני רוצה להבין מה הצעד הבא.”'
+---
+
+<BaseLayout title={seoTitle} description={seoDescription} noindex={noindex}>
+  <div class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="bg-white rounded-[3.5rem] shadow-2xl overflow-hidden border border-white flex flex-col md:flex-row min-h-[650px]">
+
+        <!-- כחול ראשון בקוד: ב-RTL זה יישב מימין בדסקטופ כמו במקור -->
+        <section class="bg-primary text-white p-16 md:w-5/12 relative overflow-hidden flex flex-col items-center text-center justify-center">
+          <div class="absolute top-0 right-0 w-80 h-80 bg-accent rounded-full -mr-20 -mt-20 opacity-20 blur-[80px]"></div>
+
+          <h1 class="text-5xl font-black font-display mb-8 leading-tight relative z-10">
+            {rightLine1} <br /><span class="text-accent">{rightLine2}</span>
+          </h1>
+
+          <div class="relative z-10 text-xl font-bold font-display dir-ltr tracking-wide mt-10">
+            {email}
+          </div>
+
+          <a
+            href={`mailto:${email}`}
+            class="mt-10 inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-white/10 hover:bg-white/15 transition-colors font-body font-bold"
+            aria-label="שליחת מייל"
+          >
+            {mailLabel} <span aria-hidden="true">←</span>
+          </a>
+
+          <p class="mt-10 font-body text-sm text-white/60 max-w-xs">
+            {rightHelper}
+          </p>
+        </section>
+
+        <!-- לבן -->
+        <section class="p-16 md:w-7/12 bg-white flex flex-col items-center text-center justify-center">
+          <h2 class="text-4xl font-black text-primary font-display">
+            {leftTitle}
+          </h2>
+
+          <p class="mt-6 text-primary/70 font-body text-lg max-w-md">
+            {leftText}
+          </p>
+
+          <a
+            href={whatsappHref}
+            class="mt-10 inline-flex items-center gap-3 px-10 py-5 rounded-2xl gradient-gold text-white font-body font-bold shadow-gold hover:opacity-95 transition"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="פתיחת וואטסאפ לתיאום"
+          >
+            {leftCtaLabel} <span aria-hidden="true">←</span>
+          </a>
+
+          <a
+            href="tel:+972544580285"
+            class="mt-4 inline-flex items-center gap-2 px-8 py-3 rounded-2xl border border-primary/20 text-primary/70 font-body font-bold hover:bg-primary/5 transition"
+            aria-label="התקשר ישירות"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+              <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z" clip-rule="evenodd"/>
+            </svg>
+            התקשר: 054-4580285
+          </a>
+
+          <p class="mt-10 font-body text-sm text-foreground/60 max-w-md">
+            {leftHelper}
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>

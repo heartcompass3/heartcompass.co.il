@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
+
+const updated = '18 ביוני 2026'
+---
+
+<BaseLayout
+  title="תנאי שימוש"
+  description={`תנאי השימוש באתר ${site.brand} ובשירותי האימון הרגשי של ${site.fullName}.`}
+>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-3xl mx-auto px-6">
+      <h1 class="text-4xl md:text-5xl font-black text-primary font-display mb-3">תנאי שימוש</h1>
+      <p class="text-primary/50 font-body mb-10">עודכן לאחרונה: {updated}</p>
+
+      <div class="space-y-8 font-body leading-relaxed text-primary/80 text-lg">
+        <p>
+          ברוכים הבאים לאתר {site.brand}. השימוש באתר ובשירותים המוצעים בו כפוף לתנאים הבאים.
+          גלישה באתר מהווה הסכמה לתנאים אלה.
+        </p>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">מהות השירות</h2>
+          <p>{site.brand} מציע ליווי ואימון רגשי המבוסס על שיטת מ.ס.ע, עבור זוגות, הורים, בני נוער ותהליכי עומק אישיים. השירות ניתן על ידי {site.fullName} ומועבר אונליין.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">הבהרה חשובה</h2>
+          <p>אימון רגשי <strong>אינו תחליף לטיפול פסיכולוגי, פסיכיאטרי או רפואי</strong>. התכנים באתר הם מידע כללי ואינם מהווים ייעוץ אישי, אבחון או המלצה טיפולית. במצב מצוקה נפשית יש לפנות לאיש מקצוע מוסמך או לקו סיוע ייעודי.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">קניין רוחני</h2>
+          <p>כל התכנים באתר — טקסטים, מאמרים, שיטת מ.ס.ע, עיצוב ותמונות — הם קניינו של {site.fullName} ומוגנים בזכויות יוצרים. אין להעתיק, לשכפל או להפיץ ללא אישור בכתב.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">אחריות</h2>
+          <p>התכנים מוצגים "כפי שהם". {site.fullName} עושה מאמץ לדיוק התוכן אך אינו אחראי לכל נזק ישיר או עקיף הנובע מהסתמכות על המידע באתר.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">תיאום וביטול שיחות</h2>
+          <p>תיאום שיחות נעשה בתיאום אישי. בקשות לשינוי או ביטול מועד יש להעביר מראש דרך ערוצי הקשר באתר.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">דין וסמכות שיפוט</h2>
+          <p>על תנאים אלה יחול הדין הישראלי, וסמכות השיפוט נתונה לבתי המשפט המוסמכים בישראל.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">יצירת קשר</h2>
+          <p>לשאלות בנוגע לתנאי השימוש: <a href={`mailto:${site.email}`} class="text-accent font-bold hover:underline">{site.email}</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

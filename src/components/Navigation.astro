@@ -1,0 +1,281 @@
+---
+import { sanity } from '../lib/sanity'
+import site from '../content/pages/site.json'
+import { SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
+
+const currentPath = Astro.url.pathname
+
+let nav = []
+
+try {
+  const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
+  nav = settings?.nav ?? []
+} catch (e) {
+  nav = []
+}
+
+/* fallback מלא במקרה ש-Sanity לא זמין */
+const fallbackNav = [
+  { label: 'ראשי', href: '/' },
+  { label: 'מי אני', href: '/about' },
+  { label: 'השיטה', href: '/method' },
+  { label: 'כלים ומדריכים', href: '/tools' },
+  { label: 'מאמרים', href: '/articles' },
+  { label: 'תחומי התמחות', href: '/specialties' }
+]
+
+if (!nav.length) {
+  nav = fallbackNav
+}
+
+const specialtiesChildrenFallback = [
+  { label: 'אימון זוגי', href: '/specialties/couples' },
+  { label: 'הדרכת הורים', href: '/specialties/parents' },
+  { label: 'אימון לנוער', href: '/specialties/youth' }
+]
+
+const isActive = (href) => {
+  if (!href) return false
+  if (href === '/') return currentPath === '/'
+  return currentPath === href || currentPath.startsWith(href + '/')
+}
+---
+
+<nav
+  class="sticky top-0 z-[999] border-b border-accent/20 bg-[#fbf8f2] md:bg-background/70 md:backdrop-blur-md"
+  data-nav
+>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-center justify-between h-20">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-4">
+        <img src="/assets/logo.png" alt="לוגו מצפן הלב" class="h-10 w-auto" />
+        <div class="flex flex-col leading-tight">
+          <span class="font-display text-xl">{site.brand}</span>
+          <span class="font-body text-xs text-muted-foreground">אימון רגשי תודעתי</span>
+          <span class="font-body text-xs text-muted-foreground">לבני נוער, הורים וזוגות</span>
+        </div>
+      </a>
+
+      <!-- Desktop -->
+      <div class="hidden md:flex gap-8 items-center">
+        {nav.map((item) => {
+
+          const childrenFromSanity = Array.isArray(item.children) ? item.children : []
+          const isSpecialties = item.href === '/specialties'
+
+          const children =
+            childrenFromSanity.length > 0
+              ? childrenFromSanity
+              : isSpecialties
+              ? specialtiesChildrenFallback
+              : []
+
+          const hasChildren = children.length > 0
+
+          if (!hasChildren) {
+            return (
+              <a
+                href={item.href}
+                class={`font-body font-bold transition ${
+                  isActive(item.href)
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-accent'
+                }`}
+              >
+                {item.label}
+              </a>
+            )
+          }
+
+          const isParentActive =
+            isActive(item.href) || children.some((c) => isActive(c.href))
+
+          return (
+            <div class="relative" data-dropdown>
+              <button
+                type="button"
+                class={`font-body font-bold transition inline-flex items-center gap-2 ${
+                  isParentActive
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-accent'
+                }`}
+                data-dropdown-trigger
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                {item.label}
+                <span aria-hidden="true">▾</span>
+              </button>
+
+              <div
+                class="hidden absolute right-0 mt-3 w-56 rounded-2xl bg-white shadow-elegant border border-accent/10 overflow-hidden z-[1000]"
+                data-dropdown-menu
+              >
+                {children.map((c) => (
+                  <a
+                    href={c.href}
+                    class={`block px-5 py-3 font-body text-sm transition ${
+                      isActive(c.href)
+                        ? 'bg-accent/10 text-foreground'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-foreground'
+                    }`}
+                  >
+                    {c.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <!-- Mobile -->
+      <div class="md:hidden">
+
+        <button
+          type="button"
+          class="text-2xl"
+          aria-label="פתח תפריט"
+          aria-expanded="false"
+          data-menu-button
+        >
+          ☰
+        </button>
+
+        <div
+          class="hidden fixed inset-0 z-[1000] bg-[#fbf8f2] overflow-y-auto"
+          data-mobile-menu
+        >
+          <div class="p-6 flex flex-col gap-6">
+
+            <button
+              type="button"
+              aria-label="סגור תפריט"
+              class="self-end text-3xl"
+              data-menu-close
+            >
+              ×
+            </button>
+
+            <div class="flex flex-col gap-2">
+
+              {nav.map((item) => {
+
+                const childrenFromSanity = Array.isArray(item.children) ? item.children : []
+                const isSpecialties = item.href === '/specialties'
+
+                const children =
+                  childrenFromSanity.length > 0
+                    ? childrenFromSanity
+                    : isSpecialties
+                    ? specialtiesChildrenFallback
+                    : []
+
+                const hasChildren = children.length > 0
+
+                if (!hasChildren) {
+                  return (
+                    <a
+                      href={item.href}
+                      class={`font-body text-xl border-b pb-4 transition ${
+                        isActive(item.href)
+                          ? 'text-foreground'
+                          : 'text-foreground/80 hover:text-accent'
+                      }`}
+                      data-menu-link
+                    >
+                      {item.label}
+                    </a>
+                  )
+                }
+
+                return (
+                  <div class="border-b pb-4">
+                    <span class="font-body text-xl text-foreground">
+                      {item.label}
+                    </span>
+
+                    <div class="mt-3 flex flex-col gap-2 pr-3">
+
+                      {children.map((c) => (
+                        <a
+                          href={c.href}
+                          class={`font-body text-base transition ${
+                            isActive(c.href)
+                              ? 'text-foreground'
+                              : 'text-foreground/70 hover:text-accent'
+                          }`}
+                          data-menu-link
+                        >
+                          {c.label}
+                        </a>
+                      ))}
+
+                    </div>
+                  </div>
+                )
+              })}
+
+            </div>
+
+            <div class="pt-2 text-sm text-muted-foreground font-body">
+              {site.tagline}
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const root = document.querySelector('[data-nav]');
+      if (!root) return;
+
+      const menu = root.querySelector('[data-mobile-menu]');
+      const btn = root.querySelector('[data-menu-button]');
+      const closeBtn = root.querySelector('[data-menu-close]');
+      const links = root.querySelectorAll('[data-menu-link]');
+
+      const openMobile = () => {
+        menu.classList.remove('hidden');
+        document.documentElement.style.overflow = 'hidden';
+      };
+
+      const closeMobile = () => {
+        menu.classList.add('hidden');
+        document.documentElement.style.overflow = '';
+      };
+
+      btn?.addEventListener('click', openMobile);
+      closeBtn?.addEventListener('click', closeMobile);
+      links.forEach((a) => a.addEventListener('click', closeMobile));
+
+      root.querySelectorAll('[data-dropdown]').forEach((dd) => {
+
+        const trigger = dd.querySelector('[data-dropdown-trigger]');
+        const menuEl = dd.querySelector('[data-dropdown-menu]');
+        if (!trigger || !menuEl) return;
+
+        let open = false;
+
+        const setOpen = (v) => {
+          open = v;
+          menuEl.classList.toggle('hidden', !open);
+        };
+
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setOpen(!open);
+        });
+
+        document.addEventListener('click', () => setOpen(false));
+      });
+    })();
+  </script>
+
+</nav>

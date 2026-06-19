@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+
+const title = 'הצהרת נגישות | מצפן הלב'
+const description =
+  'מצפן הלב מחויבת לנגישות ועושה מאמץ להנגיש את האתר בהתאם לתקן WCAG 2.0 ברמה AA. כאן תמצא פירוט התאמות ודרכי יצירת קשר.'
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="max-w-3xl mx-auto px-6 py-16">
+    <h1 class="font-display text-4xl leading-tight">הצהרת נגישות</h1>
+
+    <p class="mt-6 font-body text-lg text-foreground/80">
+      מצפן הלב רואה חשיבות רבה בהנגשת שירותיה לכלל הציבור, כולל אנשים עם מוגבלות. אנו עושים מאמץ מתמשך לשפר את נגישות האתר
+      כדי לאפשר שימוש נוח ככל האפשר.
+    </p>
+
+    <div class="mt-10 space-y-6 font-body text-foreground/80">
+      <div>
+        <h2 class="font-display text-2xl text-foreground">תקן נגישות</h2>
+        <p class="mt-2">
+          האתר שואף לעמוד בהנחיות WCAG 2.0 ברמה AA, תוך התאמה ככל האפשר לדפדפנים נפוצים ולשימוש במקלדת.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl text-foreground">התאמות שבוצעו</h2>
+        <ul class="mt-2 list-disc pr-6 space-y-2">
+          <li>מבנה עמודים היררכי עם כותרות מסודרות.</li>
+          <li>תמיכה בניווט מקלדת (Tab, Enter, Escape) ברכיבי תפריט וחלונות.</li>
+          <li>שימוש בתוויות נגישות (aria-label) לפעולות איקוניות.</li>
+          <li>טקסטים קריאים ושמירה על ניגודיות במרבית הרכיבים.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl text-foreground">מגבלות אפשריות</h2>
+        <p class="mt-2">
+          למרות מאמצינו, ייתכן שחלק מהתכנים או רכיבים מסוימים אינם מונגשים באופן מלא. אם נתקלת בקושי, נשמח לטפל בכך בהקדם.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl text-foreground">יצירת קשר בנושא נגישות</h2>
+        <p class="mt-2">
+          כדי לדווח על בעיית נגישות או לבקש התאמה, ניתן ליצור קשר:
+        </p>
+        <ul class="mt-2 space-y-2">
+          <li>
+            אימייל:
+            <a class="underline hover:opacity-80 dir-ltr" href="mailto:heartcompass3@gmail.com">heartcompass3@gmail.com</a>
+          </li>
+          <li>
+            וואטסאפ:
+            <a class="underline hover:opacity-80 dir-ltr" href="https://wa.me/972544580285" target="_blank" rel="noopener noreferrer">
+              054-458-0285
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <p class="text-sm text-foreground/60 mt-10">
+        עודכן לאחרונה: 06.01.2026
+      </p>
+    </div>
+  </section>
+</BaseLayout>

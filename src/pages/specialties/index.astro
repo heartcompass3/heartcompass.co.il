@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import site from '../../content/pages/site.json'
+import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
+
+const title = `תחומי התמחות | ${site.brand}`
+const description = 'תחומי האימון בשיטת מ.ס.ע: זוגיות, הדרכת הורים, נוער ומתבגרים, והתפתחות אישית.'
+
+const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
+
+const breadcrumbSchema = buildBreadcrumbListSchema({
+  siteUrl: site.siteUrl,
+  brandName: site.brand,
+  crumbs: [
+    { name: 'תחומי התמחות', item: canonical },
+  ],
+})
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} schema={[breadcrumbSchema]}>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="text-center mb-14">
+        <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6">
+          תחומי התמחות
+        </h1>
+        <p class="text-xl text-primary/70 font-body max-w-3xl mx-auto">
+          {description}
+        </p>
+      </header>
+
+      <section class="grid md:grid-cols-2 gap-8">
+        <a href="/specialties/couples" class="bg-white p-10 rounded-[2.5rem] shadow-elegant border border-white hover:translate-y-[-2px] transition">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">זוגיות</h2>
+          <p class="text-primary/70 font-body leading-relaxed">
+            מפרקים דפוסים שחוזרים בריב, בריחוק או בריצוי, ובונים שפה חדשה בבית.
+          </p>
+          <div class="mt-6 font-bold text-accent font-body">קרא עוד ←</div>
+        </a>
+
+        <a href="/specialties/parents" class="bg-white p-10 rounded-[2.5rem] shadow-elegant border border-white hover:translate-y-[-2px] transition">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">הדרכת הורים</h2>
+          <p class="text-primary/70 font-body leading-relaxed">
+            כלים לחיבור אמיתי עם הילד, ולהתמודדות עם ריחוק, מאבקי כוח וקשיי תקשורת.
+          </p>
+          <div class="mt-6 font-bold text-accent font-body">קרא עוד ←</div>
+        </a>
+
+        <a href="/specialties/youth" class="bg-white p-10 rounded-[2.5rem] shadow-elegant border border-white hover:translate-y-[-2px] transition">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">נוער ומתבגרים</h2>
+          <p class="text-primary/70 font-body leading-relaxed">
+            מרחב בטוח להתמודדות עם חרדה חברתית, דימוי עצמי נמוך והצפה רגשית.
+          </p>
+          <div class="mt-6 font-bold text-accent font-body">קרא עוד ←</div>
+        </a>
+
+        <a href="/specialties/personal" class="bg-white p-10 rounded-[2.5rem] shadow-elegant border border-white hover:translate-y-[-2px] transition">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">התפתחות אישית</h2>
+          <p class="text-primary/70 font-body leading-relaxed">
+            ערך עצמי, גבולות, חרדה, רעש פנימי והלקאה עצמית. חוזרים להגה מבפנים.
+          </p>
+          <div class="mt-6 font-bold text-accent font-body">קרא עוד ←</div>
+        </a>
+      </section>
+
+      <div class="mt-16 text-center">
+        <a
+          href={site.primaryCtaHref}
+          class="inline-flex items-center gap-3 px-10 py-5 rounded-2xl gradient-gold text-white font-bold shadow-gold"
+        >
+          {site.primaryCtaLabel} <span aria-hidden="true">←</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

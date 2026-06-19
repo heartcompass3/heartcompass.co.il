@@ -1,0 +1,280 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import site from '../../content/pages/site.json'
+import { sanity } from '../../lib/sanity'
+import { ARTICLE_BY_SLUG_QUERY, RELATED_ARTICLES_QUERY } from '../../lib/sanityQueries'
+import PortableText from '../../components/PortableText.astro'
+
+const rawSlug = Astro.params.slug
+const slug = Array.isArray(rawSlug) ? rawSlug.join('/') : rawSlug
+
+const article = await sanity.fetch(ARTICLE_BY_SLUG_QUERY, { slug })
+
+if (!article) {
+  return Astro.redirect('/articles', 302)
+}
+
+// מאמרים נוספים — אוטומטי לפי תגיות משותפות
+const related = article.tags?.length
+  ? await sanity.fetch(RELATED_ARTICLES_QUERY, { slug, tags: article.tags })
+  : []
+
+const title = `${article.title} | ${site.brand}`
+const description = article.excerpt || 'מאמר מתוך מצפן הלב.'
+
+const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
+const ogImage = article.mainImage?.asset?.url || undefined
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.title,
+  description,
+  abstract: article.aiCitation || undefined,
+  image: ogImage ? [ogImage] : undefined,
+  author: {
+    '@type': 'Person',
+    name: article.author?.name || article.authorLine || site.fullName,
+  },
+  publisher: {
+    '@type': 'Organization',
+    '@id': `${site.siteUrl}/#business`,
+    name: site.brand,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${site.siteUrl}/assets/logo.png`,
+    },
+  },
+  datePublished: article.publishedAt || undefined,
+  // תאריך עדכון אמיתי מ-Sanity (freshness signal); נופל חזרה לתאריך הפרסום.
+  dateModified: article._updatedAt || article.publishedAt || undefined,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonical,
+  },
+}
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: site.brand,
+      item: `${site.siteUrl}/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'מאמרים',
+      item: `${site.siteUrl}/articles`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: article.title,
+      item: canonical,
+    },
+  ],
+}
+
+// ─── FAQPage Schema — רק אם יש שאלות ────────────────────────────
+const faqSchema = article.faqItems?.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: article.faqItems.map((item: { question: string; answer: string }) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    }
+  : null
+
+const schemas = faqSchema
+  ? [articleSchema, breadcrumbSchema, faqSchema]
+  : [articleSchema, breadcrumbSchema]
+// ──────────────────────────────────────────────────────────────────
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogImage={ogImage}
+  pageType="article"
+  schema={schemas}
+>
+  <article class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-5xl mx-auto px-6">
+      <a
+        href="/articles"
+        class="flex items-center text-primary hover:text-gold-dark mb-10 font-bold transition-colors bg-white px-6 py-3 rounded-full shadow-md w-fit border border-accent/20"
+      >
+        ← חזרה למאמרים
+      </a>
+
+      <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-2xl border border-white">
+        {article.mainImage?.asset?.url && (
+          <div class="w-full h-80 rounded-[2rem] overflow-hidden mb-12 shadow-lg">
+            <img
+              src={article.mainImage.asset.url}
+              alt={article.mainImage.alt || article.title || `מאמר | ${site.brand}`}
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
+
+        <header class="text-center">
+          <h1 class="text-4xl md:text-6xl font-black text-primary font-display leading-tight mx-auto max-w-[20ch]">
+            {article.title}
+          </h1>
+
+          {article.goldLine && (
+            <p class="text-accent font-bold tracking-wide mt-5 font-display">
+              {article.goldLine}
+            </p>
+          )}
+
+          <div class="flex flex-wrap items-center justify-center gap-4 text-primary/60 font-body mt-6">
+            {article.publishedAt && <span>{new Date(article.publishedAt).toLocaleDateString('he-IL')}</span>}
+            {article.authorLine && <span>•</span>}
+            {article.authorLine && <span>{article.authorLine}</span>}
+          </div>
+
+          {/* excerpt לא מוצג כאן בכוונה: הוא משמש כ-meta description ובכרטיסים,
+             ואין צורך לחזור עליו מעל תיבת "בקצרה". */}
+        </header>
+
+        {/* ─── בקצרה: משפט תשובה (AEO) + נקודות מפתח, בתיבה אחת ─────── */}
+        {(article.aiCitation || article.keyTakeaways?.items?.length > 0) && (
+          <aside class="mt-10 bg-accent/10 border-r-4 border-accent rounded-2xl p-6 md:p-8 max-w-3xl mx-auto text-right">
+            <p class="text-accent font-display font-black text-sm tracking-wide mb-3">בקצרה</p>
+
+            {article.aiCitation && (
+              <p class="text-primary font-body font-semibold text-lg leading-relaxed">
+                {article.aiCitation}
+              </p>
+            )}
+
+            {article.keyTakeaways?.items?.length > 0 && (
+              <ul class={`space-y-3 ${article.aiCitation ? 'mt-5 pt-5 border-t border-accent/20' : ''}`}>
+                {article.keyTakeaways.items.map((point: string) => (
+                  <li class="flex items-start gap-3 text-primary/80 font-body leading-relaxed">
+                    <span class="text-accent font-black mt-0.5">✓</span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </aside>
+        )}
+        {/* ───────────────────────────────────────────────────────── */}
+
+        <div class="mt-14 prose prose-xl max-w-none text-primary/80 font-body leading-9">
+          <PortableText value={article.body} />
+        </div>
+
+        {/* ─── שאלות נפוצות ──────────────────────────────────────── */}
+        {article.faqItems?.length > 0 && (
+          <section class="mt-16 border-t border-primary/10 pt-12">
+            <h2 class="text-2xl font-black text-primary font-display mb-8 text-center">
+              שאלות נפוצות
+            </h2>
+            <div class="space-y-4">
+              {article.faqItems.map((item: { question: string; answer: string }) => (
+                <details class="group border border-primary/10 rounded-2xl overflow-hidden bg-background">
+                  <summary class="px-6 py-5 cursor-pointer font-bold text-primary font-body text-lg list-none flex justify-between items-center hover:bg-primary/5 transition-colors">
+                    {item.question}
+                    <span class="text-accent text-xl transition-transform group-open:rotate-45 mr-4">+</span>
+                  </summary>
+                  <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed text-base">
+                    {item.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+        {/* ───────────────────────────────────────────────────────── */}
+
+        {/* ─── קריאה לפעולה (CTA) ─────────────────────────────────── */}
+        {(article.cta?.heading || article.cta?.text) && (
+          <section class="mt-16 bg-gradient-to-br from-primary to-gold-dark rounded-[2rem] p-10 md:p-14 text-center shadow-xl">
+            {article.cta.heading && (
+              <h2 class="text-3xl md:text-4xl font-black text-white font-display leading-tight mb-5">
+                {article.cta.heading}
+              </h2>
+            )}
+            {article.cta.text && (
+              <p class="text-white/90 font-body text-lg leading-relaxed max-w-2xl mx-auto mb-8">
+                {article.cta.text}
+              </p>
+            )}
+            {article.cta.buttonLabel && article.cta.buttonHref && (
+              <a
+                href={article.cta.buttonHref}
+                class="inline-block bg-white text-primary font-bold text-lg px-10 py-4 rounded-full shadow-lg hover:scale-105 transition-transform"
+              >
+                {article.cta.buttonLabel}
+              </a>
+            )}
+          </section>
+        )}
+        {/* ───────────────────────────────────────────────────────── */}
+      </div>
+
+      {/* ─── מאמרים נוספים (אוטומטי לפי תגיות) ──────────────────── */}
+      {related?.length > 0 && (
+        <section class="mt-20">
+          <h2 class="text-3xl font-black text-primary font-display mb-10 text-center">
+            מאמרים נוספים
+          </h2>
+          <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+            {related.map((a: any) => (
+              <a
+                href={`/articles/${a.slug?.current}`}
+                class="bg-white rounded-[2rem] shadow-xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border border-white/50 flex flex-col h-full overflow-hidden hover:-translate-y-2 group ring-1 ring-black/5"
+              >
+                {a.mainImage?.asset?.url && (
+                  <div class="h-44 overflow-hidden relative w-full">
+                    <img
+                      src={a.mainImage.asset.url}
+                      alt={a.mainImage.alt || a.title || `מאמר | ${site.brand}`}
+                      class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div class="p-8 flex-1 flex flex-col text-center items-center">
+                  <h3 class="text-xl font-black text-primary mb-2 font-display leading-tight group-hover:text-gold-dark transition-colors">
+                    {a.title}
+                  </h3>
+                  {a.goldLine && (
+                    <p class="text-accent font-bold tracking-wide mb-3 font-display text-sm">
+                      {a.goldLine}
+                    </p>
+                  )}
+                  {a.excerpt && (
+                    <p class="text-primary/70 font-body leading-relaxed line-clamp-3 text-base">
+                      {a.excerpt}
+                    </p>
+                  )}
+                  <div class="mt-auto pt-5 flex items-center text-accent font-bold tracking-wide group-hover:gap-2 transition-all">
+                    קרא עוד <span class="mr-2">←</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+      {/* ───────────────────────────────────────────────────────── */}
+    </div>
+  </article>
+</BaseLayout>

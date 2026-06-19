@@ -1,0 +1,52 @@
+/* studio2/studio.css */
+/* Strong RTL + punctuation fix for Sanity Studio (Hebrew + mixed English) */
+
+:root {
+  direction: rtl;
+}
+
+/* General typography direction */
+body,
+[data-ui],
+[data-ui] * {
+  direction: rtl;
+}
+
+/* Inputs */
+input,
+textarea {
+  direction: rtl;
+  unicode-bidi: plaintext;
+  text-align: right;
+}
+
+/* Portable Text editor: force bidi handling on editor surface and inner blocks */
+[contenteditable='true'] {
+  direction: rtl;
+  unicode-bidi: plaintext;
+  text-align: right;
+}
+
+/* Sanity/PT editor internal wrappers (covers commas + quotes in mixed content) */
+[data-slate-editor],
+[data-slate-editor] * {
+  direction: rtl;
+  unicode-bidi: plaintext;
+  text-align: right;
+}
+
+/* Paragraph-like nodes inside the editor */
+[data-slate-node='element'],
+[data-slate-node='text'] {
+  unicode-bidi: plaintext;
+}
+
+/* When you intentionally need LTR (emails/urls/WhatsApp) */
+.dir-ltr,
+a[href^='http'],
+a[href^='mailto:'],
+a[href^='https://wa.me'],
+code {
+  direction: ltr;
+  unicode-bidi: isolate;
+}

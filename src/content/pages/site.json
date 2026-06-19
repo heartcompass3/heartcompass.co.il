@@ -1,0 +1,31 @@
+{
+  "siteUrl": "https://heartcompass.co.il",
+  "siteName": "יוסי מדלסי - מאמן רגשי",
+  "brand": "מצפן הלב",
+  "fullName": "יוסי מדלסי",
+  "tagline": "אימון רגשי תודעתי לבני נוער , הורים , זוגות ותהליכי עומק אישיים ",
+  "heroBadge": "שחרור דפוסים אוטומטיים לבני נוער וליווי להורים,זוגות ותהליכי עומק אישיים ",
+
+  "heroTitleLine1": "לבחור מתוך תשוקה,",
+  "heroTitleLine2": "לא מתוך הפחד.",
+  "heroTitleLine3": "ולחזור לעצמך.",
+
+  "heroSubheadline": "תהליך עומק לשחרור דפוסים לבני נוער, הורים וזוגות המתמודדים עם תקיעות, חרדה חברתית וכללית , ריחוק ודפוסים שחוזרים על עצמם",
+  "heroDescription": "התשובות כבר קיימות אצלך, אבל הרעש של הפחד והריצוי מסתיר אותן. במצפן הלב אנחנו מנמיכים את הרעש, ומשחררים את הדפוס כדי שתוכל להתקדם  מתוך בחירה ולא מתוך פחד.",
+
+  "primaryCtaLabel": "בוא נדבר תכל'ס",
+  "primaryCtaHref": "https://wa.me/972544580285?text=%D7%94%D7%99%D7%99%20%D7%99%D7%95%D7%A1%D7%99%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%90%D7%95%D7%9C%20%D7%9B%D7%9E%D7%94%20%D7%A9%D7%90%D7%9C%D7%95%D7%AA%20%D7%9C%D7%A4%D7%A0%D7%99%20%D7%A9%D7%A0%D7%A7%D7%91%D7%A2%20%D7%A9%D7%99%D7%97%D7%94",
+
+  "email": "heartcompass3@gmail.com",
+  "blogExternalUrl": "https://heartcompass3.blogspot.com/",
+  "facebookUrl": "https://www.facebook.com/share/1AGLnvhmiF/",
+  "instagramUrl": "https://www.instagram.com/heartcompass3/",
+
+  "whatsAppPhone": "972544580285",
+  "whatsAppDefaultMessage": "היי יוסי, אני רוצה לשאול כמה שאלות לפני שנקבע שיחה.",
+  "whatsAppQuickQuestions": [
+    "מה המטרה שהכי נכון להתחיל איתה?",
+    "כמה זמן בדרך כלל לוקח לראות שינוי?",
+    "איך נראה התהליך בשיטת מ.ס.ע?"
+  ]
+}

@@ -1,0 +1,66 @@
+---
+const consentKey = 'hc_cookie_consent'
+---
+
+<div
+  class="fixed bottom-4 right-4 left-4 md:left-auto md:w-[420px] z-[999] hidden"
+  data-cookie-banner
+  role="dialog"
+  aria-live="polite"
+  aria-label="הגדרות עוגיות"
+>
+  <div class="rounded-2xl border border-accent/20 bg-white shadow-elegant p-4">
+    <div class="font-body font-bold text-foreground">קוקיז ופרטיות</div>
+    <p class="font-body text-sm text-muted-foreground mt-2">
+      כדי למדוד ביצועים ולהפעיל קמפיינים בעתיד, האתר עשוי להשתמש בעוגיות (Analytics ופיקסלים).
+      אפשר לאשר או לדחות. תמיד ניתן לשנות החלטה על ידי מחיקת נתוני גלישה.
+    </p>
+
+    <div class="mt-4 flex gap-3 justify-end">
+      <button
+        type="button"
+        class="px-4 py-2 rounded-xl border border-accent/20 font-body text-sm hover:bg-accent/5 transition"
+        data-cookie-decline
+      >
+        דחייה
+      </button>
+      <button
+        type="button"
+        class="px-4 py-2 rounded-xl bg-accent text-white font-body text-sm hover:opacity-95 transition"
+        data-cookie-accept
+      >
+        אישור
+      </button>
+    </div>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const key = "hc_cookie_consent";
+      const banner = document.querySelector("[data-cookie-banner]");
+      if (!banner) return;
+
+      const existing = localStorage.getItem(key);
+      if (existing === "accepted" || existing === "declined") return;
+
+      banner.classList.remove("hidden");
+
+      const accept = banner.querySelector("[data-cookie-accept]");
+      const decline = banner.querySelector("[data-cookie-decline]");
+
+      const close = () => banner.classList.add("hidden");
+
+      accept?.addEventListener("click", () => {
+        localStorage.setItem(key, "accepted");
+        close();
+        window.dispatchEvent(new Event("hc:consent-changed"));
+      });
+
+      decline?.addEventListener("click", () => {
+        localStorage.setItem(key, "declined");
+        close();
+        window.dispatchEvent(new Event("hc:consent-changed"));
+      });
+    })();
+  </script>
+</div>

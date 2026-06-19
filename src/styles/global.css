@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&family=Heebo:wght@400;500;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  MATZPEN HALEV Design System
+  Theme: Deep Authority & Inner Gold
+  Primary: #0F2C36 (Deep Teal) | Accent: #D4AF37 (Gold)
+*/
+
+@layer base {
+  :root {
+    --background: 40 33% 98%;
+    --foreground: 193 57% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 193 57% 14%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 193 57% 14%;
+
+    --primary: 193 57% 14%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40 33% 96%;
+    --secondary-foreground: 193 57% 14%;
+
+    --muted: 40 20% 94%;
+    --muted-foreground: 193 30% 40%;
+
+    --accent: 43 66% 52%;
+    --accent-foreground: 0 0% 100%;
+
+    --gold: 43 66% 52%;
+    --gold-light: 43 66% 62%;
+    --gold-dark: 43 66% 42%;
+
+    --teal: 193 57% 14%;
+    --teal-light: 193 40% 30%;
+    --teal-lighter: 193 35% 40%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 43 30% 85%;
+    --input: 43 30% 90%;
+    --ring: 43 66% 52%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 193 57% 14%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 43 66% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 193 40% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 193 40% 25%;
+    --sidebar-ring: 43 66% 52%;
+
+    --shadow-gold: 0 10px 30px -10px hsl(43 66% 52% / 0.3);
+    --shadow-elegant: 0 25px 50px -12px hsl(193 57% 14% / 0.15);
+  }
+
+  .dark {
+    --background: 193 57% 10%;
+    --foreground: 40 33% 98%;
+
+    --card: 193 50% 12%;
+    --card-foreground: 40 33% 98%;
+
+    --popover: 193 50% 12%;
+    --popover-foreground: 40 33% 98%;
+
+    --primary: 43 66% 52%;
+    --primary-foreground: 193 57% 10%;
+
+    --secondary: 193 40% 18%;
+    --secondary-foreground: 40 33% 98%;
+
+    --muted: 193 40% 20%;
+    --muted-foreground: 40 20% 70%;
+
+    --accent: 43 66% 52%;
+    --accent-foreground: 193 57% 10%;
+
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 193 40% 25%;
+    --input: 193 40% 20%;
+    --ring: 43 66% 52%;
+
+    --sidebar-background: 193 57% 8%;
+    --sidebar-foreground: 40 33% 98%;
+    --sidebar-primary: 43 66% 52%;
+    --sidebar-primary-foreground: 193 57% 10%;
+    --sidebar-accent: 193 40% 15%;
+    --sidebar-accent-foreground: 40 33% 98%;
+    --sidebar-border: 193 40% 20%;
+    --sidebar-ring: 43 66% 52%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Heebo', sans-serif;
+  }
+
+  /* נעילת היררכיה: כותרות תמיד Assistant */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Assistant', sans-serif;
+  }
+
+  /* Utility classes */
+  .font-display { font-family: 'Assistant', sans-serif; }
+  .font-body { font-family: 'Heebo', sans-serif; }
+
+  [dir="rtl"] { text-align: right; }
+
+  ::selection {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  /* ===== PortableText / RichText spacing ===== */
+  .portabletext {
+    direction: rtl;
+  }
+
+  .portabletext > * + * {
+    margin-top: 1rem; /* אוויר בין פסקאות / כותרות */
+  }
+
+  .portabletext p {
+    line-height: 1.85;
+  }
+
+  .portabletext a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .portabletext strong {
+    font-weight: 800;
+  }
+
+  .portabletext em {
+    font-style: italic;
+  }
+
+  .portabletext ul {
+    list-style: disc;
+    padding-right: 1.25rem;
+  }
+
+  .portabletext li {
+    margin-top: 0.4rem;
+  }
+
+  .portabletext blockquote {
+    border-right: 4px solid hsl(var(--accent));
+    padding-right: 1rem;
+    color: hsl(var(--muted-foreground));
+  }
+}
+
+@layer utilities {
+  .gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-dark)) 100%);
+  }
+
+  .gradient-teal {
+    background: linear-gradient(135deg, hsl(var(--teal-lighter)) 0%, hsl(var(--teal)) 100%);
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-dark)) 100%);
+  }
+
+  /* Glass effect (שימוש כללי) */
+  .glass {
+    @apply bg-background/80 backdrop-blur-md;
+  }
+
+  .glow-gold { box-shadow: 0 0 40px hsl(var(--gold) / 0.4); }
+  .glow-accent { box-shadow: 0 4px 15px hsl(var(--accent) / 0.4); }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .highlight-box {
+    @apply bg-secondary border-r-4 border-accent p-6 rounded-lg my-6;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}

@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
+
+const updated = '18 ביוני 2026'
+---
+
+<BaseLayout
+  title="מדיניות פרטיות"
+  description={`מדיניות הפרטיות של ${site.brand} — איזה מידע נאסף, כיצד נעשה בו שימוש וכיצד הוא נשמר.`}
+>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-3xl mx-auto px-6">
+      <h1 class="text-4xl md:text-5xl font-black text-primary font-display mb-3">מדיניות פרטיות</h1>
+      <p class="text-primary/50 font-body mb-10">עודכן לאחרונה: {updated}</p>
+
+      <div class="space-y-8 font-body leading-relaxed text-primary/80 text-lg">
+        <p>
+          הפרטיות שלך חשובה לנו. מסמך זה מסביר איזה מידע נאסף באתר {site.siteUrl},
+          כיצד נעשה בו שימוש, וכיצד הוא מוגן. השימוש באתר מהווה הסכמה למדיניות זו.
+        </p>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">איזה מידע נאסף</h2>
+          <ul class="list-disc pr-6 space-y-2">
+            <li><strong>מידע שאתה מוסר ביוזמתך</strong> — שם, טלפון, אימייל ותוכן ההודעה כשאתה פונה דרך WhatsApp, מייל, טופס יצירת קשר או טופס הדיוור.</li>
+            <li><strong>מידע טכני אנונימי</strong> — נתוני שימוש כלליים (סוג דפדפן, עמודים שנצפו) הנאספים באמצעות כלי אנליטיקה, ללא זיהוי אישי.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">למה משמש המידע</h2>
+          <ul class="list-disc pr-6 space-y-2">
+            <li>מענה לפניות ותיאום שיחות אימון.</li>
+            <li>שיפור התוכן והשירות באתר.</li>
+            <li>שליחת תובנות וכלים מקצועיים — רק אם נתת לכך הסכמה מפורשת בטופס הדיוור.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">מסירת מידע לצד שלישי</h2>
+          <p>איננו מוכרים או משכירים מידע אישי. מידע עשוי להישמר אצל ספקי שירות (אחסון אתר, אנליטיקה, שירות דיוור) הפועלים בהתאם לחוק, וייחשף רק אם הדבר נדרש על פי דין.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">סודיות תהליך האימון</h2>
+          <p>כל תוכן הנמסר במהלך שיחות וליווי האימון נשמר בסודיות מלאה ולא ייחשף לצד שלישי ללא הסכמתך, למעט במקרים שבהם קיימת חובה חוקית.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">הזכויות שלך</h2>
+          <p>באפשרותך לבקש לעיין במידע שנשמר עליך, לתקנו או למחקו, בפנייה לכתובת <a href={`mailto:${site.email}`} class="text-accent font-bold hover:underline">{site.email}</a>. ניתן להסיר את עצמך מרשימת הדיוור בכל עת.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">יצירת קשר</h2>
+          <p>בכל שאלה בנושא פרטיות ניתן לפנות אל {site.fullName} בכתובת <a href={`mailto:${site.email}`} class="text-accent font-bold hover:underline">{site.email}</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

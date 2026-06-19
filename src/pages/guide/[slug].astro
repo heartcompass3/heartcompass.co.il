@@ -1,0 +1,147 @@
+---
+import { sanity } from '../../lib/sanity'
+import PortableText from '../../components/PortableText.astro'
+
+const { slug } = Astro.params;
+
+const pageData = await sanity.fetch(`
+  *[_type == "landingPage" && slug.current == $slug][0]{
+    title,
+    subtitle,
+    "imageUrl": mainImage.asset->url,
+    content,
+    bullets,
+    cta,
+    trustText,
+    "pdfUrl": leadMagnet.asset->url,
+    faqItems[]{
+      question,
+      answer
+    }
+  }
+`, { slug });
+
+if (!pageData) {
+  return new Response('Not found', { status: 404 });
+}
+
+const formSubmitEmail = "yossi1974@outlook.co.il";
+// כאן הקסם: אנחנו שולחים את הגולש לדף התודה בתוספת מזהה המדריך הספציפי
+const nextUrl = `https://heartcompass.co.il/guide/thanks?guide=${slug}`;
+
+// ─── FAQPage Schema — רק אם יש שאלות ────────────────────────────
+const faqSchema = pageData.faqItems?.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: pageData.faqItems.map((item: { question: string; answer: string }) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    }
+  : null
+---
+
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{pageData.title} | מצפן הלב</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
+  <script is:inline src="https://cdn.tailwindcss.com"></script>
+  {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+</head>
+<body class="bg-slate-50 text-slate-900 font-['Assistant',sans-serif] antialiased">
+
+  <main class="min-h-screen flex flex-col items-center justify-center gap-12 p-4 md:p-8">
+    <div class="max-w-6xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row border border-slate-100 text-right font-['Assistant']">
+      
+      <div class="w-full lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center order-2 lg:order-1">
+        <header class="mb-10">
+          <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight italic">{pageData.title}</h1>
+          {pageData.subtitle && <p class="text-xl md:text-2xl text-slate-600 leading-relaxed">{pageData.subtitle}</p>}
+        </header>
+
+        {pageData.bullets && pageData.bullets.length > 0 && (
+          <section class="mb-10">
+            <ul class="space-y-4">
+              {pageData.bullets.map((bullet: string) => (
+                <li class="flex items-start text-lg text-slate-800">
+                  <span class="text-green-500 ml-3 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {pageData.content && (
+          <div class="prose prose-lg text-slate-700 mb-8 leading-relaxed">
+            <PortableText value={pageData.content} />
+          </div>
+        )}
+
+        <section class="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100">
+          <form action={`https://formsubmit.co/${formSubmitEmail}`} method="POST" class="space-y-4">
+            <input type="hidden" name="_next" value={nextUrl}>
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_subject" value={`בקשה למדריך: ${pageData.title}`}>
+
+            <input type="text" name="name" required placeholder="שם מלא" class="w-full px-4 py-4 rounded-xl bg-white border border-slate-200 focus:border-slate-400 outline-none transition-all text-lg text-right">
+            <input type="email" name="email" required placeholder="כתובת מייל" class="w-full px-4 py-4 rounded-xl bg-white border border-slate-200 focus:border-slate-400 outline-none transition-all text-lg text-right">
+
+            <div class="flex items-center gap-3 px-2 py-2">
+              <input type="checkbox" id="consent" name="consent" required class="w-5 h-5 accent-slate-900 cursor-pointer">
+              <label for="consent" class="text-slate-600 text-sm cursor-pointer select-none">
+                אני מאשר/ת קבלת תכנים, עדכונים והצעות ממצפן הלב במייל.
+              </label>
+            </div>
+
+            <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-bold text-xl py-5 rounded-xl transition-all mt-4 cursor-pointer shadow-lg">
+              {pageData.cta}
+            </button>
+          </form>
+          <p class="text-sm text-slate-400 mt-6 text-center italic">{pageData.trustText}</p>
+        </section>
+      </div>
+
+      {pageData.imageUrl && (
+        <div class="w-full lg:w-1/2 bg-slate-100 order-1 lg:order-2 relative h-64 lg:h-auto">
+          <img src={pageData.imageUrl} alt={pageData.title} class="absolute inset-0 w-full h-full object-cover" />
+        </div>
+      )}
+    </div>
+
+    {/* ─── שאלות נפוצות (אופציונלי) ──────────────────────────── */}
+    {pageData.faqItems?.length > 0 && (
+      <section class="max-w-3xl w-full text-right font-['Assistant']">
+        <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">שאלות נפוצות</h2>
+        <div class="space-y-4">
+          {pageData.faqItems.map((item: { question: string; answer: string }) => (
+            <details class="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <summary class="px-6 py-5 cursor-pointer font-bold text-slate-900 text-lg list-none flex justify-between items-center hover:bg-slate-50 transition-colors">
+                {item.question}
+                <span class="text-slate-400 text-2xl transition-transform group-open:rotate-45 mr-4">+</span>
+              </summary>
+              <div class="px-6 pb-6 pt-2 text-slate-600 leading-relaxed">
+                {item.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
+    {/* ───────────────────────────────────────────────────────── */}
+  </main>
+</body>
+</html>

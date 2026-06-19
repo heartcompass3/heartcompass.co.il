@@ -1,0 +1,12 @@
+node_modules/
+.env
+.DS_Store
+.astro/
+dist/
+.vercel/
+
+# local scratch files
+local-article.txt
+
+# local Claude settings
+.claude/settings.local.json

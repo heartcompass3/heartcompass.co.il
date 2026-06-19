@@ -1,0 +1,92 @@
+---
+import { sanity } from '../lib/sanity'
+
+type TrackingSettings = {
+  enabled?: boolean
+  gaMeasurementId?: string
+  metaPixelId?: string
+  tiktokPixelId?: string
+}
+
+// הגדרות הטראקינג מגיעות מסאניטי (הגדרות אתר → Tracking).
+// משתני הסביבה משמשים כגיבוי אם סאניטי לא זמין או שהשדות ריקים.
+// cache קצר כדי לא לשלוף מסאניטי בכל צפייה בעמוד.
+const CACHE_TTL_MS = 5 * 60 * 1000
+const g = globalThis as typeof globalThis & {
+  __trackingCache?: { value: TrackingSettings | null; fetchedAt: number }
+}
+
+let tracking: TrackingSettings | null = null
+if (g.__trackingCache && Date.now() - g.__trackingCache.fetchedAt < CACHE_TTL_MS) {
+  tracking = g.__trackingCache.value
+} else {
+  try {
+    tracking = await sanity.fetch<TrackingSettings | null>(
+      `*[_type == "siteSettings"][0].tracking`
+    )
+  } catch {
+    tracking = null
+  }
+  g.__trackingCache = { value: tracking, fetchedAt: Date.now() }
+}
+
+const clean = (v?: unknown) => (typeof v === 'string' ? v.trim() : '')
+
+const envEnabled =
+  (import.meta.env.PUBLIC_TRACKING_ENABLED ?? '').toString().toLowerCase() === 'true'
+const enabled = tracking?.enabled === true || envEnabled
+
+const gaId = clean(tracking?.gaMeasurementId) || clean(import.meta.env.PUBLIC_GA_ID)
+const gtmId = clean(import.meta.env.PUBLIC_GTM_ID)
+const metaPixelId = clean(tracking?.metaPixelId) || clean(import.meta.env.PUBLIC_META_PIXEL_ID)
+---
+
+{enabled && (gaId || gtmId || metaPixelId) ? (
+  <>
+    {/* Google Tag Manager */}
+    {gtmId ? (
+      <script is:inline>
+        {`
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','${gtmId}');
+        `}
+      </script>
+    ) : null}
+
+    {/* Google Analytics (gtag) */}
+    {gaId ? (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script is:inline>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gaId}', { anonymize_ip: true });
+          `}
+        </script>
+      </>
+    ) : null}
+
+    {/* Meta Pixel */}
+    {metaPixelId ? (
+      <script is:inline>
+        {`
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '${metaPixelId}');
+          fbq('track', 'PageView');
+        `}
+      </script>
+    ) : null}
+  </>
+) : null}

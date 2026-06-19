@@ -1,0 +1,292 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PortableText from '../../components/PortableText.astro'
+import site from '../../content/pages/site.json'
+import { sanity } from '../../lib/sanity'
+
+const data = await sanity.fetch(/* groq */ `
+*[_type == "methodPage"][0]{
+  hero{
+    headlineLine1,
+    headlineLine2,
+    subheadline,
+    intro
+  },
+  interludeImage{
+    asset->{url},
+    alt,
+    caption
+  },
+  body,
+  msa{
+    intro,
+    steps[]{
+      letter,
+      title,
+      description,
+      exampleTitle,
+      example
+    }
+  },
+  cta{
+    title,
+    text,
+    buttonLabel,
+    buttonHref
+  },
+  aiCitation,
+  keyTakeaways,
+  faqItems,
+  painTags,
+  aiContext,
+  seo{
+    title,
+    description,
+    canonical,
+    noindex,
+    ogImage{asset->{url}}
+  }
+}
+`)
+
+if (!data) {
+  throw new Error('No methodPage document found in Sanity')
+}
+
+const h1a = data?.hero?.headlineLine1 || 'שיטת מ.ס.ע'
+const h1b = data?.hero?.headlineLine2 || ''
+const gold = data?.hero?.subheadline || ''
+const intro = data?.hero?.intro || ''
+
+const interludeUrl = data?.interludeImage?.asset?.url || ''
+const interludeAlt = data?.interludeImage?.alt || ''
+const interludeCaption = data?.interludeImage?.caption || ''
+
+const body = Array.isArray(data?.body) ? data.body : []
+
+const msaIntro = data?.msa?.intro || ''
+const steps = Array.isArray(data?.msa?.steps) ? data.msa.steps : []
+
+const ctaTitle = data?.cta?.title || ''
+const ctaText = data?.cta?.text || ''
+const ctaLabel = data?.cta?.buttonLabel || site.primaryCtaLabel
+const ctaHref = data?.cta?.buttonHref || site.primaryCtaHref
+
+const seoTitle = data?.seo?.title || `${h1a} | ${site.brand}`
+const seoDescription =
+  data?.seo?.description ||
+  gold ||
+  'מודל מ.ס.ע: מיפוי, סילוק וסלילה, עצמאות. תהליך מדורג לשחרור דפוסים מהשורש.'
+
+const canonical = data?.seo?.canonical || undefined
+const noindex = data?.seo?.noindex || false
+const ogImage = data?.seo?.ogImage?.asset?.url || undefined
+
+// ── AEO ──────────────────────────────────────────────────────────
+const aiCitation = data?.aiCitation || ''
+const ktHeading = data?.keyTakeaways?.heading || 'בקצרה'
+const keyTakeaways = Array.isArray(data?.keyTakeaways?.items) ? data.keyTakeaways.items : []
+const faqItems = Array.isArray(data?.faqItems) ? data.faqItems : []
+const painTags = Array.isArray(data?.painTags) ? data.painTags : []
+const aiContext = data?.aiContext || ''
+
+const faqSchema = faqItems.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((it: { question: string; answer: string }) => ({
+    '@type': 'Question',
+    name: it.question,
+    acceptedAnswer: { '@type': 'Answer', text: it.answer },
+  })),
+} : null
+
+const methodSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'EducationalOccupationalCredential',
+  name: seoTitle,
+  description: seoDescription,
+  ...(aiCitation ? { abstract: aiCitation } : {}),
+  ...(aiContext ? { disambiguatingDescription: aiContext } : {}),
+  ...(painTags.length > 0 ? { keywords: painTags.join(', ') } : {}),
+}
+
+const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
+---
+
+<BaseLayout title={seoTitle} description={seoDescription} canonical={canonical} noindex={noindex} ogImage={ogImage} schema={schemas}>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-6xl mx-auto px-6">
+
+      <!-- HERO -->
+      <header class="mb-14 text-center">
+        <h1 class="text-5xl md:text-6xl font-black text-primary font-display leading-tight mb-6">
+          <span class="block">{h1a}</span>
+          {h1b && <span class="block">{h1b}</span>}
+        </h1>
+
+        {gold && (
+          <p class="text-xl text-accent font-body font-bold max-w-3xl mx-auto leading-relaxed">
+            {gold}
+          </p>
+        )}
+
+      </header>
+
+      <!-- בקצרה (AEO): לחישה ל-AI + נקודות מפתח — לפני פסקת הפתיחה -->
+      {(aiCitation || keyTakeaways.length > 0) && (
+        <aside class="max-w-3xl mx-auto mb-10 bg-accent/10 border-r-4 border-accent rounded-2xl p-6 md:p-8 text-right">
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{ktHeading}</p>
+          {aiCitation && (
+            <p class="text-primary font-body font-semibold text-lg leading-relaxed">{aiCitation}</p>
+          )}
+          {keyTakeaways.length > 0 && (
+            <ul class={`space-y-3 ${aiCitation ? 'mt-5 pt-5 border-t border-accent/20' : ''}`}>
+              {keyTakeaways.map((p: string) => (
+                <li class="flex items-start gap-3 text-primary/80 font-body leading-relaxed">
+                  <span class="text-accent font-black mt-0.5">✓</span>
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
+      )}
+
+      {intro && (
+        <p class="mb-14 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
+          {intro}
+        </p>
+      )}
+
+      <!-- מ.ס.ע – הליבה -->
+      {(msaIntro || steps.length > 0) && (
+        <section class="mb-14">
+          {msaIntro && (
+            <div class="max-w-4xl mx-auto mb-10">
+              <div class="bg-white rounded-[3rem] shadow-elegant border border-white px-10 py-8 text-center">
+                <p class="text-lg text-primary/70 font-body leading-relaxed">
+                  {msaIntro}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {steps.length > 0 && (
+            <div class="grid md:grid-cols-3 gap-8">
+              {steps.map((s) => (
+                <div class="bg-white p-10 rounded-[3rem] shadow-elegant border border-white">
+                  <div class="flex justify-center mb-6">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-accent/10 border border-accent/20">
+                      <span class="text-2xl font-black text-primary font-display">
+                        {s?.letter}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h2 class="text-2xl font-black text-primary font-display mb-4 text-center">
+                    {s?.title}
+                  </h2>
+
+                  {Array.isArray(s?.description) && s.description.length > 0 && (
+                    <div class="prose prose-lg max-w-none prose-headings:font-display prose-p:font-body prose-p:text-foreground/80">
+                      <PortableText value={s.description} />
+                    </div>
+                  )}
+
+                  {(s?.exampleTitle || (Array.isArray(s?.example) && s.example.length > 0)) && (
+                    <div class="mt-8 bg-background p-6 rounded-2xl border border-accent/10">
+                      {s?.exampleTitle && (
+                        <div class="font-black text-accent font-body mb-2">
+                          {s.exampleTitle}
+                        </div>
+                      )}
+                      {Array.isArray(s?.example) && s.example.length > 0 && (
+                        <div class="prose prose-lg max-w-none prose-p:font-body prose-p:text-foreground/80">
+                          <PortableText value={s.example} />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      <!-- תמונת נשימה באמצע הדרך -->
+      {interludeUrl && (
+        <section class="my-16">
+          <div class="bg-white p-6 md:p-8 rounded-[3rem] shadow-elegant border border-white">
+            <img
+              src={interludeUrl}
+              alt={interludeAlt || interludeCaption || `תמונת ביניים | ${site.brand}`}
+              class="w-full h-auto rounded-[2.5rem]"
+              loading="lazy"
+            />
+            {interludeCaption && (
+              <p class="mt-4 text-sm text-primary/60 font-body text-center">
+                {interludeCaption}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
+      <!-- מאמר רציף -->
+      {body.length > 0 && (
+        <section class="mt-2 max-w-4xl mx-auto">
+          <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white">
+            <div class="prose prose-lg max-w-none prose-headings:font-display prose-p:font-body prose-p:text-foreground/80">
+              <PortableText value={body} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <!-- שאלות נפוצות (AEO) -->
+      {faqItems.length > 0 && (
+        <section class="mt-16 max-w-4xl mx-auto">
+          <h2 class="text-3xl font-black text-primary font-display mb-8 text-center">שאלות נפוצות</h2>
+          <div class="space-y-4">
+            {faqItems.map((it: { question: string; answer: string }) => (
+              <details class="group border border-primary/10 rounded-2xl overflow-hidden bg-background">
+                <summary class="px-6 py-5 cursor-pointer font-bold text-primary font-body text-lg list-none flex justify-between items-center hover:bg-primary/5 transition-colors">
+                  {it.question}
+                  <span class="text-accent text-xl transition-transform group-open:rotate-45 mr-4">+</span>
+                </summary>
+                <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed text-base">{it.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- CTA תחתון -->
+      <div class="mt-16 text-center">
+        {(ctaTitle || ctaText) && (
+          <div class="max-w-3xl mx-auto mb-8">
+            {ctaTitle && (
+              <h2 class="text-3xl font-black text-primary font-display mb-3">
+                {ctaTitle}
+              </h2>
+            )}
+            {ctaText && (
+              <p class="text-lg text-primary/70 font-body leading-relaxed">
+                {ctaText}
+              </p>
+            )}
+          </div>
+        )}
+
+        <a
+          href={ctaHref}
+          class="inline-flex items-center gap-3 px-10 py-5 rounded-2xl gradient-gold text-white font-bold shadow-gold"
+        >
+          {ctaLabel} <span aria-hidden="true">←</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>

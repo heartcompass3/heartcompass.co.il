@@ -1,0 +1,48 @@
+/* studio2/studio-rtl.css */
+/* RTL יציב ל-Sanity Studio (Chrome friendly) */
+
+html,
+body {
+  direction: rtl;
+}
+
+/* editor root */
+[data-slate-editor="true"] {
+  direction: rtl !important;
+  text-align: right !important;
+
+  /* לא plaintext - זה גורם לקפיצות עם marks */
+  unicode-bidi: isolate !important;
+
+  font-weight: 400;
+}
+
+/* contenteditable container (fallback) */
+[contenteditable="true"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+
+/* marks - לבודד כדי שלא "ימשכו" כיוון */
+[data-slate-editor="true"] strong,
+[data-slate-editor="true"] em,
+[data-slate-editor="true"] a,
+[data-slate-editor="true"] mark,
+[data-slate-editor="true"] span {
+  unicode-bidi: isolate !important;
+  direction: inherit !important;
+}
+
+[data-slate-editor="true"] strong {
+  font-weight: 800;
+}
+
+/* lists rtl */
+[data-slate-editor="true"] ul,
+[data-testid="portable-text-editor"] ul,
+[data-ui="PortableTextEditor"] ul {
+  padding-right: 1.25rem;
+  padding-left: 0;
+  text-align: right;
+}

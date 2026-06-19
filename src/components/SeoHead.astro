@@ -1,0 +1,70 @@
+---
+import site from '../content/pages/site.json'
+
+const {
+  title,
+  description,
+  canonical,
+  noIndex = false,
+  ogImage,
+  pageType = 'website',
+  schema = [],
+} = Astro.props
+
+const brand = site.brand
+// הנה החוט שחיברנו:
+const siteName = site.siteName
+
+const clean = (v) => (typeof v === 'string' ? v.trim() : '')
+
+const resolvedTitle = (() => {
+  const t = clean(title)
+  if (!t) return brand
+  // אם הכותרת כבר כוללת את שם המותג או מפריד נפוץ – לא מוסיפים.
+  if (t.includes(brand) || t.includes('|') || t.includes('–') || t.includes('-')) return t
+  return `${t} | ${brand}`
+})()
+
+const defaultDescription =
+  clean(site.heroDescription) || 'אימון רגשי תודעתי לשחרור חסמים ומציאת ייעוד.'
+const resolvedDescription = clean(description) || defaultDescription
+
+const resolvedCanonical = clean(canonical) || site.siteUrl
+
+const toAbsoluteUrl = (v) => {
+  const raw = clean(v)
+  if (!raw) return ''
+  try {
+    if (raw.startsWith('http://') || raw.startsWith('https://')) return raw
+    return new URL(raw, site.siteUrl).toString()
+  } catch {
+    return raw
+  }
+}
+
+const defaultOgImage = `${site.siteUrl}/assets/yossi-hero.jpg`
+const resolvedOgImage = toAbsoluteUrl(ogImage) || defaultOgImage
+---
+
+<title>{resolvedTitle}</title>
+<meta name="description" content={resolvedDescription} />
+<link rel="canonical" href={resolvedCanonical} />
+{noIndex && <meta name="robots" content="noindex,follow" />}
+
+<meta property="og:site_name" content={siteName} />
+<meta property="og:locale" content="he_IL" />
+<meta property="og:type" content={pageType} />
+<meta property="og:title" content={resolvedTitle} />
+<meta property="og:description" content={resolvedDescription} />
+<meta property="og:url" content={resolvedCanonical} />
+<meta property="og:image" content={resolvedOgImage} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={resolvedTitle} />
+<meta name="twitter:description" content={resolvedDescription} />
+<meta name="twitter:image" content={resolvedOgImage} />
+
+{Array.isArray(schema) &&
+  schema.map((s) => (
+    <script type="application/ld+json" set:html={JSON.stringify(s)}></script>
+  ))}

@@ -1,0 +1,35 @@
+name: Deploy Sanity Studio
+
+# פורס אוטומטית את הסטודיו ל-Sanity כש-push ל-main משנה משהו בתיקיית studio/.
+# כך push אחד מעדכן גם את האתר (דרך Vercel) וגם את הסטודיו.
+#
+# דרישה חד-פעמית: להוסיף Secret בשם SANITY_AUTH_TOKEN ב-GitHub
+# (Settings → Secrets and variables → Actions). יוצרים Deploy Token ב:
+# https://www.sanity.io/manage/project/bk4y5jiw/api
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'studio/**'
+  workflow_dispatch: {}
+
+jobs:
+  deploy-studio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install studio dependencies
+        working-directory: studio
+        run: npm ci
+
+      - name: Deploy Sanity Studio
+        working-directory: studio
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        run: npx sanity deploy

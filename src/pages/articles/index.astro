@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import site from '../../content/pages/site.json'
+import { sanity } from '../../lib/sanity'
+import { ARTICLES_QUERY } from '../../lib/sanityQueries'
+
+const articles = await sanity.fetch(ARTICLES_QUERY)
+
+const title = `מאמרים | ${site.brand}`
+const description = 'מאמרים, תובנות וכלים מעשיים מתוך מצפן הלב.'
+
+// Build a lightweight index for client-side search
+const searchIndex = (articles ?? []).map((a) => ({
+  slug: a.slug?.current ?? '',
+  title: a.title ?? '',
+  goldLine: a.goldLine ?? '',
+  excerpt: a.excerpt ?? '',
+  image: a.mainImage?.asset?.url || '/assets/yossi-hero.jpg',
+  imageAlt: a.mainImage?.alt || a.title || `מאמר | ${site.brand}`,
+  date: a.publishedAt
+    ? new Date(a.publishedAt).toLocaleDateString('he-IL')
+    : '',
+}))
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <header class="mb-10 text-center">
+        <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6 drop-shadow-sm">
+          מאמרים
+        </h1>
+        <p class="text-xl md:text-2xl text-primary/70 font-body font-medium max-w-3xl mx-auto">
+          תובנות, מחקר וכלים לשחרור דפוסים ולתנועה פנימית קדימה.
+        </p>
+      </header>
+
+      <!-- Search bar -->
+      <div class="mb-12 max-w-xl mx-auto relative">
+        <div class="relative">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/40 pointer-events-none"
+          >
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            id="article-search"
+            type="search"
+            placeholder="חיפוש מאמר... למשל: חשיבת יתר, הסתגרות, זוגיות"
+            class="w-full rounded-2xl border border-accent/20 bg-white px-5 py-4 pr-12 font-body text-right text-foreground placeholder:text-primary/35 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 transition"
+            autocomplete="off"
+            dir="rtl"
+          />
+        </div>
+        <p id="search-count" class="mt-3 text-sm text-primary/50 font-body text-center hidden">
+          נמצאו <span id="search-count-num" class="font-bold text-accent"></span> תוצאות
+        </p>
+      </div>
+
+      {(!articles || articles.length === 0) ? (
+        <p class="text-center text-primary/60 font-body text-lg">עדיין לא פורסמו מאמרים.</p>
+      ) : (
+        <>
+          <div id="articles-grid" class="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((a) => (
+              <a
+                href={`/articles/${a.slug?.current}`}
+                data-article
+                class="bg-white rounded-[2.5rem] shadow-xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border border-white/50 flex flex-col h-full overflow-hidden hover:-translate-y-3 cursor-pointer group ring-1 ring-black/5 relative"
+              >
+                <div class="h-56 overflow-hidden relative w-full">
+                  <img
+                    src={a.mainImage?.asset?.url || '/assets/yossi-hero.jpg'}
+                    alt={a.mainImage?.alt || a.title || `מאמר | ${site.brand}`}
+                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
+                    loading="lazy"
+                  />
+                  <div class="absolute top-6 right-6 bg-white/95 px-4 py-1.5 text-xs font-bold text-primary rounded-full shadow-lg z-20">
+                    {a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('he-IL') : ''}
+                  </div>
+                </div>
+
+                <div class="p-10 flex-1 flex flex-col text-center items-center w-full">
+                  <h2 class="text-2xl font-black text-primary mb-2 font-display leading-tight group-hover:text-gold-dark transition-colors">
+                    {a.title}
+                  </h2>
+
+                  {a.goldLine && (
+                    <p class="text-accent font-bold tracking-wide mb-4 font-display text-sm">
+                      {a.goldLine}
+                    </p>
+                  )}
+
+                  {a.excerpt && (
+                    <p class="text-primary/70 font-body leading-relaxed mb-8 font-medium line-clamp-3 text-lg">
+                      {a.excerpt}
+                    </p>
+                  )}
+
+                  <div class="mt-auto flex items-center text-accent font-bold tracking-wide group-hover:gap-2 transition-all">
+                    קרא עוד <span class="mr-2">←</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <!-- Empty state -->
+          <div id="no-results" class="hidden text-center py-20">
+            <div class="text-5xl mb-4">🔍</div>
+            <p class="text-xl font-bold text-primary font-display mb-2">לא נמצאו מאמרים</p>
+            <p class="text-primary/60 font-body">נסה מילת חיפוש אחרת</p>
+          </div>
+        </>
+      )}
+
+    </div>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ searchIndex }}>
+  const input = document.getElementById('article-search')
+  const cards = document.querySelectorAll('[data-article]')
+  const noResults = document.getElementById('no-results')
+  const countEl = document.getElementById('search-count')
+  const countNum = document.getElementById('search-count-num')
+
+  if (!input) return
+
+  // Normalise Hebrew/English text for comparison
+  const normalise = (str) =>
+    (str || '')
+      .toLowerCase()
+      .replace(/[\u05b0-\u05c7]/g, '') // strip niqqud
+      .trim()
+
+  input.addEventListener('input', () => {
+    const query = normalise(input.value)
+
+    if (!query) {
+      // Reset: show all
+      cards.forEach((c) => {
+        c.style.display = ''
+        c.style.opacity = ''
+      })
+      noResults.classList.add('hidden')
+      countEl.classList.add('hidden')
+      return
+    }
+
+    let visible = 0
+
+    cards.forEach((card, i) => {
+      const item = searchIndex[i]
+      if (!item) return
+      const haystack = normalise(
+        [item.title, item.goldLine, item.excerpt].join(' ')
+      )
+      const match = query.split(' ').every((word) => haystack.includes(word))
+
+      if (match) {
+        card.style.display = ''
+        card.style.opacity = '1'
+        visible++
+      } else {
+        card.style.display = 'none'
+        card.style.opacity = '0'
+      }
+    })
+
+    // Show/hide no-results + count
+    noResults.classList.toggle('hidden', visible > 0)
+    countEl.classList.toggle('hidden', !query)
+    if (countNum) countNum.textContent = String(visible)
+  })
+</script>
+

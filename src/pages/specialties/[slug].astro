@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PortableText from '../../components/PortableText.astro'
+import { sanity } from '../../lib/sanity'
+import site from '../../content/pages/site.json'
+
+const { slug } = Astro.params
+
+const page = await sanity.fetch(
+  `*[_type == "page" && (
+      slug.current == $plain
+      || slug.current == $prefixed
+      || slug.current == $methodOld
+    )][0]{
+    title,
+    excerpt,
+    body,
+    specialty{
+      intro,
+      faqTitle,
+      faq[]{
+        question,
+        answer
+      },
+      stagesTitle,
+      stages[]{
+        key,
+        title,
+        text
+      },
+      closing
+    },
+    seo{
+      title,
+      description,
+      canonical,
+      noindex
+    }
+  }`,
+  {
+    plain: slug,
+    prefixed: `specialties/${slug}`,
+    methodOld: `method/${slug}`,
+  }
+)
+
+if (!page) return new Response(null, { status: 404 })
+
+const faq = Array.isArray(page?.specialty?.faq) ? page.specialty.faq : []
+const stages = Array.isArray(page?.specialty?.stages) ? page.specialty.stages : []
+const faqTitle = page?.specialty?.faqTitle || 'שאלות שאנשים שואלים את עצמם בשקט'
+const stagesTitle = page?.specialty?.stagesTitle || 'מה קורה בפועל'
+---
+
+<BaseLayout 
+  title={page.seo?.title || page.title} 
+  description={page.seo?.description || page.excerpt}
+>
+  <section class="container mx-auto px-6 py-16 max-w-4xl">
+    <header class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-black text-primary font-display">{page.title}</h1>
+      {page.excerpt && <p class="mt-6 text-xl text-primary/70 font-bold">{page.excerpt}</p>}
+      {page?.specialty?.intro && <p class="mt-4 text-lg text-primary/80">{page.specialty.intro}</p>}
+    </header>
+
+    {page.body && (
+      <article class="prose prose-lg max-w-none bg-white rounded-[36px] shadow-lg p-8 md:p-12 border border-foreground/5 mb-16">
+        <PortableText value={page.body} />
+      </article>
+    )}
+
+    {stages.length > 0 && (
+      <section class="mb-16">
+        <h2 class="text-3xl font-black text-primary text-center mb-10">{stagesTitle}</h2>
+        <div class="grid gap-6 md:grid-cols-3">
+          {stages.map((stage: any, index: number) => (
+            <div class="bg-white rounded-2xl p-6 shadow-md border border-primary/10">
+              <div class="text-accent font-black text-xl mb-2">{index + 1}. {stage.title}</div>
+              <p class="text-primary/80 leading-relaxed">{stage.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {faq.length > 0 && (
+      <section class="bg-white rounded-[36px] shadow-lg p-8 md:p-12 border border-foreground/5 mb-16">
+        <h2 class="text-3xl font-black text-primary text-center mb-10">{faqTitle}</h2>
+        <div class="space-y-4">
+          {faq.map((item: any) => (
+            <details class="group border border-primary/10 rounded-2xl p-6 bg-background cursor-pointer">
+              <summary class="flex justify-between items-center list-none font-black text-lg text-primary">
+                {item.question}
+                <span class="text-2xl text-accent transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <p class="mt-4 text-primary/80 leading-relaxed">{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {page?.specialty?.closing && (
+      <div class="text-center text-lg text-primary/80 font-bold bg-white rounded-2xl p-8 shadow-md">
+        {page.specialty.closing}
+      </div>
+    )}
+  </section>
+</BaseLayout>

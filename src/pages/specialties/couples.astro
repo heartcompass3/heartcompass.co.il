@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import site from '../../content/pages/site.json'
+import { sanity } from '../../lib/sanity'
+import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
+import { buildServiceSchema } from '../../lib/schema'
+import { ARTICLES_QUERY } from '../../lib/sanityQueries'
+
+const SLUG = 'specialties/couples'
+
+const page = await sanity.fetch(
+  `*[_type=="page" && slug.current == $slug][0]{
+    title,
+    excerpt,
+    specialty{
+      intro,
+      faqTitle,
+      faq[]{
+        question, answer
+      },
+      closing
+    },
+    aiCitation,
+    painTags,
+    aiContext,
+    seo{
+      title,
+      description,
+      canonical,
+      noindex,
+      ogImage{
+        asset->{url}
+      }
+    }
+  }`,
+  { slug: SLUG }
+)
+
+const title = page?.seo?.title || page?.title || site.brand
+const description = page?.seo?.description || page?.excerpt || ''
+const canonical = page?.seo?.canonical || new URL(Astro.url.pathname, site.siteUrl).toString()
+const noindex = page?.seo?.noindex || false
+const ogImage = page?.seo?.ogImage?.asset?.url || undefined
+
+const h1 = page?.title || ''
+const gold = page?.excerpt || ''
+const intro = page?.specialty?.intro || ''
+const faqTitle = page?.specialty?.faqTitle || 'שאלות ותשובות'
+const faqs = page?.specialty?.faq || []
+const closing = page?.specialty?.closing || ''
+
+const breadcrumbSchema = buildBreadcrumbListSchema({
+  siteUrl: site.siteUrl,
+  brandName: site.brand,
+  crumbs: [
+    { name: 'תחומי התמחות', item: `${site.siteUrl}/specialties` },
+    { name: h1, item: canonical },
+  ],
+})
+
+const allArticles = await sanity.fetch(ARTICLES_QUERY)
+const categoryArticles = allArticles?.filter((a) => 
+  (a.tags && (a.tags.includes('זוגיות') || a.tags.includes('אימון זוגי') || a.tags.includes('זוגות'))) ||
+  a.slug?.current === 'arguing-same-things-relationship-patterns' ||
+  a.slug?.current === 'attraction-vs-love-brain-science-patterns'
+) || []
+
+const faqSchema = faqs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${canonical}#faq`,
+  mainEntity: faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+} : null
+
+const serviceSchema = buildServiceSchema({
+  siteUrl: site.siteUrl,
+  name: h1 || title,
+  url: canonical,
+  description,
+  serviceType: 'ליווי וייעוץ זוגי',
+})
+
+const serviceSchemaAeo = {
+  ...serviceSchema,
+  ...(page?.aiCitation ? { abstract: page.aiCitation } : {}),
+  ...(page?.aiContext ? { disambiguatingDescription: page.aiContext } : {}),
+  ...(page?.painTags?.length ? { keywords: page.painTags.join(', ') } : {}),
+}
+const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  noindex={noindex}
+  ogImage={ogImage}
+  schema={schemaArray}
+>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-4xl mx-auto px-6">
+      <header class="mb-10 text-center">
+        {h1 && (
+          <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6">
+            {h1}
+          </h1>
+        )}
+
+        {gold && (
+          <p class="text-xl text-accent font-body font-bold max-w-3xl mx-auto">
+            {gold}
+          </p>
+        )}
+
+        {intro && (
+          <p class="mt-8 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto">
+            {intro}
+          </p>
+        )}
+      </header>
+
+      {faqs.length > 0 && (
+        <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white mb-16">
+          <h2 class="text-2xl font-black text-primary font-display mb-10 text-center">
+            {faqTitle}
+          </h2>
+
+          <div class="space-y-4">
+            {faqs.map((item) => (
+              <details class="group border border-primary/10 rounded-2xl p-6 bg-background cursor-pointer">
+                <summary class="flex justify-between items-center list-none font-black text-lg text-primary">
+                  {item.question}
+                  <span class="text-2xl text-accent transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p class="mt-4 text-primary/80 leading-relaxed">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+
+          {closing && (
+            <div class="mt-10 text-primary/75 font-body leading-relaxed text-center font-bold">
+              {closing}
+            </div>
+          )}
+
+          <div class="mt-10 text-center">
+            <a
+              href={site.primaryCtaHref}
+              class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-white font-bold shadow-gold"
+            >
+              {site.primaryCtaLabel} <span aria-hidden="true">←</span>
+            </a>
+          </div>
+        </div>
+      )}
+
+      <div class="pt-8 border-t border-accent/10">
+        <h2 class="text-3xl font-black text-primary font-display mb-6 text-center">
+          מאמרים ומדריכים
+        </h2>
+        
+        {categoryArticles.length === 0 ? (
+          <div class="text-center bg-white rounded-3xl p-10 border border-white/50 shadow-sm">
+            <p class="text-primary/60 font-body text-lg">
+              מאמרים מקצועיים יעלו לכאן בקרוב.
+            </p>
+          </div>
+        ) : (
+          <div class="grid gap-8 md:grid-cols-2 mt-10">
+            {categoryArticles.map((a) => (
+              <a
+                href={`/articles/${a.slug?.current}`}
+                class="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/50 flex flex-col h-full overflow-hidden hover:-translate-y-2 group"
+              >
+                <div class="h-48 overflow-hidden relative w-full">
+                  <img
+                    src={a.mainImage?.asset?.url || ''}
+                    alt={a.mainImage?.alt || a.title}
+                    class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+                <div class="p-8 flex-1 flex flex-col items-start w-full">
+                  <h3 class="text-xl font-black text-primary mb-3 font-display leading-tight group-hover:text-gold-dark transition-colors">
+                    {a.title}
+                  </h3>
+                  <div class="mt-auto text-accent font-bold text-sm flex items-center group-hover:gap-2 transition-all">
+                    קרא עוד <span class="mr-2">←</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
