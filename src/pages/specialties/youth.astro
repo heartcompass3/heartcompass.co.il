@@ -115,11 +115,6 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
           </p>
         )}
 
-        {intro && (
-          <p class="mt-8 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto">
-            {intro}
-          </p>
-        )}
       </header>
 
       <!-- בקצרה (AEO): לחישה + "מתאים לך אם" -->
@@ -143,6 +138,12 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
             </div>
           )}
         </aside>
+      )}
+
+      {intro && (
+        <p class="mb-12 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
+          {intro}
+        </p>
       )}
 
       {faqs.length > 0 && (
