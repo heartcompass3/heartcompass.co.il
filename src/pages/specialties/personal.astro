@@ -148,10 +148,34 @@ if (faqSchema) {
           {gold}
         </p>
         
-        <p class="mt-8 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto">
-          {intro}
-        </p>
       </header>
+
+      <!-- בקצרה (AEO): לחישה + "מתאים לך אם" -->
+      {(page?.aiCitation || (page?.painTags && page.painTags.length > 0)) && (
+        <aside class="max-w-3xl mx-auto mb-14 bg-accent/10 border-r-4 border-accent rounded-2xl p-6 md:p-8 text-right">
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">בקצרה</p>
+          {page?.aiCitation && (
+            <p class="text-primary font-body font-semibold text-lg leading-relaxed">{page.aiCitation}</p>
+          )}
+          {page?.painTags && page.painTags.length > 0 && (
+            <div class={page?.aiCitation ? 'mt-5 pt-5 border-t border-accent/20' : ''}>
+              <p class="font-black text-primary font-body mb-3">מתאים לך אם:</p>
+              <ul class="space-y-2">
+                {page.painTags.map((t: string) => (
+                  <li class="flex items-start gap-3 text-primary/80 font-body leading-relaxed">
+                    <span class="text-accent font-black mt-0.5">✓</span>
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </aside>
+      )}
+
+      <p class="mb-12 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
+        {intro}
+      </p>
 
       {faqs.length > 0 && (
         <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white mb-16">
