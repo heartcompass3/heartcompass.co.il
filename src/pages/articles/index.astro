@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { ARTICLES_QUERY } from '../../lib/sanityQueries'
+import { optImg } from '../../lib/img'
 
 const articles = await sanity.fetch(ARTICLES_QUERY)
 
@@ -15,7 +16,7 @@ const searchIndex = (articles ?? []).map((a) => ({
   title: a.title ?? '',
   goldLine: a.goldLine ?? '',
   excerpt: a.excerpt ?? '',
-  image: a.mainImage?.asset?.url || '/assets/yossi-hero.jpg',
+  image: optImg(a.mainImage?.asset?.url, 600) || '/assets/yossi-hero.jpg',
   imageAlt: a.mainImage?.alt || a.title || `מאמר | ${site.brand}`,
   date: a.publishedAt
     ? new Date(a.publishedAt).toLocaleDateString('he-IL')

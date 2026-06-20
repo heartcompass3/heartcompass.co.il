@@ -4,6 +4,8 @@ import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { ARTICLE_BY_SLUG_QUERY, RELATED_ARTICLES_QUERY } from '../../lib/sanityQueries'
 import PortableText from '../../components/PortableText.astro'
+import { optImg } from '../../lib/img'
+import { slugify } from '../../lib/slug'
 
 const rawSlug = Astro.params.slug
 const slug = Array.isArray(rawSlug) ? rawSlug.join('/') : rawSlug
@@ -29,6 +31,16 @@ const readTime = Math.max(1, Math.round(wordCount / 200))
 const updatedDate = article._updatedAt
   ? new Date(article._updatedAt).toLocaleDateString('he-IL')
   : ''
+
+// תוכן עניינים — מכותרות H2/H3 בגוף (חייב להתאים ל-id ב-PortableText)
+const headings = (Array.isArray(article.body) ? article.body : [])
+  .filter((b: any) => b?._type === 'block' && (b.style === 'h2' || b.style === 'h3'))
+  .map((b: any) => {
+    const text = (b.children || []).map((c: any) => c.text || '').join('')
+    return { text, id: slugify(text), level: b.style }
+  })
+  .filter((h: any) => h.text)
+const showToc = headings.length >= 3
 
 const title = `${article.title} | ${site.brand}`
 const description = article.excerpt || 'מאמר מתוך מצפן הלב.'
@@ -136,10 +148,11 @@ const schemas = faqSchema
         {article.mainImage?.asset?.url && (
           <div class="w-full h-80 rounded-[2rem] overflow-hidden mb-12 shadow-lg">
             <img
-              src={article.mainImage.asset.url}
+              src={optImg(article.mainImage.asset.url, 1400)}
               alt={article.mainImage.alt || article.title || `מאמר | ${site.brand}`}
               class="w-full h-full object-cover"
-              loading="lazy"
+              loading="eager"
+              fetchpriority="high"
             />
           </div>
         )}
@@ -190,6 +203,19 @@ const schemas = faqSchema
           </aside>
         )}
         {/* ───────────────────────────────────────────────────────── */}
+
+        {showToc && (
+          <nav class="mt-8 max-w-3xl mx-auto bg-background border border-primary/10 rounded-2xl p-6 text-right">
+            <p class="font-black text-primary font-display mb-3">תוכן עניינים</p>
+            <ul class="space-y-2">
+              {headings.map((h: any) => (
+                <li class={h.level === 'h3' ? 'pr-4' : ''}>
+                  <a href={`#${h.id}`} class="text-primary/70 hover:text-accent font-body transition-colors">{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
         <div class="mt-14 prose prose-xl max-w-none text-primary/80 font-body leading-9">
           <PortableText value={article.body} />
@@ -278,8 +304,9 @@ const schemas = faqSchema
                 {a.mainImage?.asset?.url && (
                   <div class="h-44 overflow-hidden relative w-full">
                     <img
-                      src={a.mainImage.asset.url}
+                      src={optImg(a.mainImage.asset.url, 600)}
                       alt={a.mainImage.alt || a.title || `מאמר | ${site.brand}`}
+                      width="600" height="352"
                       class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
                       loading="lazy"
                     />

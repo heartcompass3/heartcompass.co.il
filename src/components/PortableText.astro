@@ -1,10 +1,17 @@
 ---
 import { toHTML } from '@portabletext/to-html'
 import { urlFor } from '../lib/sanity'
+import { slugify } from '../lib/slug'
 
 const { value } = Astro.props
 
+const headingId = (v: any) => slugify((v?.children || []).map((c: any) => c.text || '').join(''))
+
 const components = {
+  block: {
+    h2: ({ children, value }: any) => `<h2 id="${headingId(value)}">${children}</h2>`,
+    h3: ({ children, value }: any) => `<h3 id="${headingId(value)}">${children}</h3>`,
+  },
   types: {
     spacer: ({ value }) => {
       const size = value?.size || 'md'
@@ -65,12 +72,14 @@ const html = value ? toHTML(value, { components }) : ''
     margin: 1.4rem 0 0.6rem;
     line-height: 1.2;
     font-weight: 900;
+    scroll-margin-top: 90px;
   }
 
   .portabletext :global(h3) {
     margin: 1.2rem 0 0.55rem;
     line-height: 1.25;
     font-weight: 900;
+    scroll-margin-top: 90px;
   }
 
   .portabletext :global(blockquote) {
