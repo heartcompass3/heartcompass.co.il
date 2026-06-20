@@ -136,7 +136,7 @@ const schemas = faqSchema
   schema={schemas}
 >
   <article class="animate-fade-in py-24 bg-background min-h-screen">
-    <div class="max-w-5xl mx-auto px-6">
+    <div class="max-w-6xl mx-auto px-6">
       <a
         href="/articles"
         class="flex items-center text-primary hover:text-gold-dark mb-10 font-bold transition-colors bg-white px-6 py-3 rounded-full shadow-md w-fit border border-accent/20"
@@ -144,7 +144,24 @@ const schemas = faqSchema
         ← חזרה למאמרים
       </a>
 
-      <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-2xl border border-white">
+      <div class={showToc ? 'lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start' : ''}>
+        {/* ─── תוכן עניינים: סיידבר דביק בצד (דסקטופ בלבד) ─────── */}
+        {showToc && (
+          <aside class="hidden lg:block lg:sticky lg:top-28">
+            <nav class="bg-white border border-primary/10 border-r-4 border-r-accent rounded-2xl px-5 py-5 text-right shadow-sm">
+              <p class="text-accent font-display font-black text-sm tracking-wide mb-4">תוכן העניינים</p>
+              <ul class="space-y-2.5">
+                {headings.map((h: any) => (
+                  <li class={h.level === 'h3' ? 'pr-4' : ''}>
+                    <a href={`#${h.id}`} class="block text-sm leading-snug text-primary/75 hover:text-accent hover:underline underline-offset-4 font-body transition-colors">{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        )}
+
+      <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-2xl border border-white min-w-0">
         {article.mainImage?.asset?.url && (
           <div class="w-full h-80 rounded-[2rem] overflow-hidden mb-12 shadow-lg">
             <img
@@ -204,17 +221,21 @@ const schemas = faqSchema
         )}
         {/* ───────────────────────────────────────────────────────── */}
 
+        {/* ─── תוכן עניינים: אקורדיון מתקפל (מובייל בלבד) ─────── */}
         {showToc && (
-          <nav class="mt-8 max-w-2xl mx-auto bg-white border border-primary/10 border-r-4 border-r-accent rounded-2xl px-7 py-6 text-right shadow-sm">
-            <p class="text-accent font-display font-black text-sm tracking-wide mb-4">תוכן העניינים</p>
-            <ul class="space-y-2.5">
+          <details class="lg:hidden mt-8 bg-white border border-primary/10 border-r-4 border-r-accent rounded-2xl px-6 py-4 text-right shadow-sm group">
+            <summary class="text-accent font-display font-black text-sm tracking-wide cursor-pointer list-none flex items-center justify-between">
+              תוכן העניינים
+              <span class="text-accent transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <ul class="space-y-2.5 mt-4">
               {headings.map((h: any) => (
-                <li class={h.level === 'h3' ? 'pr-5 text-sm' : ''}>
-                  <a href={`#${h.id}`} class="text-primary/75 hover:text-accent hover:underline underline-offset-4 font-body transition-colors">{h.text}</a>
+                <li class={h.level === 'h3' ? 'pr-4' : ''}>
+                  <a href={`#${h.id}`} class="block text-sm text-primary/75 hover:text-accent font-body">{h.text}</a>
                 </li>
               ))}
             </ul>
-          </nav>
+          </details>
         )}
 
         <div class="mt-14 prose prose-xl max-w-none text-primary/80 font-body leading-9">
@@ -268,6 +289,7 @@ const schemas = faqSchema
           </section>
         )}
         {/* ───────────────────────────────────────────────────────── */}
+      </div>
       </div>
 
       {/* ─── תיבת מחבר (E-E-A-T) ──────────────────────────────── */}
