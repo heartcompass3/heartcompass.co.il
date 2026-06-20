@@ -205,12 +205,12 @@ const schemas = faqSchema
         {/* ───────────────────────────────────────────────────────── */}
 
         {showToc && (
-          <nav class="mt-8 max-w-3xl mx-auto bg-background border border-primary/10 rounded-2xl p-6 text-right">
-            <p class="font-black text-primary font-display mb-3">תוכן עניינים</p>
-            <ul class="space-y-2">
+          <nav class="mt-8 max-w-2xl mx-auto bg-white border border-primary/10 border-r-4 border-r-accent rounded-2xl px-7 py-6 text-right shadow-sm">
+            <p class="text-accent font-display font-black text-sm tracking-wide mb-4">תוכן העניינים</p>
+            <ul class="space-y-2.5">
               {headings.map((h: any) => (
-                <li class={h.level === 'h3' ? 'pr-4' : ''}>
-                  <a href={`#${h.id}`} class="text-primary/70 hover:text-accent font-body transition-colors">{h.text}</a>
+                <li class={h.level === 'h3' ? 'pr-5 text-sm' : ''}>
+                  <a href={`#${h.id}`} class="text-primary/75 hover:text-accent hover:underline underline-offset-4 font-body transition-colors">{h.text}</a>
                 </li>
               ))}
             </ul>
