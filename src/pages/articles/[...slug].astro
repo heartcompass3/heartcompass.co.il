@@ -136,7 +136,7 @@ const schemas = faqSchema
   schema={schemas}
 >
   <article class="animate-fade-in py-24 bg-background min-h-screen">
-    <div class="max-w-6xl mx-auto px-6">
+    <div class={showToc ? 'max-w-6xl mx-auto px-6' : 'max-w-5xl mx-auto px-6'}>
       <a
         href="/articles"
         class="flex items-center text-primary hover:text-gold-dark mb-10 font-bold transition-colors bg-white px-6 py-3 rounded-full shadow-md w-fit border border-accent/20"
@@ -161,7 +161,8 @@ const schemas = faqSchema
           </aside>
         )}
 
-      <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-2xl border border-white min-w-0">
+      <div class="min-w-0">
+        <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-2xl border border-white">
         {article.mainImage?.asset?.url && (
           <div class="w-full h-80 rounded-[2rem] overflow-hidden mb-12 shadow-lg">
             <img
@@ -290,7 +291,6 @@ const schemas = faqSchema
         )}
         {/* ───────────────────────────────────────────────────────── */}
       </div>
-      </div>
 
       {/* ─── תיבת מחבר (E-E-A-T) ──────────────────────────────── */}
       <aside class="mt-12 max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-right">
@@ -358,6 +358,8 @@ const schemas = faqSchema
         </section>
       )}
       {/* ───────────────────────────────────────────────────────── */}
+      </div>
+      </div>
     </div>
   </article>
 </BaseLayout>
