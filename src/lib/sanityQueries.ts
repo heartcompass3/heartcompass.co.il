@@ -164,6 +164,7 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
     name
   },
   tags,
+  painTags,
   aiCitation,
   keyTakeaways{
     heading,

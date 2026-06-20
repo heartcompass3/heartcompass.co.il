@@ -19,6 +19,17 @@ const related = article.tags?.length
   ? await sanity.fetch(RELATED_ARTICLES_QUERY, { slug, tags: article.tags })
   : []
 
+// זמן קריאה + ספירת מילים מגוף ה-PortableText
+const bodyText = (Array.isArray(article.body) ? article.body : [])
+  .filter((b: any) => b?._type === 'block')
+  .flatMap((b: any) => (b.children || []).map((c: any) => c.text || ''))
+  .join(' ')
+const wordCount = bodyText.trim() ? bodyText.trim().split(/\s+/).length : 0
+const readTime = Math.max(1, Math.round(wordCount / 200))
+const updatedDate = article._updatedAt
+  ? new Date(article._updatedAt).toLocaleDateString('he-IL')
+  : ''
+
 const title = `${article.title} | ${site.brand}`
 const description = article.excerpt || 'מאמר מתוך מצפן הלב.'
 
@@ -52,6 +63,9 @@ const articleSchema = {
     '@type': 'WebPage',
     '@id': canonical,
   },
+  ...(wordCount ? { wordCount } : {}),
+  ...(article.tags?.length ? { articleSection: article.tags[0] } : {}),
+  ...(article.painTags?.length ? { keywords: article.painTags.join(', ') } : {}),
 }
 
 const breadcrumbSchema = {
@@ -141,10 +155,11 @@ const schemas = faqSchema
             </p>
           )}
 
-          <div class="flex flex-wrap items-center justify-center gap-4 text-primary/60 font-body mt-6">
-            {article.publishedAt && <span>{new Date(article.publishedAt).toLocaleDateString('he-IL')}</span>}
-            {article.authorLine && <span>•</span>}
-            {article.authorLine && <span>{article.authorLine}</span>}
+          <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-primary/60 font-body mt-6 text-sm">
+            <span class="font-bold text-primary">מאת {article.author?.name || site.fullName}</span>
+            <span class="inline-flex items-center gap-1 text-accent font-bold"><span>✓</span> נבדק ואומת</span>
+            {updatedDate && <><span>•</span><span>עודכן: {updatedDate}</span></>}
+            {readTime > 0 && <><span>•</span><span>{readTime} דק׳ קריאה</span></>}
           </div>
 
           {/* excerpt לא מוצג כאן בכוונה: הוא משמש כ-meta description ובכרטיסים,
@@ -228,6 +243,25 @@ const schemas = faqSchema
         )}
         {/* ───────────────────────────────────────────────────────── */}
       </div>
+
+      {/* ─── תיבת מחבר (E-E-A-T) ──────────────────────────────── */}
+      <aside class="mt-12 max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-right">
+        <img
+          src="/assets/yossi-hero.jpg"
+          alt={article.author?.name || 'יוסי מדלסי'}
+          width="96" height="96"
+          class="w-24 h-24 rounded-full object-cover object-top shrink-0 border-2 border-accent/20"
+          loading="lazy"
+        />
+        <div>
+          <a href="/about" class="text-xl font-black text-primary font-display hover:text-gold-dark transition-colors">
+            {article.author?.name || 'יוסי מדלסי'}
+          </a>
+          <p class="mt-2 text-primary/70 font-body leading-relaxed">
+            מאמן רגשי מוסמך ICF ומפתח שיטת מ.ס.ע במצפן הלב. מעל עשור ניסיון בליווי נוער, הורים וזוגות לשחרור דפוסים רגשיים מהשורש.
+          </p>
+        </div>
+      </aside>
 
       {/* ─── מאמרים נוספים (אוטומטי לפי תגיות) ──────────────────── */}
       {related?.length > 0 && (
