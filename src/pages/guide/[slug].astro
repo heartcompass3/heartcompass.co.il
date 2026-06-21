@@ -8,6 +8,7 @@ const pageData = await sanity.fetch(`
   *[_type == "landingPage" && slug.current == $slug][0]{
     title,
     subtitle,
+    seoDescription,
     "imageUrl": mainImage.asset->url,
     content,
     bullets,
@@ -24,6 +25,18 @@ const pageData = await sanity.fetch(`
 if (!pageData) {
   return new Response('Not found', { status: 404 });
 }
+
+// Meta description (Bing/Google): seoDescription → subtitle fallback, capped ~160 chars on a word boundary
+const rawDescription = String(pageData.seoDescription || pageData.subtitle || '')
+  .replace(/\s+/g, ' ')
+  .trim();
+const metaDescription =
+  rawDescription.length <= 160
+    ? rawDescription
+    : rawDescription.slice(0, 157).replace(/\s+\S*$/, '') + '…';
+
+const ogTitle = `${pageData.title} | מצפן הלב`;
+const canonicalUrl = `https://heartcompass.co.il/guide/${slug}`;
 
 const formSubmitEmail = "yossi1974@outlook.co.il";
 // כאן הקסם: אנחנו שולחים את הגולש לדף התודה בתוספת מזהה המדריך הספציפי
@@ -50,7 +63,18 @@ const faqSchema = pageData.faqItems?.length > 0
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{pageData.title} | מצפן הלב</title>
+  <title>{ogTitle}</title>
+  {metaDescription && <meta name="description" content={metaDescription} />}
+  <link rel="canonical" href={canonicalUrl} />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="he_IL" />
+  <meta property="og:title" content={ogTitle} />
+  {metaDescription && <meta property="og:description" content={metaDescription} />}
+  <meta property="og:url" content={canonicalUrl} />
+  {pageData.imageUrl && <meta property="og:image" content={pageData.imageUrl} />}
+  <meta name="twitter:card" content="summary_large_image" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
