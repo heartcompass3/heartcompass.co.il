@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import site from '../../content/pages/site.json'
+import { sanity } from '../../lib/sanity'
+import { PAINS_LIST_QUERY } from '../../lib/sanityQueries'
+
+const pains = (await sanity.fetch(PAINS_LIST_QUERY)) ?? []
+
+const title = `מרכז המידע — מוקדי כאב | ${site.brand}`
+const description =
+  'מרכז המידע של מצפן הלב: מוקדי הכאב המרכזיים — קשר רעיל, נרקיסיזם, ערך עצמי ועוד — וכל המאמרים שמפרקים כל אחד מהם מהשורש.'
+const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
+
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${canonical}#collection`,
+  name: 'מרכז המידע',
+  description,
+  inLanguage: 'he',
+  isPartOf: { '@id': `${site.siteUrl}/#website` },
+  ...(pains.length
+    ? {
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: pains.length,
+          itemListElement: pains.map((p: any, i: number) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            url: `${site.siteUrl}/pain/${p.slug}`,
+            name: p.title,
+          })),
+        },
+      }
+    : {}),
+}
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  pageType="website"
+  schema={[collectionSchema]}
+>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-6xl mx-auto px-6">
+
+      <Breadcrumbs items={[{ name: 'מרכז המידע' }]} />
+
+      <header class="mb-12 text-center">
+        <h1 class="text-4xl md:text-6xl font-black text-primary font-display mb-5 drop-shadow-sm">
+          מרכז המידע
+        </h1>
+        <p class="text-lg md:text-xl text-primary/75 font-body leading-relaxed max-w-3xl mx-auto">
+          מוקדי הכאב המרכזיים שאנחנו עוסקים בהם. כל מוקד מרכז את כל המאמרים שמפרקים אותו לעומק ומראים את הדרך לשחרור הדפוס מהשורש.
+        </p>
+      </header>
+
+      {pains.length === 0 ? (
+        <p class="text-center text-primary/60 font-body text-lg">בקרוב.</p>
+      ) : (
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {pains.map((p: any) => (
+            <a
+              href={`/pain/${p.slug}`}
+              class="bg-white rounded-[2rem] shadow-xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border border-white/50 flex flex-col h-full p-8 hover:-translate-y-2 cursor-pointer group ring-1 ring-black/5 text-right"
+            >
+              <div class="flex items-center gap-2 mb-3">
+                <span aria-hidden="true" class="text-2xl">🩹</span>
+                <h2 class="text-2xl font-black text-primary font-display group-hover:text-gold-dark transition-colors">
+                  {p.title}
+                </h2>
+              </div>
+              {p.goldLine && (
+                <p class="text-accent font-bold font-display text-sm mb-3">{p.goldLine}</p>
+              )}
+              {p.excerpt && (
+                <p class="text-primary/70 font-body leading-relaxed line-clamp-3 mb-6">{p.excerpt}</p>
+              )}
+              <div class="mt-auto flex items-center justify-between">
+                <span class="text-primary/50 font-body text-sm">{p.count} מאמרים</span>
+                <span class="text-accent font-bold tracking-wide group-hover:gap-2 transition-all flex items-center">
+                  כניסה <span class="mr-2">←</span>
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </section>
+</BaseLayout>
