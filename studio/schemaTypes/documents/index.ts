@@ -7,6 +7,7 @@ import contactPage from './contactPage'
 import article from './article'
 import author from './author'
 import specialty from './specialty'
+import pain from './pain'
 
 
 export const documents = [
@@ -18,6 +19,7 @@ export const documents = [
   // Content
   article,
   specialty,
+  pain,
   author,
 
 

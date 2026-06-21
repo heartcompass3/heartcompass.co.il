@@ -1,0 +1,216 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import PortableText from '../../components/PortableText.astro'
+import site from '../../content/pages/site.json'
+import { sanity } from '../../lib/sanity'
+import { PAIN_BY_SLUG_QUERY } from '../../lib/sanityQueries'
+import { optImg } from '../../lib/img'
+
+const { slug } = Astro.params
+
+const pain = await sanity.fetch(PAIN_BY_SLUG_QUERY, { slug })
+
+if (!pain) {
+  return Astro.redirect('/articles', 302)
+}
+
+const articles = pain.articles ?? []
+
+const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
+
+const fallbackDesc = String(pain.heroIntro || '')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, 160)
+const description = pain.excerpt?.trim() || pain.seo?.description?.trim() || fallbackDesc
+const title = pain.seo?.title?.trim() || `${pain.title} | ${site.brand}`
+const noIndex = pain.seo?.noindex === true
+
+// ── Schema: CollectionPage (ה-hub) + רשימת המאמרים + AEO ──────────
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${canonical}#collection`,
+  name: pain.title,
+  headline: pain.goldLine || pain.title,
+  description,
+  abstract: pain.aiCitation || undefined,
+  inLanguage: 'he',
+  isPartOf: { '@id': `${site.siteUrl}/#website` },
+  about: { '@id': `${site.siteUrl}/#business` },
+  ...(pain.painKeywords?.length ? { keywords: pain.painKeywords.join(', ') } : {}),
+  ...(articles.length
+    ? {
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: articles.length,
+          itemListElement: articles.map((a: any, i: number) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            url: `${site.siteUrl}/articles/${a.slug}`,
+            name: a.title,
+          })),
+        },
+      }
+    : {}),
+}
+
+const faqSchema = pain.faqItems?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: pain.faqItems.map((item: { question: string; answer: string }) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    }
+  : null
+
+const schemas = faqSchema ? [collectionSchema, faqSchema] : [collectionSchema]
+
+const fmtDate = (d?: string) =>
+  d ? new Date(d).toLocaleDateString('he-IL') : ''
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  noIndex={noIndex}
+  pageType="website"
+  schema={schemas}
+>
+  <section class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-5xl mx-auto px-6">
+
+      <Breadcrumbs items={[{ name: pain.title }]} />
+
+      <!-- Hero -->
+      <header class="mb-12 text-center">
+        <h1 class="text-4xl md:text-6xl font-black text-primary font-display mb-5 drop-shadow-sm">
+          {pain.title}
+        </h1>
+        {pain.goldLine && (
+          <p class="text-accent font-bold tracking-wide mb-6 font-display text-lg md:text-xl">
+            {pain.goldLine}
+          </p>
+        )}
+        {pain.heroIntro && (
+          <p class="text-lg md:text-xl text-primary/75 font-body leading-relaxed max-w-3xl mx-auto">
+            {pain.heroIntro}
+          </p>
+        )}
+      </header>
+
+      <!-- "האם זה מוכר לך?" -->
+      {pain.painPoints?.length > 0 && (
+        <section class="mb-14 max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 md:p-10">
+          <h2 class="text-2xl font-black text-primary font-display mb-6 text-center">האם זה מוכר לך?</h2>
+          <ul class="space-y-3">
+            {pain.painPoints.map((p: string) => (
+              <li class="flex items-start gap-3 text-primary/80 font-body text-lg">
+                <span class="text-accent mt-1">◆</span>
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <!-- גוף מורחב -->
+      {pain.body && (
+        <div class="prose prose-lg max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 md:p-12 mb-16">
+          <PortableText value={pain.body} />
+        </div>
+      )}
+
+      <!-- מאמרים בנושא — מתמלא אוטומטית -->
+      <section class="mb-16">
+        <h2 class="text-3xl md:text-4xl font-black text-primary font-display mb-3 text-center">
+          מאמרים בנושא
+        </h2>
+        <p class="text-center text-primary/55 font-body mb-10">
+          {articles.length > 0 ? `${articles.length} מאמרים` : ''}
+        </p>
+
+        {articles.length === 0 ? (
+          <p class="text-center text-primary/60 font-body text-lg">בקרוב יתווספו מאמרים בנושא הזה.</p>
+        ) : (
+          <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((a: any) => (
+              <a
+                href={`/articles/${a.slug}`}
+                class="bg-white rounded-[2rem] shadow-xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border border-white/50 flex flex-col h-full overflow-hidden hover:-translate-y-2 cursor-pointer group ring-1 ring-black/5"
+              >
+                <div class="h-48 overflow-hidden relative w-full">
+                  <img
+                    src={optImg(a.mainImage?.asset?.url, 600) || '/assets/yossi-hero.jpg'}
+                    alt={a.mainImage?.alt || a.title || `מאמר | ${site.brand}`}
+                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
+                    loading="lazy"
+                  />
+                  {a.publishedAt && (
+                    <div class="absolute top-5 right-5 bg-white/95 px-3 py-1 text-xs font-bold text-primary rounded-full shadow-lg">
+                      {fmtDate(a.publishedAt)}
+                    </div>
+                  )}
+                </div>
+                <div class="p-8 flex-1 flex flex-col text-center items-center w-full">
+                  <h3 class="text-xl font-black text-primary mb-2 font-display leading-tight group-hover:text-gold-dark transition-colors">
+                    {a.title}
+                  </h3>
+                  {a.goldLine && (
+                    <p class="text-accent font-bold tracking-wide mb-3 font-display text-xs">{a.goldLine}</p>
+                  )}
+                  {a.excerpt && (
+                    <p class="text-primary/70 font-body leading-relaxed mb-6 line-clamp-3">{a.excerpt}</p>
+                  )}
+                  <div class="mt-auto flex items-center text-accent font-bold tracking-wide group-hover:gap-2 transition-all">
+                    קרא עוד <span class="mr-2">←</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <!-- FAQ -->
+      {pain.faqItems?.length > 0 && (
+        <section class="max-w-3xl mx-auto mb-16">
+          <h2 class="text-3xl font-black text-primary font-display mb-8 text-center">שאלות נפוצות</h2>
+          <div class="space-y-4">
+            {pain.faqItems.map((item: { question: string; answer: string }) => (
+              <details class="group bg-white border border-foreground/10 rounded-2xl overflow-hidden shadow-sm">
+                <summary class="px-6 py-5 cursor-pointer font-bold text-primary text-lg list-none flex justify-between items-center hover:bg-background/50 transition-colors">
+                  {item.question}
+                  <span class="text-accent text-2xl transition-transform group-open:rotate-45 mr-4">+</span>
+                </summary>
+                <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed">{item.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- CTA -->
+      {pain.cta?.heading && (
+        <section class="max-w-3xl mx-auto bg-primary text-white rounded-[2rem] shadow-xl p-10 md:p-12 text-center">
+          <h2 class="text-3xl font-black font-display mb-4">{pain.cta.heading}</h2>
+          {pain.cta.text && <p class="text-white/85 font-body text-lg mb-8 leading-relaxed">{pain.cta.text}</p>}
+          {pain.cta.buttonLabel && (
+            <a
+              href={pain.cta.buttonHref || '/contact'}
+              class="inline-block bg-accent hover:bg-gold-dark text-white font-bold text-lg px-10 py-4 rounded-full transition-all shadow-lg"
+            >
+              {pain.cta.buttonLabel}
+            </a>
+          )}
+        </section>
+      )}
+
+    </div>
+  </section>
+</BaseLayout>

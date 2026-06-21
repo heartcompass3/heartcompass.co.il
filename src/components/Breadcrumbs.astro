@@ -1,0 +1,57 @@
+---
+/**
+ * Breadcrumbs — פירורי לחם ויזואליים + BreadcrumbList JSON-LD.
+ *
+ * שימוש:
+ *   <Breadcrumbs items={[{ name: 'מאמרים', href: '/articles' }, { name: article.title }]} />
+ *
+ * - הבית ("מצפן הלב") נוסף אוטומטית כפריט ראשון.
+ * - הפריט האחרון הוא העמוד הנוכחי (בלי קישור).
+ * - withSchema={false} מרנדר רק ויזואלי (כשהעמוד כבר פולט BreadcrumbList בעצמו).
+ */
+import site from '../content/pages/site.json'
+
+const { items = [], withSchema = true } = Astro.props
+
+const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
+const toAbs = (href?: string) => {
+  const h = clean(href)
+  if (!h) return ''
+  return h.startsWith('http') ? h : new URL(h, site.siteUrl).toString()
+}
+
+// הבית תמיד ראשון
+const trail = [{ name: site.brand, href: '/' }, ...items]
+
+const breadcrumbSchema = withSchema
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: trail.map((it: any, i: number) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: it.name,
+        ...(it.href ? { item: toAbs(it.href) } : {}),
+      })),
+    }
+  : null
+---
+
+<nav aria-label="פירורי לחם" class="mb-6 text-sm font-body text-primary/55" dir="rtl">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+    {trail.map((it: any, i: number) => (
+      <li class="flex items-center gap-x-2">
+        {i > 0 && <span class="text-primary/30 select-none">‹</span>}
+        {it.href && i < trail.length - 1 ? (
+          <a href={it.href} class="hover:text-accent transition-colors">{it.name}</a>
+        ) : (
+          <span class="text-primary/80 font-medium" aria-current="page">{it.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+{breadcrumbSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+)}

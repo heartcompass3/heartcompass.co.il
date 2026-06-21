@@ -165,6 +165,7 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
   },
   tags,
   painTags,
+  pains[]->{ title, "slug": slug.current },
   aiCitation,
   keyTakeaways{
     heading,
@@ -200,6 +201,54 @@ export const RELATED_ARTICLES_QUERY = /* groq */ `
       url
     }
   }
+}
+`
+
+// =======================
+// Pain Hubs (מוקדי כאב)
+// =======================
+
+// עמוד כאב בודד — שולף אוטומטית את כל המאמרים שמצביעים אליו (article.pains)
+export const PAIN_BY_SLUG_QUERY = /* groq */ `
+*[_type == "pain" && slug.current == $slug && coalesce(publishedSite, "new") in ["new", "both"]][0]{
+  _id,
+  _updatedAt,
+  title,
+  goldLine,
+  "slug": slug.current,
+  heroIntro,
+  painPoints,
+  body,
+  aiCitation,
+  aiContext,
+  painKeywords,
+  excerpt,
+  seo,
+  faqItems[]{ question, answer },
+  cta{ heading, text, buttonLabel, buttonHref },
+  "articles": *[_type == "article" && references(^._id)]
+    | order(coalesce(publishedAt, _createdAt) desc){
+      _id,
+      title,
+      goldLine,
+      "slug": slug.current,
+      excerpt,
+      publishedAt,
+      mainImage{ alt, asset->{ url } }
+    }
+}
+`
+
+// רשימת כל הכאבים (לאינדקס "מרכז המידע" ול-sitemap) + ספירת מאמרים לכל אחד
+export const PAINS_LIST_QUERY = /* groq */ `
+*[_type == "pain" && coalesce(publishedSite, "new") in ["new", "both"]]
+| order(coalesce(order, 99) asc){
+  _id,
+  title,
+  goldLine,
+  "slug": slug.current,
+  excerpt,
+  "count": count(*[_type == "article" && references(^._id)])
 }
 `
 
