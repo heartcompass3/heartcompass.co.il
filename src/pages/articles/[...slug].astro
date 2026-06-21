@@ -196,6 +196,20 @@ const schemas = faqSchema
             {readTime > 0 && <><span>•</span><span>{readTime} דק׳ קריאה</span></>}
           </div>
 
+          {/* ─── מוקדי כאב (צ'יפים → /pain/[slug]) — הקשר נושאי מוקדם ─── */}
+          {article.pains?.length > 0 && (
+            <div class="flex flex-wrap items-center justify-center gap-2.5 mt-6">
+              {article.pains.map((p: any) => (
+                <a
+                  href={`/pain/${p.slug}`}
+                  class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent/10 text-accent font-bold text-sm font-body hover:bg-accent hover:text-white transition-colors"
+                >
+                  <span aria-hidden="true">🩹</span>{p.title}
+                </a>
+              ))}
+            </div>
+          )}
+
           {/* excerpt לא מוצג כאן בכוונה: הוא משמש כ-meta description ובכרטיסים,
              ואין צורך לחזור עליו מעל תיבת "בקצרה". */}
         </header>
@@ -313,23 +327,6 @@ const schemas = faqSchema
           </p>
         </div>
       </aside>
-
-      {/* ─── מוקדי כאב שהמאמר עוסק בהם (צ'יפים → /pain/[slug]) ──── */}
-      {article.pains?.length > 0 && (
-        <section class="mt-12 pt-8 border-t border-foreground/10">
-          <p class="text-sm font-body text-primary/50 mb-4">הכאבים שהמאמר הזה עוסק בהם:</p>
-          <div class="flex flex-wrap gap-3">
-            {article.pains.map((p: any) => (
-              <a
-                href={`/pain/${p.slug}`}
-                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-accent/10 text-accent font-bold text-sm font-body hover:bg-accent hover:text-white transition-colors"
-              >
-                <span aria-hidden="true">🩹</span>{p.title}
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* ─── מאמרים נוספים (אוטומטי לפי תגיות) ──────────────────── */}
       {related?.length > 0 && (
