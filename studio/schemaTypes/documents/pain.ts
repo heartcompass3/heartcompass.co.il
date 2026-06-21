@@ -54,6 +54,16 @@ export default defineType({
     }),
 
     defineField({
+      name: 'definition',
+      title: 'מה זה בעצם? (הגדרה)',
+      type: 'text',
+      rows: 4,
+      group: 'content',
+      description:
+        'הגדרה עניינית וקצרה בראש הדף: מה המונח אומר, ההיבט הקליני אם רלוונטי, ומקור השם. מצוין לתשובות חיפוש ול-AI (נשלף גם ל-schema). אופציונלי.',
+    }),
+
+    defineField({
       name: 'heroIntro',
       title: 'פיצוח הכאב — פסקת פתיחה',
       type: 'text',

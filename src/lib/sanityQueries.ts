@@ -216,6 +216,7 @@ export const PAIN_BY_SLUG_QUERY = /* groq */ `
   title,
   goldLine,
   "slug": slug.current,
+  definition,
   heroIntro,
   painPoints,
   body,
