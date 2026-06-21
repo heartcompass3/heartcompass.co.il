@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { ARTICLES_QUERY } from '../../lib/sanityQueries'
@@ -27,6 +28,8 @@ const searchIndex = (articles ?? []).map((a) => ({
 <BaseLayout title={title} description={description}>
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-7xl mx-auto px-6">
+
+      <Breadcrumbs items={[{ name: 'מאמרים' }]} />
 
       <header class="mb-10 text-center">
         <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6 drop-shadow-sm">

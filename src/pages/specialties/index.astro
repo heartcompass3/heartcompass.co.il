@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import site from '../../content/pages/site.json'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
 
@@ -20,6 +21,7 @@ const breadcrumbSchema = buildBreadcrumbListSchema({
 <BaseLayout title={title} description={description} canonical={canonical} schema={[breadcrumbSchema]}>
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-6xl mx-auto px-6">
+      <Breadcrumbs withSchema={false} items={[{ name: 'תחומי התמחות' }]} />
       <header class="text-center mb-14">
         <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6">
           תחומי התמחות

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import PortableText from '../../components/PortableText.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
@@ -118,6 +119,7 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
     <div class="max-w-6xl mx-auto px-6">
 
       <!-- HERO -->
+      <Breadcrumbs items={[{ name: 'שיטת מ.ס.ע' }]} />
       <header class="mb-14 text-center">
         <h1 class="text-5xl md:text-6xl font-black text-primary font-display leading-tight mb-6">
           <span class="block">{h1a}</span>

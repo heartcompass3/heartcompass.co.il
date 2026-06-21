@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
@@ -102,6 +103,7 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-4xl mx-auto px-6">
+      <Breadcrumbs withSchema={false} items={[{ name: 'תחומי התמחות', href: '/specialties' }, { name: 'הדרכת הורים' }]} />
       <header class="mb-10 text-center">
         {h1 && (
           <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6">
