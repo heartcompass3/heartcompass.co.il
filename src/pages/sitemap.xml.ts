@@ -17,6 +17,7 @@ export const GET: APIRoute = async () => {
 
   let articles = []
   let pages = []
+  let pains = []
 
   try {
     // משיכת המאמרים
@@ -30,6 +31,14 @@ export const GET: APIRoute = async () => {
     // משיכת דפי ההתמחויות (סכימת "page")
     pages = await sanity.fetch(`
       *[_type == "page" && defined(slug.current)]{
+        "slug": slug.current,
+        _updatedAt
+      }
+    `)
+
+    // משיכת מוקדי הכאב (Pain Hubs)
+    pains = await sanity.fetch(`
+      *[_type == "pain" && defined(slug.current) && coalesce(publishedSite, "new") in ["new", "both"]]{
         "slug": slug.current,
         _updatedAt
       }
@@ -62,6 +71,14 @@ export const GET: APIRoute = async () => {
       <url>
         <loc>${baseUrl}/${cleanSlug}</loc>
         <lastmod>${page._updatedAt}</lastmod>
+      </url>
+    `}),
+    ...pains.map(pain => {
+      const cleanSlug = pain.slug.replace(/^\/+/, '')
+      return `
+      <url>
+        <loc>${baseUrl}/pain/${cleanSlug}</loc>
+        <lastmod>${pain._updatedAt}</lastmod>
       </url>
     `})
   ]

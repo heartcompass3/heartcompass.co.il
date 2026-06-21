@@ -4,6 +4,7 @@ import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { ARTICLE_BY_SLUG_QUERY, RELATED_ARTICLES_QUERY } from '../../lib/sanityQueries'
 import PortableText from '../../components/PortableText.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import { optImg } from '../../lib/img'
 import { slugify } from '../../lib/slug'
 
@@ -143,6 +144,8 @@ const schemas = faqSchema
       >
         ← חזרה למאמרים
       </a>
+
+      <Breadcrumbs items={[{ name: 'מאמרים', href: '/articles' }, { name: article.title }]} withSchema={false} />
 
       <div class={showToc ? 'lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start' : ''}>
         {/* ─── תוכן עניינים: סיידבר דביק בצד (דסקטופ בלבד) ─────── */}
@@ -310,6 +313,23 @@ const schemas = faqSchema
           </p>
         </div>
       </aside>
+
+      {/* ─── מוקדי כאב שהמאמר עוסק בהם (צ'יפים → /pain/[slug]) ──── */}
+      {article.pains?.length > 0 && (
+        <section class="mt-12 pt-8 border-t border-foreground/10">
+          <p class="text-sm font-body text-primary/50 mb-4">הכאבים שהמאמר הזה עוסק בהם:</p>
+          <div class="flex flex-wrap gap-3">
+            {article.pains.map((p: any) => (
+              <a
+                href={`/pain/${p.slug}`}
+                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-accent/10 text-accent font-bold text-sm font-body hover:bg-accent hover:text-white transition-colors"
+              >
+                <span aria-hidden="true">🩹</span>{p.title}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ─── מאמרים נוספים (אוטומטי לפי תגיות) ──────────────────── */}
       {related?.length > 0 && (
