@@ -24,6 +24,14 @@ const heroTitle3 = hero.titleLine3
 const heroImg =
   hero.image ? urlFor(hero.image).width(1400).quality(85).url() : '/assets/yossi-hero.jpg'
 
+// מידות אמיתיות לתמונת הירו (מונע CLS) — נגזר מ-Sanity, נפילה חזרה ל-1400x2100.
+const heroDims = home.heroImageDims
+const heroW = 1400
+const heroH =
+  heroDims?.width && heroDims?.height
+    ? Math.round((1400 * heroDims.height) / heroDims.width)
+    : 2100
+
 const primaryCtaHref = hero.primaryCtaHref
 const primaryCtaLabel = hero.primaryCtaText || 'בוא נדבר תכל׳ס ←'
 
@@ -166,9 +174,12 @@ const brandDeep = '#295157'
             <div class="rounded-[28px] overflow-hidden bg-white">
               <img
                 src={heroImg}
-                alt="יוסי מדלסי"
-                width="1400"
-                height="2100"
+                alt="יוסי מדלסי — מאמן רגשי מוסמך ICF, מצפן הלב"
+                width={heroW}
+                height={heroH}
+                fetchpriority="high"
+                loading="eager"
+                decoding="async"
                 class="w-full h-auto object-cover max-h-[520px] md:max-h-none"
               />
             </div>

@@ -16,4 +16,6 @@ export const sanity = createClient({
 })
 
 const builder = imageUrlBuilder(sanity)
-export const urlFor = (source: any) => builder.image(source)
+// auto('format') => מגיש WebP/AVIF לדפדפנים תומכים (חוסך משקל, משפר LCP).
+// מוחל גלובלית על כל תמונה שעוברת ב-urlFor; קריאות .width()/.quality() ממשיכות לעבוד מעליו.
+export const urlFor = (source: any) => builder.image(source).auto('format')

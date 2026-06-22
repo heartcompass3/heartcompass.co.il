@@ -224,10 +224,20 @@ if (isArticlePage) {
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- משקלים בשימוש בלבד (הוסר 300 הלא-בשימוש, נוסף 900 ל-font-black). -->
+    <!-- טעינה לא-חוסמת-רינדור: media=print + onload swap, עם fallback ב-noscript. -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800;900&family=Heebo:wght@400;500;600;700;800;900&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800;900&family=Heebo:wght@400;500;600;700;800;900&display=swap"
+      />
+    </noscript>
   </head>
 
   <body class="min-h-screen selection:bg-accent selection:text-white">

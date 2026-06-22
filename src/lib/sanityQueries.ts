@@ -5,6 +5,7 @@ export const HOME_PAGE_QUERY = /* groq */ `
 *[_type == "homePage"][0]{
   seo,
   hero,
+  "heroImageDims": hero.image.asset->metadata.dimensions{ width, height },
   h1,
 
   introParagraph,
