@@ -11,9 +11,18 @@ import { slugify } from '../../lib/slug'
 const rawSlug = Astro.params.slug
 const slug = Array.isArray(rawSlug) ? rawSlug.join('/') : rawSlug
 
+// הפניות 301 מ-slugs ישנים (שתוקנו לאנגלית נקייה) — שומר על קישורים/אינדוקס קיימים.
+const OLD_SLUG_REDIRECTS: Record<string, string> = {
+  'מתקיעות לתנועה': 'stop-repeating-the-script',
+  'דיכאון, תקיעות ואנרגיה': 'hidden-cost-of-hypervigilance',
+}
+
 const article = await sanity.fetch(ARTICLE_BY_SLUG_QUERY, { slug })
 
 if (!article) {
+  if (slug && OLD_SLUG_REDIRECTS[slug]) {
+    return Astro.redirect(`/articles/${OLD_SLUG_REDIRECTS[slug]}`, 301)
+  }
   return Astro.redirect('/articles', 302)
 }
 

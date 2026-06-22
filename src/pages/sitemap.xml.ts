@@ -56,41 +56,38 @@ export const GET: APIRoute = async () => {
     console.error('❌ Error fetching dynamic routes from Sanity:', error)
   }
 
-  const urls = [
-    ...staticPages.map(p => `
+  // איסוף כל הכתובות לרשימה אחת, ואז דה-דופ לפי loc.
+  // (עמודי תשתית מקודדים-קשיח חופפים למסמכי "page" עם אותו slug — דה-דופ מונע כפילויות.)
+  type Entry = { loc: string; lastmod: string }
+  const entries: Entry[] = []
+
+  staticPages.forEach(p => entries.push({ loc: `${baseUrl}${p.url}`, lastmod: p.lastmod }))
+
+  const addDocs = (docs: any[], prefix: string) =>
+    docs
+      .map(d => cleanSlug(d.slug) && { slug: cleanSlug(d.slug), _updatedAt: d._updatedAt })
+      .filter((d): d is { slug: string; _updatedAt: string } => !!d && isValidSlug(d.slug))
+      .forEach(d =>
+        entries.push({ loc: encodeURI(`${baseUrl}${prefix}${d.slug}`), lastmod: d._updatedAt })
+      )
+
+  addDocs(articles, '/articles/')
+  addDocs(pages, '/')
+  addDocs(pains, '/pain/')
+
+  // דה-דופ: שומרים על ה-lastmod החדש ביותר לכל כתובת.
+  const byLoc = new Map<string, string>()
+  for (const e of entries) {
+    const prev = byLoc.get(e.loc)
+    if (!prev || (e.lastmod && e.lastmod > prev)) byLoc.set(e.loc, e.lastmod)
+  }
+
+  const urls = [...byLoc.entries()].map(([loc, lastmod]) => `
       <url>
-        <loc>${baseUrl}${p.url}</loc>
-        <lastmod>${p.lastmod}</lastmod>
-      </url>
-    `),
-    ...articles
-      .map(a => cleanSlug(a.slug) && { slug: cleanSlug(a.slug), _updatedAt: a._updatedAt })
-      .filter((a): a is { slug: string; _updatedAt: string } => !!a && isValidSlug(a.slug))
-      .map(a => `
-      <url>
-        <loc>${encodeURI(`${baseUrl}/articles/${a.slug}`)}</loc>
-        <lastmod>${a._updatedAt}</lastmod>
-      </url>
-    `),
-    ...pages
-      .map(p => cleanSlug(p.slug) && { slug: cleanSlug(p.slug), _updatedAt: p._updatedAt })
-      .filter((p): p is { slug: string; _updatedAt: string } => !!p && isValidSlug(p.slug))
-      .map(p => `
-      <url>
-        <loc>${encodeURI(`${baseUrl}/${p.slug}`)}</loc>
-        <lastmod>${p._updatedAt}</lastmod>
-      </url>
-    `),
-    ...pains
-      .map(p => cleanSlug(p.slug) && { slug: cleanSlug(p.slug), _updatedAt: p._updatedAt })
-      .filter((p): p is { slug: string; _updatedAt: string } => !!p && isValidSlug(p.slug))
-      .map(p => `
-      <url>
-        <loc>${encodeURI(`${baseUrl}/pain/${p.slug}`)}</loc>
-        <lastmod>${p._updatedAt}</lastmod>
+        <loc>${loc}</loc>
+        <lastmod>${lastmod}</lastmod>
       </url>
     `)
-  ]
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
