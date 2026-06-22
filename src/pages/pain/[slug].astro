@@ -27,6 +27,11 @@ const description = pain.excerpt?.trim() || pain.seo?.description?.trim() || fal
 const title = pain.seo?.title?.trim() || `${pain.title} | ${site.brand}`
 const noIndex = pain.seo?.noindex === true
 
+// תמונת שיתוף נושאית: התמונה של המאמר הראשון במוקד הכאב (אם קיים),
+// אחרת נופל חזרה לתמונת ברירת המחדל של המותג ב-SeoHead.
+const ogSource = articles.find((a: any) => a.mainImage?.asset?.url)
+const ogImage = ogSource ? optImg(ogSource.mainImage.asset.url, 1200) : undefined
+
 // ── Schema: CollectionPage (ה-hub) + רשימת המאמרים + AEO ──────────
 const collectionSchema = {
   '@context': 'https://schema.org',
@@ -81,6 +86,7 @@ const fmtDate = (d?: string) =>
   description={description}
   canonical={canonical}
   noIndex={noIndex}
+  ogImage={ogImage}
   pageType="website"
   schema={schemas}
 >

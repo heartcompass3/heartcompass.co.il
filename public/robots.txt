@@ -1,51 +1,24 @@
-# Robots.txt for Heart Compass (מצפן הלב) - Optimized for Search & AI
+# Robots.txt for Heart Compass (מצפן הלב) — Optimized for Search & AI
 
 User-agent: *
 Allow: /
-# Allow AI agents to access specific SEO files
-Allow: /llms.txt
-Allow: /services.md
-Allow: /sitemap.xml
-
-# חסימת אזורים טכניים (אם קיימים)
 Disallow: /api/
 Disallow: /studio/
 
-# גוגל
-User-agent: Googlebot
-Allow: /
-
-# בינג
-User-agent: Bingbot
-Allow: /
-
-# OpenAI / AI Crawlers
-User-agent: OAI-SearchBot
-Allow: /
-Allow: /llms.txt
-Allow: /services.md
-
-# Specific instructions for GPTBot (OpenAI)
+# AI crawlers — full access (GEO / AEO)
 User-agent: GPTBot
 Allow: /
-Allow: /llms.txt
-Allow: /services.md
 
-# Specific instructions for ClaudeBot (Anthropic)
+User-agent: OAI-SearchBot
+Allow: /
+
 User-agent: ClaudeBot
 Allow: /
-Allow: /llms.txt
-Allow: /services.md
 
-# Perplexity
 User-agent: PerplexityBot
 Allow: /
-Allow: /llms.txt
-Allow: /services.md
 
-# Google AI (Gemini / Vertex - training & grounding)
 User-agent: Google-Extended
 Allow: /
 
-# מפת האתר
 Sitemap: https://www.heartcompass.co.il/sitemap.xml

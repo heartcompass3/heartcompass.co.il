@@ -47,7 +47,10 @@ const title = `${article.title} | ${site.brand}`
 const description = article.excerpt || 'מאמר מתוך מצפן הלב.'
 
 const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
-const ogImage = article.mainImage?.asset?.url || undefined
+// תמונת שיתוף ממוטבת (~1200px, WebP/AVIF) במקום המקור המלא הכבד.
+const ogImage = article.mainImage?.asset?.url
+  ? optImg(article.mainImage.asset.url, 1200)
+  : undefined
 
 const articleSchema = {
   '@context': 'https://schema.org',
