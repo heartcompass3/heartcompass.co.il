@@ -16,7 +16,14 @@ export default defineConfig({
   site: getSiteUrl(),
   output: 'server',
   trailingSlash: 'never',
-  adapter: vercel(),
+  // ISR: Vercel מקאשר את ה-HTML בקצה ומחדש כל 10 דק' (TTFB מהיר, תקציב זחילה יעיל).
+  // /api מוחרג כדי שה-IndexNow (כולל ה-cron) לא ייתפס בקאש.
+  adapter: vercel({
+    isr: {
+      expiration: 600,
+      exclude: [/^\/api\//],
+    },
+  }),
   redirects: {
     '/sitemap-index.xml': '/sitemap.xml',
     '/sitemap-0.xml': '/sitemap.xml',
