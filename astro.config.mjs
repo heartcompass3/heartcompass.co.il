@@ -21,7 +21,9 @@ export default defineConfig({
   adapter: vercel({
     isr: {
       expiration: 600,
-      exclude: [/^\/api\//],
+      // /api (IndexNow + cron) ו-/sitemap.xml מוחרגים — צריכים להישאר טריים
+      // (ל-sitemap יש קאש משלו של 60ש'), לא להיתפס בקאש ISR של 10 דק'.
+      exclude: [/^\/api\//, '/sitemap.xml'],
     },
   }),
   redirects: {
