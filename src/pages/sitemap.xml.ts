@@ -4,15 +4,23 @@ import { sanity } from '../lib/sanity'
 export const prerender = true;
 
 export const GET: APIRoute = async () => {
-  const baseUrl = 'https://heartcompass.co.il'
+  const baseUrl = 'https://www.heartcompass.co.il'
 
-  // עמודי התשתית 
+  // תאריך הבנייה — עדכני לכל deploy במקום תאריך קשיח שמתיישן
+  const buildDate = new Date().toISOString().slice(0, 10)
+
+  // מנקה ובודק slug: גוזם רווחים, מסיר סלאש מוביל, ומדלג על slug פגום
+  // (רווחים/טאבים בתוך ה-slug = כתובת לא חוקית שלא נפתרת). מקודד עברית ל-%xx.
+  const cleanSlug = (s: string) => (s || '').trim().replace(/^\/+/, '')
+  const isValidSlug = (s: string) => !!s && !/\s/.test(s)
+
+  // עמודי התשתית
   const staticPages = [
-    { url: '/', lastmod: '2026-03-01' },
-    { url: '/about', lastmod: '2026-03-01' },
-    { url: '/method', lastmod: '2026-03-01' },
-    { url: '/articles', lastmod: '2026-03-01' },
-    { url: '/specialties', lastmod: '2026-03-01' }
+    { url: '/', lastmod: buildDate },
+    { url: '/about', lastmod: buildDate },
+    { url: '/method', lastmod: buildDate },
+    { url: '/articles', lastmod: buildDate },
+    { url: '/specialties', lastmod: buildDate }
   ]
 
   let articles = []
@@ -55,32 +63,33 @@ export const GET: APIRoute = async () => {
         <lastmod>${p.lastmod}</lastmod>
       </url>
     `),
-    ...articles.map(a => {
-      // מנקה סלאש מיותר אם קיים בטעות ב-Sanity
-      const cleanSlug = a.slug.replace(/^\/+/, '')
-      return `
+    ...articles
+      .map(a => cleanSlug(a.slug) && { slug: cleanSlug(a.slug), _updatedAt: a._updatedAt })
+      .filter((a): a is { slug: string; _updatedAt: string } => !!a && isValidSlug(a.slug))
+      .map(a => `
       <url>
-        <loc>${baseUrl}/articles/${cleanSlug}</loc>
+        <loc>${encodeURI(`${baseUrl}/articles/${a.slug}`)}</loc>
         <lastmod>${a._updatedAt}</lastmod>
       </url>
-    `}),
-    ...pages.map(page => {
-      // כאן הסרנו את הקידומת הקשיחה, כי ה-Slug כבר מכיל אותה
-      const cleanSlug = page.slug.replace(/^\/+/, '')
-      return `
+    `),
+    ...pages
+      .map(p => cleanSlug(p.slug) && { slug: cleanSlug(p.slug), _updatedAt: p._updatedAt })
+      .filter((p): p is { slug: string; _updatedAt: string } => !!p && isValidSlug(p.slug))
+      .map(p => `
       <url>
-        <loc>${baseUrl}/${cleanSlug}</loc>
-        <lastmod>${page._updatedAt}</lastmod>
+        <loc>${encodeURI(`${baseUrl}/${p.slug}`)}</loc>
+        <lastmod>${p._updatedAt}</lastmod>
       </url>
-    `}),
-    ...pains.map(pain => {
-      const cleanSlug = pain.slug.replace(/^\/+/, '')
-      return `
+    `),
+    ...pains
+      .map(p => cleanSlug(p.slug) && { slug: cleanSlug(p.slug), _updatedAt: p._updatedAt })
+      .filter((p): p is { slug: string; _updatedAt: string } => !!p && isValidSlug(p.slug))
+      .map(p => `
       <url>
-        <loc>${baseUrl}/pain/${cleanSlug}</loc>
-        <lastmod>${pain._updatedAt}</lastmod>
+        <loc>${encodeURI(`${baseUrl}/pain/${p.slug}`)}</loc>
+        <lastmod>${p._updatedAt}</lastmod>
       </url>
-    `})
+    `)
   ]
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

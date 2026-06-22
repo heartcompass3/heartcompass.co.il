@@ -6,7 +6,7 @@ function getSiteUrl() {
   const env = process.env.VERCEL_ENV
   const vercelUrl = process.env.VERCEL_URL
 
-  if (env === 'production') return 'https://heartcompass.co.il'
+  if (env === 'production') return 'https://www.heartcompass.co.il'
   if (vercelUrl) return `https://${vercelUrl}`
 
   return 'http://localhost:4321'

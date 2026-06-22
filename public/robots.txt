@@ -37,5 +37,15 @@ Allow: /
 Allow: /llms.txt
 Allow: /services.md
 
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /services.md
+
+# Google AI (Gemini / Vertex - training & grounding)
+User-agent: Google-Extended
+Allow: /
+
 # מפת האתר
-Sitemap: https://heartcompass.co.il/sitemap.xml
+Sitemap: https://www.heartcompass.co.il/sitemap.xml

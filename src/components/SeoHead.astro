@@ -8,6 +8,7 @@ const {
   noIndex = false,
   ogImage,
   pageType = 'website',
+  author,
   schema = [],
 } = Astro.props
 
@@ -44,10 +45,13 @@ const toAbsoluteUrl = (v) => {
 
 const defaultOgImage = `${site.siteUrl}/assets/yossi-hero.jpg`
 const resolvedOgImage = toAbsoluteUrl(ogImage) || defaultOgImage
+
+const resolvedAuthor = clean(author) || site.fullName
 ---
 
 <title>{resolvedTitle}</title>
 <meta name="description" content={resolvedDescription} />
+{resolvedAuthor && <meta name="author" content={resolvedAuthor} />}
 <link rel="canonical" href={resolvedCanonical} />
 {noIndex && <meta name="robots" content="noindex,follow" />}
 
