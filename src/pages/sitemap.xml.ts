@@ -1,7 +1,10 @@
 import type { APIRoute } from 'astro'
 import { sanity } from '../lib/sanity'
 
-export const prerender = true;
+// SSR (לא prerender): המפה נמשכת חיה מ-Sanity בכל בקשה, כך שתוכן חדש
+// (מוקדי כאב, מאמרים) נכנס מיד בלי צורך ב-redeploy. יש קאש משלה (s-maxage=60)
+// והיא מוחרגת מ-ISR ב-astro.config, כך שהיא נשארת טרייה.
+export const prerender = false;
 
 export const GET: APIRoute = async () => {
   const baseUrl = 'https://www.heartcompass.co.il'
