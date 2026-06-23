@@ -20,6 +20,8 @@ const {
   ogImage,
   pageType,
   schema,
+  // preload אופציונלי לתמונת ה-LCP (הירו): { srcset, sizes } או { href }
+  preload,
 } = Astro.props
 
 const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
@@ -200,6 +202,20 @@ if (isArticlePage) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/* preload לתמונת ה-LCP — מאיץ את ה-Largest Contentful Paint */}
+    {preload?.srcset && (
+      <link
+        rel="preload"
+        as="image"
+        imagesrcset={preload.srcset}
+        imagesizes={preload.sizes}
+        fetchpriority="high"
+      />
+    )}
+    {preload?.href && !preload?.srcset && (
+      <link rel="preload" as="image" href={preload.href} fetchpriority="high" />
+    )}
 
     <!-- Google Search Console verification -->
     <meta

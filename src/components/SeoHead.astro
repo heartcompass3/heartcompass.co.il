@@ -62,11 +62,13 @@ const resolvedAuthor = clean(author) || site.fullName
 <meta property="og:description" content={resolvedDescription} />
 <meta property="og:url" content={resolvedCanonical} />
 <meta property="og:image" content={resolvedOgImage} />
+<meta property="og:image:alt" content={resolvedTitle} />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={resolvedTitle} />
 <meta name="twitter:description" content={resolvedDescription} />
 <meta name="twitter:image" content={resolvedOgImage} />
+<meta name="twitter:image:alt" content={resolvedTitle} />
 
 {Array.isArray(schema) &&
   schema.map((s) => (
