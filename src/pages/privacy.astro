@@ -2,12 +2,19 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import site from '../content/pages/site.json'
 
-const updated = '18 ביוני 2026'
+const updated = '23 ביוני 2026'
+
+// פרטי בעל מאגר המידע (נדרש לפי חוק הגנת הפרטיות, תיקון 13)
+const business = {
+  name: 'יוסי מדלסי – מצפן הלב',
+  status: 'עוסק פטור',
+  taxId: '025663642',
+}
 ---
 
 <BaseLayout
   title="מדיניות פרטיות"
-  description={`מדיניות הפרטיות של ${site.brand} — איזה מידע נאסף, כיצד נעשה בו שימוש וכיצד הוא נשמר.`}
+  description={`מדיניות הפרטיות של ${site.brand} — איזה מידע נאסף, כיצד נעשה בו שימוש, עוגיות וזכויותיך לפי חוק הגנת הפרטיות.`}
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-3xl mx-auto px-6">
@@ -17,15 +24,26 @@ const updated = '18 ביוני 2026'
       <div class="space-y-8 font-body leading-relaxed text-primary/80 text-lg">
         <p>
           הפרטיות שלך חשובה לנו. מסמך זה מסביר איזה מידע נאסף באתר {site.siteUrl},
-          כיצד נעשה בו שימוש, וכיצד הוא מוגן. השימוש באתר מהווה הסכמה למדיניות זו.
+          כיצד נעשה בו שימוש, כיצד הוא מוגן, ומהן זכויותיך לפי חוק הגנת הפרטיות, התשמ"א-1981
+          (כולל תיקון 13). השימוש באתר מהווה הסכמה למדיניות זו.
         </p>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">בעל מאגר המידע והאחראי</h2>
+          <p>
+            הגורם האחראי על המידע באתר ("בעל המאגר") הוא <strong>{business.name}</strong>,
+            {business.status} (מס׳ {business.taxId}). האחראי על הטיפול בפניות בנושא הגנת הפרטיות
+            הוא {site.fullName}, בכתובת <a href={`mailto:${site.email}`} class="text-accent font-bold hover:underline">{site.email}</a>.
+          </p>
+        </div>
 
         <div>
           <h2 class="text-2xl font-black text-primary font-display mb-3">איזה מידע נאסף</h2>
           <ul class="list-disc pr-6 space-y-2">
             <li><strong>מידע שאתה מוסר ביוזמתך</strong> — שם, טלפון, אימייל ותוכן ההודעה כשאתה פונה דרך WhatsApp, מייל, טופס יצירת קשר או טופס הדיוור.</li>
-            <li><strong>מידע טכני אנונימי</strong> — נתוני שימוש כלליים (סוג דפדפן, עמודים שנצפו) הנאספים באמצעות כלי אנליטיקה, ללא זיהוי אישי.</li>
+            <li><strong>מידע טכני אנונימי</strong> — נתוני שימוש כלליים (סוג דפדפן, עמודים שנצפו, מקור הגעה) הנאספים באמצעות עוגיות וכלי אנליטיקה, ללא זיהוי אישי.</li>
           </ul>
+          <p class="mt-3">אנו אוספים את המידע המינימלי הנדרש למטרות המפורטות בלבד (עקרון מזעור המידע).</p>
         </div>
 
         <div>
@@ -33,7 +51,34 @@ const updated = '18 ביוני 2026'
           <ul class="list-disc pr-6 space-y-2">
             <li>מענה לפניות ותיאום שיחות אימון.</li>
             <li>שיפור התוכן והשירות באתר.</li>
+            <li>מדידת ביצועים ופרסום (אנליטיקה ורימרקטינג) — בכפוף להסכמתך לעוגיות.</li>
             <li>שליחת תובנות וכלים מקצועיים — רק אם נתת לכך הסכמה מפורשת בטופס הדיוור.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">עוגיות (Cookies)</h2>
+          <p>
+            האתר עושה שימוש בעוגיות — קבצי טקסט קטנים הנשמרים בדפדפן — לצורך תפעול תקין,
+            ניתוח שימוש ופרסום. קיימים שני סוגים עיקריים:
+          </p>
+          <ul class="list-disc pr-6 space-y-2 mt-3">
+            <li><strong>עוגיות הכרחיות</strong> — נדרשות לתפקוד בסיסי של האתר ולשמירת העדפותיך.</li>
+            <li><strong>עוגיות אנליטיקה ופרסום</strong> — נטענות רק לאחר קבלת הסכמתך בבאנר העוגיות, ומאפשרות מדידה ושיפור.</li>
+          </ul>
+          <p class="mt-3">
+            באפשרותך לנהל או לבטל את הסכמתך לעוגיות בכל עת דרך הגדרות הדפדפן, או דרך באנר העוגיות באתר.
+            ביטול עוגיות אנליטיקה ופרסום לא יפגע ביכולת לגלוש באתר.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">שירותי צד שלישי</h2>
+          <p>האתר עשוי לעשות שימוש בכלי מדידה ופרסום של צדדים שלישיים, האוספים מידע באמצעות עוגיות בכפוף למדיניות הפרטיות שלהם:</p>
+          <ul class="list-disc pr-6 space-y-2 mt-3">
+            <li><strong>Google Analytics</strong> ו-<strong>Google Tag Manager</strong> — ניתוח תנועה ושימוש (<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" class="text-accent font-bold hover:underline">מדיניות Google</a>).</li>
+            <li><strong>Meta (Facebook) Pixel</strong> — מדידת המרות ופרסום (<a href="https://www.facebook.com/privacy/policy" target="_blank" rel="noopener noreferrer" class="text-accent font-bold hover:underline">מדיניות Meta</a>).</li>
+            <li>במקרים מסוימים כלי מדידה נוספים של פלטפורמות פרסום (כגון TikTok), אם מופעלים.</li>
           </ul>
         </div>
 
@@ -43,13 +88,27 @@ const updated = '18 ביוני 2026'
         </div>
 
         <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">תקופת שמירת המידע</h2>
+          <p>המידע נשמר למשך הזמן הנדרש להגשמת המטרות שלשמן נאסף, או כל עוד נדרש לפי חובה חוקית, ולאחר מכן יימחק או יהפוך לאנונימי. ניתן לבקש מחיקה מוקדמת בכל עת.</p>
+        </div>
+
+        <div>
           <h2 class="text-2xl font-black text-primary font-display mb-3">סודיות תהליך האימון</h2>
           <p>כל תוכן הנמסר במהלך שיחות וליווי האימון נשמר בסודיות מלאה ולא ייחשף לצד שלישי ללא הסכמתך, למעט במקרים שבהם קיימת חובה חוקית.</p>
         </div>
 
         <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">קטינים</h2>
+          <p>
+            חלק משירותי האימון מיועדים לבני נוער. ליווי של קטין נעשה בידיעת ההורה או האפוטרופוס ובהסכמתו.
+            איננו אוספים ביודעין מידע אישי מקטינים מתחת לגיל 18 ללא הסכמת הורה. אם נודע לך שקטין מסר לנו מידע ללא הסכמה,
+            פנה אלינו ונמחק אותו.
+          </p>
+        </div>
+
+        <div>
           <h2 class="text-2xl font-black text-primary font-display mb-3">הזכויות שלך</h2>
-          <p>באפשרותך לבקש לעיין במידע שנשמר עליך, לתקנו או למחקו, בפנייה לכתובת <a href={`mailto:${site.email}`} class="text-accent font-bold hover:underline">{site.email}</a>. ניתן להסיר את עצמך מרשימת הדיוור בכל עת.</p>
+          <p>בהתאם לחוק, באפשרותך לבקש לעיין במידע שנשמר עליך, לתקנו או למחקו, וכן לחזור בך מהסכמה שנתת (כולל הסרה מרשימת הדיוור) בכל עת. לפניות בנושא: <a href={`mailto:${site.email}`} class="text-accent font-bold hover:underline">{site.email}</a>.</p>
         </div>
 
         <div>

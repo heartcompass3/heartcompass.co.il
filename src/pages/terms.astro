@@ -2,7 +2,14 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import site from '../content/pages/site.json'
 
-const updated = '18 ביוני 2026'
+const updated = '23 ביוני 2026'
+
+// פרטי העסק (נדרש לחובת הגילוי בעסקת מכר מרחוק / חוק הגנת הצרכן)
+const business = {
+  name: 'יוסי מדלסי – מצפן הלב',
+  status: 'עוסק פטור',
+  taxId: '025663642',
+}
 ---
 
 <BaseLayout
@@ -21,13 +28,34 @@ const updated = '18 ביוני 2026'
         </p>
 
         <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">פרטי העסק</h2>
+          <p>
+            האתר מופעל על ידי <strong>{business.name}</strong>, {business.status} (מס׳ {business.taxId}).
+            יצירת קשר: אימייל <a href={`mailto:${site.email}`} class="text-accent font-bold hover:underline">{site.email}</a>,
+            וכן בוואטסאפ דרך עמוד <a href="/contact" class="text-accent font-bold hover:underline">יצירת הקשר</a>. השירות ניתן אונליין בכל הארץ.
+          </p>
+        </div>
+
+        <div>
           <h2 class="text-2xl font-black text-primary font-display mb-3">מהות השירות</h2>
           <p>{site.brand} מציע ליווי ואימון רגשי המבוסס על שיטת מ.ס.ע, עבור זוגות, הורים, בני נוער ותהליכי עומק אישיים. השירות ניתן על ידי {site.fullName} ומועבר אונליין.</p>
         </div>
 
         <div>
           <h2 class="text-2xl font-black text-primary font-display mb-3">הבהרה חשובה</h2>
-          <p>אימון רגשי <strong>אינו תחליף לטיפול פסיכולוגי, פסיכיאטרי או רפואי</strong>. התכנים באתר הם מידע כללי ואינם מהווים ייעוץ אישי, אבחון או המלצה טיפולית. במצב מצוקה נפשית יש לפנות לאיש מקצוע מוסמך או לקו סיוע ייעודי.</p>
+          <p>אימון רגשי <strong>אינו תחליף לטיפול פסיכולוגי, פסיכיאטרי או רפואי</strong>. התכנים באתר הם מידע כללי ואינם מהווים ייעוץ אישי, אבחון או המלצה טיפולית. במצב מצוקה נפשית מיידית יש לפנות לעזרה מקצועית, לקו הסיוע של ער"ן בטלפון <strong>1201</strong>, או למוקד חירום <strong>101 / 100</strong>.</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-black text-primary font-display mb-3">תיאום, תשלום וביטול</h2>
+          <p>
+            תיאום השיחות והתשלום נעשים באופן אישי מול {site.fullName} (אין סליקה אוטומטית באתר).
+            ניתן לשנות או לבטל מועד שתואם עד 24 שעות מראש, דרך ערוצי הקשר באתר.
+          </p>
+          <p class="mt-3">
+            בהתאם לחוק הגנת הצרכן, התשמ"א-1981, רשאי לקוח לבטל עסקה לרכישת שירות בתוך 14 ימים ממועד עשייתה,
+            ובלבד שהביטול נעשה לפחות שני ימי עסקים לפני מועד השיחה. דמי ביטול, ככל שיחולו, יהיו בהתאם להוראות החוק.
+          </p>
         </div>
 
         <div>
@@ -38,11 +66,6 @@ const updated = '18 ביוני 2026'
         <div>
           <h2 class="text-2xl font-black text-primary font-display mb-3">אחריות</h2>
           <p>התכנים מוצגים "כפי שהם". {site.fullName} עושה מאמץ לדיוק התוכן אך אינו אחראי לכל נזק ישיר או עקיף הנובע מהסתמכות על המידע באתר.</p>
-        </div>
-
-        <div>
-          <h2 class="text-2xl font-black text-primary font-display mb-3">תיאום וביטול שיחות</h2>
-          <p>תיאום שיחות נעשה בתיאום אישי. בקשות לשינוי או ביטול מועד יש להעביר מראש דרך ערוצי הקשר באתר.</p>
         </div>
 
         <div>
