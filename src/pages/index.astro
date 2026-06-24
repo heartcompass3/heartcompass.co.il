@@ -22,7 +22,7 @@ const heroTitle3 = hero.titleLine3
 
 // תמונת הירו: אם יש תמונה בסאניטי משתמשים בה, אחרת נשארים עם התמונה הקבועה
 const heroImg =
-  hero.image ? urlFor(hero.image).width(1400).quality(85).url() : '/assets/yossi-hero.jpg'
+  hero.image ? urlFor(hero.image).width(800).quality(85).url() : '/assets/yossi-hero.jpg'
 
 // תמונות רספונסיביות ל-hero (LCP) — srcset לפי רוחב תצוגה אמיתי במקום 1400 קבוע.
 const heroSrcset = hero.image
@@ -34,11 +34,11 @@ const heroSizes = '(max-width: 1023px) 100vw, 600px'
 
 // מידות אמיתיות לתמונת הירו (מונע CLS) — נגזר מ-Sanity, נפילה חזרה ל-1400x2100.
 const heroDims = home.heroImageDims
-const heroW = 1400
+const heroW = 800
 const heroH =
   heroDims?.width && heroDims?.height
-    ? Math.round((1400 * heroDims.height) / heroDims.width)
-    : 2100
+    ? Math.round((800 * heroDims.height) / heroDims.width)
+    : 1200
 
 const primaryCtaHref = hero.primaryCtaHref
 const primaryCtaLabel = hero.primaryCtaText || 'בוא נדבר תכל׳ס ←'
