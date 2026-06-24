@@ -18,6 +18,20 @@ const components = {
       return `<div class="hc-spacer hc-spacer--${size}" aria-hidden="true"></div>`
     },
 
+    // ─── קריאה לפעולה בתוך גוף המאמר ────────────────────────────
+    ctaBlock: ({ value }) => {
+      const { heading, text, buttonLabel, buttonHref } = value || {}
+      if (!heading && !text) return ''
+      return `
+        <aside class="hc-cta-block">
+          ${heading ? `<p class="hc-cta-block__heading">${heading}</p>` : ''}
+          ${text ? `<p class="hc-cta-block__text">${text}</p>` : ''}
+          ${buttonLabel && buttonHref ? `<a href="${buttonHref}" class="hc-cta-block__btn">${buttonLabel}</a>` : ''}
+        </aside>
+      `
+    },
+    // ──────────────────────────────────────────────────────────────
+
     // ─── תמונה בגוף המאמר ─────────────────────────────────────────
     image: ({ value }) => {
       if (!value?.asset) return ''
@@ -116,6 +130,47 @@ const html = value ? toHTML(value, { components }) : ''
   .portabletext :global(.hc-spacer--sm) { height: 0.6rem; }
   .portabletext :global(.hc-spacer--md) { height: 1.2rem; }
   .portabletext :global(.hc-spacer--lg) { height: 2rem; }
+
+  /* ─── קריאה לפעולה בתוך גוף המאמר ─────────────────────────── */
+  .portabletext :global(.hc-cta-block) {
+    margin: 2.5rem 0;
+    background: linear-gradient(135deg, #295157, #b8860b);
+    border-radius: 1.5rem;
+    padding: 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .portabletext :global(.hc-cta-block__heading) {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin: 0 0 0.6rem;
+    line-height: 1.3;
+  }
+
+  .portabletext :global(.hc-cta-block__text) {
+    color: rgba(255,255,255,0.88);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0 0 1.2rem;
+  }
+
+  .portabletext :global(.hc-cta-block__btn) {
+    display: inline-block;
+    background: #fff;
+    color: #295157;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.7rem 2rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: transform 0.15s;
+  }
+
+  .portabletext :global(.hc-cta-block__btn:hover) {
+    transform: scale(1.04);
+  }
+  /* ─────────────────────────────────────────────────────────── */
 
   /* ─── תמונה בגוף המאמר ─────────────────────────────────────── */
   .portabletext :global(.hc-inline-image) {

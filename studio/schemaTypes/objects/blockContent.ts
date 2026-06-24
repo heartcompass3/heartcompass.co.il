@@ -50,5 +50,40 @@ export default defineType({
         },
       ],
     }),
+
+    defineArrayMember({
+      name: "ctaBlock",
+      title: "קריאה לפעולה",
+      type: "object",
+      fields: [
+        {
+          name: "heading",
+          title: "כותרת",
+          type: "string",
+        },
+        {
+          name: "text",
+          title: "טקסט",
+          type: "text",
+          rows: 2,
+        },
+        {
+          name: "buttonLabel",
+          title: "תווית כפתור",
+          type: "string",
+        },
+        {
+          name: "buttonHref",
+          title: "קישור כפתור",
+          type: "url",
+        },
+      ],
+      preview: {
+        select: { heading: "heading", buttonLabel: "buttonLabel" },
+        prepare({ heading, buttonLabel }) {
+          return { title: heading || "קריאה לפעולה", subtitle: buttonLabel }
+        },
+      },
+    }),
   ],
 });

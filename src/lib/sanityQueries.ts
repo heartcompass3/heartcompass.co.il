@@ -172,7 +172,13 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
     heading,
     items
   },
-  body,
+  body[]{
+    ...,
+    _type == "image" => {
+      ...,
+      asset->{ url }
+    }
+  },
   cta{
     heading,
     text,
