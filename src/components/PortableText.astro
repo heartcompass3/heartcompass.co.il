@@ -40,11 +40,20 @@ const components = {
       const alt = value.alt || ''
       const caption = value.caption || ''
 
+      // ממדים מ-Sanity metadata (אם הגיעו בקוורי) — מונעים CLS
+      const dims = value.asset?.metadata?.dimensions
+      const imgW = 900
+      const imgH = dims?.height && dims?.width
+        ? Math.round((900 * dims.height) / dims.width)
+        : 600
+
       return `
         <figure class="hc-inline-image">
           <img
             src="${src}"
             alt="${alt}"
+            width="${imgW}"
+            height="${imgH}"
             loading="lazy"
             decoding="async"
           />
@@ -181,6 +190,7 @@ const html = value ? toHTML(value, { components }) : ''
   .portabletext :global(.hc-inline-image img) {
     width: 100%;
     height: auto;
+    aspect-ratio: 3 / 2; /* placeholder עד טעינה — מונע CLS */
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: block;

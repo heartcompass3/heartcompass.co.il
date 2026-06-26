@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* fallback fonts עם metric-matching — מקטין את קפיצת הפונט כשAssistant/Heebo נטענים */
+@font-face {
+  font-family: 'Assistant-fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('sans-serif');
+  size-adjust: 102%;
+  ascent-override: 105%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Heebo-fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('sans-serif');
+  size-adjust: 100%;
+  ascent-override: 108%;
+  descent-override: 27%;
+  line-gap-override: 0%;
+}
+
 /* 
   MATZPEN HALEV Design System
   Theme: Deep Authority & Inner Gold
@@ -106,17 +125,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Heebo', sans-serif;
+    font-family: 'Heebo', 'Heebo-fallback', sans-serif;
   }
 
   /* נעילת היררכיה: כותרות תמיד Assistant */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Assistant', 'Assistant-fallback', sans-serif;
   }
 
   /* Utility classes */
-  .font-display { font-family: 'Assistant', sans-serif; }
-  .font-body { font-family: 'Heebo', sans-serif; }
+  .font-display { font-family: 'Assistant', 'Assistant-fallback', sans-serif; }
+  .font-body { font-family: 'Heebo', 'Heebo-fallback', sans-serif; }
 
   [dir="rtl"] { text-align: right; }
 

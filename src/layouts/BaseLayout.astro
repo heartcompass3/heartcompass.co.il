@@ -241,18 +241,20 @@ if (isArticlePage) {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.sanity.io" />
-    <!-- Assistant (כותרות) + Heebo (גוף): 4 משקלים בלבד — חוסך ~60% מנפח הפונטים. -->
-    <!-- טעינה לא-חוסמת-רינדור: media=print + onload swap, עם fallback ב-noscript. -->
+    <link rel="dns-prefetch" href="//wa.me" />
+    <link rel="dns-prefetch" href="//api.whatsapp.com" />
+    <!-- display=optional: אין swap אחרי window הטעינה — מבטל CLS לחלוטין.
+         בביקור חוזר הפונט טעון מהקאש ומופיע מיידית. -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800;900&family=Heebo:wght@400;600;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800;900&family=Heebo:wght@400;600;800;900&display=optional"
       media="print"
       onload="this.media='all'"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800;900&family=Heebo:wght@400;600;800;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800;900&family=Heebo:wght@400;600;800;900&display=optional"
       />
     </noscript>
   </head>

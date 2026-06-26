@@ -176,7 +176,7 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
     ...,
     _type == "image" => {
       ...,
-      asset->{ url }
+      asset->{ url, metadata{ dimensions } }
     }
   },
   cta{
