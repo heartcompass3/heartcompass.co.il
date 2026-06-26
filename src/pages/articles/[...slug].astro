@@ -70,7 +70,10 @@ const articleSchema = {
   image: ogImage ? [ogImage] : undefined,
   author: {
     '@type': 'Person',
+    '@id': `${site.siteUrl}/#person`,
     name: article.author?.name || article.authorLine || site.fullName,
+    jobTitle: 'מאמן רגשי מוסמך ICF',
+    url: `${site.siteUrl}/about`,
   },
   publisher: {
     '@type': 'Organization',
