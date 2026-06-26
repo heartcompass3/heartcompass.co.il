@@ -36,5 +36,5 @@
 - **אודות:** https://www.heartcompass.co.il/about
 - **יצירת קשר:** https://www.heartcompass.co.il/contact
 - **וואטסאפ:** https://wa.me/972544580285
-- **אימייל:** heartcompass3@gmail.com
+- **אימייל:** yossi@heartcompass.co.il
 - **שפה:** עברית · שירות אונליין בכל הארץ
