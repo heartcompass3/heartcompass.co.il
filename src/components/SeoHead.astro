@@ -43,7 +43,7 @@ const toAbsoluteUrl = (v) => {
   }
 }
 
-const defaultOgImage = `${site.siteUrl}/assets/yossi-hero.jpg`
+const defaultOgImage = `${site.siteUrl}/assets/og-image.jpg`
 const resolvedOgImage = toAbsoluteUrl(ogImage) || defaultOgImage
 
 const resolvedAuthor = clean(author) || site.fullName
