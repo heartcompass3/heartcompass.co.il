@@ -7,7 +7,6 @@ const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
 // קישור בסיס לוואטסאפ (חי מהסאניטי אם קיים)
 const baseHref =
   settings?.whatsapp?.href ||
-  settings?.whatsappPrimaryHref ||
   'https://wa.me/972544580285'
 
 // Warmups מהסאניטי אם יהיה בעתיד שדה כזה (whatsappWarmups)
