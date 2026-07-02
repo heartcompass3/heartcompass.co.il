@@ -20,6 +20,6 @@ export function buildServiceSchema(params: {
     provider: { '@id': `${siteUrl}/#person` },
     brand: { '@id': `${siteUrl}/#business` },
     areaServed: [{ '@type': 'Country', name: 'ישראל' }, 'Online'],
-    availableLanguage: 'he',
+    availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
   }
 }

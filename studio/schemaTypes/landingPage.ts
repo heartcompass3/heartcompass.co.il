@@ -55,7 +55,15 @@ export default {
       title: 'תוכן',
       type: 'array',
       group: 'content',
-      of: [{ type: 'block' }]
+      of: [{
+        type: 'block',
+        styles: [
+          { title: 'טקסט', value: 'normal' },
+          { title: 'כותרת (H2)', value: 'h2' },
+          { title: 'כותרת (H3)', value: 'h3' },
+          { title: 'ציטוט', value: 'blockquote' },
+        ],
+      }]
     },
     {
       name: 'seoDescription',

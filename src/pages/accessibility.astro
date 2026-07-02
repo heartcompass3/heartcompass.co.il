@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
 
 const title = 'הצהרת נגישות | מצפן הלב'
 const description =
@@ -52,7 +53,7 @@ const description =
           </li>
           <li>
             וואטסאפ:
-            <a class="underline hover:opacity-80 dir-ltr" href="https://wa.me/972544580285" target="_blank" rel="noopener noreferrer">
+            <a class="underline hover:opacity-80 dir-ltr" href={`https://wa.me/${site.whatsAppPhone}`} target="_blank" rel="noopener noreferrer">
               054-458-0285
             </a>
           </li>

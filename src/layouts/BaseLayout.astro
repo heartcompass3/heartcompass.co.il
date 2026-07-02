@@ -113,7 +113,7 @@ const defaultServiceSchema = {
   founder: { '@id': `${site.siteUrl}/#person` },
   address: businessAddress,
   areaServed: [{ '@type': 'Country', name: 'ישראל' }, 'Online'],
-  availableLanguage: 'he',
+  availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
   priceRange: '₪₪',
   slogan: site.tagline,
   email: site.email,

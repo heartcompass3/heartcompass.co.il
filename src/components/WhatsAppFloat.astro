@@ -1,5 +1,6 @@
 ---
 import { sanity } from '../lib/sanity'
+import site from '../content/pages/site.json'
 import { SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
 
 const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
@@ -7,7 +8,7 @@ const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
 // קישור בסיס לוואטסאפ (חי מהסאניטי אם קיים)
 const baseHref =
   settings?.whatsapp?.href ||
-  'https://wa.me/972544580285'
+  `https://wa.me/${site.whatsAppPhone}`
 
 // Warmups מהסאניטי אם יהיה בעתיד שדה כזה (whatsappWarmups)
 // אם לא קיים – fallback קשיח כדי שלא ייעלם
