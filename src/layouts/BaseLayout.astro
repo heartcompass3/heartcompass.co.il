@@ -122,7 +122,14 @@ const defaultServiceSchema = {
   telephone: `+${site.whatsAppPhone}`,
   image: `${site.siteUrl}/assets/og-image.jpg`,
   logo: `${site.siteUrl}/assets/logo.png`,
-  sameAs: [site.instagramUrl, site.facebookUrl],
+  // רישומי ספריות עסקיות מאומתים — מאחדים את כל האזכורים לישות אחת בגוגל.
+  sameAs: [
+    site.instagramUrl,
+    site.facebookUrl,
+    'https://www.b144.co.il/מצפן-הלב/נתניה/',
+    'https://easy.co.il/page/10158019',
+    'https://lee.co.il/b/tQxW9',
+  ],
   knowsAbout: [
     'אימון רגשי',
     'אינטליגנציה רגשית',
@@ -174,6 +181,7 @@ const personSchema = {
     site.facebookUrl,
     'https://www.linkedin.com/in/yossi-medalsi-2a643a397/',
     `https://wa.me/${site.whatsAppPhone}`,
+    'https://www.alternabe.co.il/therapist/yossi-madlsi-emotional-coaching',
   ],
   image: `${site.siteUrl}/assets/og-image.jpg`,
 }
