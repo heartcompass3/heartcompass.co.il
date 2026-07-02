@@ -122,10 +122,13 @@ const defaultServiceSchema = {
   telephone: `+${site.whatsAppPhone}`,
   image: `${site.siteUrl}/assets/og-image.jpg`,
   logo: `${site.siteUrl}/assets/logo.png`,
+  // הפרופיל העסקי בגוגל — kgmid הוא מזהה הישות הקבוע ב-Knowledge Graph.
+  hasMap: 'https://www.google.com/maps?kgmid=/g/11n457hlws',
   // רישומי ספריות עסקיות מאומתים — מאחדים את כל האזכורים לישות אחת בגוגל.
   sameAs: [
     site.instagramUrl,
     site.facebookUrl,
+    'https://www.google.com/maps?kgmid=/g/11n457hlws',
     'https://www.b144.co.il/מצפן-הלב/נתניה/',
     'https://easy.co.il/page/10158019',
     'https://lee.co.il/b/tQxW9',
