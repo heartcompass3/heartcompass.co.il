@@ -52,7 +52,10 @@ const serviceSchema = {
   url: canonical,
   provider: { '@id': `${site.siteUrl}/#person` },
   areaServed: [{ '@type': 'Country', name: 'ישראל' }, 'Online'],
-  availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
+  availableChannel: {
+    '@type': 'ServiceChannel',
+    availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
+  },
 }
 ---
 

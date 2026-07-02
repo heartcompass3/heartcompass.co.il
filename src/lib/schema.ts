@@ -20,6 +20,10 @@ export function buildServiceSchema(params: {
     provider: { '@id': `${siteUrl}/#person` },
     brand: { '@id': `${siteUrl}/#business` },
     areaServed: [{ '@type': 'Country', name: 'ישראל' }, 'Online'],
-    availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
+    // Service לא תומך ב-availableLanguage ישירות — רק דרך ServiceChannel.
+    availableChannel: {
+      '@type': 'ServiceChannel',
+      availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
+    },
   }
 }
