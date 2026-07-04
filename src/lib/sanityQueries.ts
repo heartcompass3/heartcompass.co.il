@@ -191,10 +191,12 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
 }
 `
 
-// מאמרים נוספים — אוטומטי לפי תגיות משותפות, ללא המאמר הנוכחי
+// מאמרים נוספים — אוטומטי לפי תגיות משותפות, ללא המאמר הנוכחי.
+// מיון לפי כמות התגיות המשותפות (רלוונטיות) ואז לפי טריות — כדי שמאמרים
+// ותיקים אך קרובים נושאית יקבלו קישורים נכנסים ולא ייחנקו לטובת החדשים בלבד.
 export const RELATED_ARTICLES_QUERY = /* groq */ `
 *[_type == "article" && slug.current != $slug && count(tags[@ in $tags]) > 0]
-| order(coalesce(publishedAt, _createdAt) desc)[0...3]{
+| order(count(tags[@ in $tags]) desc, coalesce(publishedAt, _createdAt) desc)[0...4]{
   _id,
   title,
   goldLine,

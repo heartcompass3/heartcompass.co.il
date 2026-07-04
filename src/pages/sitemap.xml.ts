@@ -23,7 +23,9 @@ export const GET: APIRoute = async () => {
     { url: '/about', lastmod: buildDate },
     { url: '/method', lastmod: buildDate },
     { url: '/articles', lastmod: buildDate },
-    { url: '/specialties', lastmod: buildDate }
+    { url: '/specialties', lastmod: buildDate },
+    // מרכז הכלים — עכשיו יעד של עשרות קישורים פנימיים ("אבחון קצר"), חייב להיות באינדקס
+    { url: '/tools', lastmod: buildDate }
   ]
 
   let articles = []

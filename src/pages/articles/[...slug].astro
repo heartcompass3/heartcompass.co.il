@@ -9,7 +9,17 @@ import { optImg } from '../../lib/img'
 import { slugify } from '../../lib/slug'
 
 const rawSlug = Astro.params.slug
-const slug = Array.isArray(rawSlug) ? rawSlug.join('/') : rawSlug
+const joinedSlug = Array.isArray(rawSlug) ? rawSlug.join('/') : (rawSlug || '')
+
+// נרמול הסלאג: גיזום רווחים מובילים/עוקבים והסרת סלאש מוביל. כתובות "מלוכלכות"
+// ישנות שנשארו בזיכרון של גוגל (למשל "/articles/ addiction-root-cause-healing"
+// עם רווח מוביל מתקופת ה-bulk upload) מקבלות 301 נקי לכתובת הקנונית — במקום
+// redirect רך של 302 ל-/articles שגורם ל"נסרק ולא אונדקס".
+const slug = joinedSlug.trim().replace(/^\/+/, '')
+
+if (slug && slug !== joinedSlug) {
+  return Astro.redirect(encodeURI(`/articles/${slug}`), 301)
+}
 
 // הפניות 301 מ-slugs ישנים (שתוקנו לאנגלית נקייה) — שומר על קישורים/אינדוקס קיימים.
 const OLD_SLUG_REDIRECTS: Record<string, string> = {
