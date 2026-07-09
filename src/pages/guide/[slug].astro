@@ -75,9 +75,15 @@ const faqSchema = pageData.faqItems?.length > 0
   {pageData.imageUrl && <meta property="og:image" content={pageData.imageUrl} />}
   <meta name="twitter:card" content="summary_large_image" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="/fonts/Assistant-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face {
+      font-family: 'Assistant';
+      src: url('/fonts/Assistant-Variable.woff2') format('woff2-variations'), url('/fonts/Assistant-Variable.woff2') format('woff2');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+  </style>
   <script is:inline src="https://cdn.tailwindcss.com"></script>
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
 </head>

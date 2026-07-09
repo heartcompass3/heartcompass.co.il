@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* self-hosted variable fonts — קובץ אחד לכל משפחה, כל המשקלים (400-900) */
+@font-face {
+  font-family: 'Assistant';
+  src: url('/fonts/Assistant-Variable.woff2') format('woff2-variations'), url('/fonts/Assistant-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Heebo';
+  src: url('/fonts/Heebo-Variable.woff2') format('woff2-variations'), url('/fonts/Heebo-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 /* fallback fonts עם metric-matching — מקטין את קפיצת הפונט כשAssistant/Heebo נטענים */
 @font-face {
   font-family: 'Assistant-fallback';
