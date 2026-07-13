@@ -1,0 +1,205 @@
+---
+// ווידג'ט נגישות קל משלנו (ללא צד שלישי / ללא איסוף מידע).
+// שולט על: גודל טקסט, ניגודיות גבוהה, גווני אפור, הדגשת קישורים, עצירת אנימציות.
+// ההעדפות נשמרות ב-localStorage ומיושמות בטעינה לפני צביעה.
+---
+
+<!-- מיושם מוקדם ככל האפשר כדי למנוע הבהוב של העדפות שמורות -->
+<script is:inline>
+  (() => {
+    try {
+      const s = JSON.parse(localStorage.getItem('hc_a11y') || '{}')
+      const el = document.documentElement
+      if (s.fontStep) el.style.setProperty('--a11y-font-scale', String(s.fontStep))
+      el.classList.toggle('a11y-contrast', !!s.contrast)
+      el.classList.toggle('a11y-grayscale', !!s.grayscale)
+      el.classList.toggle('a11y-links', !!s.links)
+      el.classList.toggle('a11y-no-motion', !!s.motion)
+    } catch (e) {}
+  })()
+</script>
+
+<div class="a11y-root">
+  <button
+    type="button"
+    class="a11y-toggle"
+    aria-label="פתיחת תפריט נגישות"
+    aria-expanded="false"
+    aria-controls="a11y-panel"
+    data-a11y-toggle
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7" aria-hidden="true">
+      <path d="M12 2a2 2 0 110 4 2 2 0 010-4zm8 5.5a1 1 0 01-.7 1.2l-4.3 1.2v3.3l1.9 5.4a1 1 0 01-1.9.7L12 15l-3 4.3a1 1 0 01-1.9-.7l1.9-5.4v-3.3L4.7 8.7A1 1 0 015.3 6.8l5.4 1.5c.8.2 1.8.2 2.6 0l5.4-1.5a1 1 0 011.3.7z"/>
+    </svg>
+  </button>
+
+  <div id="a11y-panel" class="a11y-panel hidden" role="dialog" aria-label="הגדרות נגישות" data-a11y-panel>
+    <div class="a11y-head">
+      <span class="a11y-title">נגישות</span>
+      <button type="button" class="a11y-close" aria-label="סגירת תפריט נגישות" data-a11y-close>×</button>
+    </div>
+
+    <div class="a11y-group">
+      <span class="a11y-label">גודל טקסט</span>
+      <div class="a11y-row">
+        <button type="button" class="a11y-btn" data-a11y="font-dec" aria-label="הקטנת טקסט">א−</button>
+        <button type="button" class="a11y-btn" data-a11y="font-reset" aria-label="איפוס גודל טקסט">איפוס</button>
+        <button type="button" class="a11y-btn" data-a11y="font-inc" aria-label="הגדלת טקסט">א+</button>
+      </div>
+    </div>
+
+    <button type="button" class="a11y-item" data-a11y="contrast" aria-pressed="false">ניגודיות גבוהה</button>
+    <button type="button" class="a11y-item" data-a11y="grayscale" aria-pressed="false">גווני אפור</button>
+    <button type="button" class="a11y-item" data-a11y="links" aria-pressed="false">הדגשת קישורים</button>
+    <button type="button" class="a11y-item" data-a11y="motion" aria-pressed="false">עצירת אנימציות</button>
+
+    <button type="button" class="a11y-reset" data-a11y="reset">איפוס כל ההגדרות</button>
+
+    <a href="/accessibility" class="a11y-statement">להצהרת הנגישות המלאה</a>
+  </div>
+</div>
+
+<style is:global>
+  :root { --a11y-font-scale: 1; }
+
+  /* הגדלת טקסט: מחיל קנה מידה על טקסט בלי לשבור פריסות */
+  html[style*="--a11y-font-scale"] p,
+  html[style*="--a11y-font-scale"] li,
+  html[style*="--a11y-font-scale"] a,
+  html[style*="--a11y-font-scale"] span,
+  html[style*="--a11y-font-scale"] h1,
+  html[style*="--a11y-font-scale"] h2,
+  html[style*="--a11y-font-scale"] h3,
+  html[style*="--a11y-font-scale"] h4,
+  html[style*="--a11y-font-scale"] label,
+  html[style*="--a11y-font-scale"] button {
+    font-size: calc(1em * var(--a11y-font-scale));
+  }
+
+  html.a11y-contrast { filter: contrast(1.28); }
+  html.a11y-grayscale { filter: grayscale(1); }
+  html.a11y-contrast.a11y-grayscale { filter: contrast(1.28) grayscale(1); }
+
+  html.a11y-links a { text-decoration: underline !important; text-underline-offset: 2px; }
+
+  html.a11y-no-motion *,
+  html.a11y-no-motion *::before,
+  html.a11y-no-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .a11y-root { position: fixed; bottom: 1rem; left: 1rem; z-index: 1000; }
+
+  .a11y-toggle {
+    width: 3rem; height: 3rem; border-radius: 9999px;
+    background: #0f2c36; color: #fff; border: 2px solid #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .a11y-toggle:hover { background: #16414f; }
+  .a11y-toggle:focus-visible { outline: 3px solid #D4AF37; outline-offset: 2px; }
+
+  .a11y-panel {
+    position: absolute; bottom: 3.75rem; left: 0;
+    width: 260px; max-width: calc(100vw - 2rem);
+    background: #fff; color: #0f2c36;
+    border: 1px solid rgba(15,44,54,.15); border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2); padding: 1rem;
+    font-family: 'Assistant', sans-serif; text-align: right; direction: rtl;
+  }
+  .a11y-panel.hidden { display: none; }
+
+  .a11y-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .75rem; }
+  .a11y-title { font-weight: 800; font-size: 1.1rem; }
+  .a11y-close { background: none; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: #0f2c36; }
+
+  .a11y-group { margin-bottom: .75rem; }
+  .a11y-label { display: block; font-size: .8rem; color: #445; margin-bottom: .35rem; }
+  .a11y-row { display: flex; gap: .4rem; }
+  .a11y-btn {
+    flex: 1; padding: .5rem; border: 1px solid rgba(15,44,54,.2); border-radius: .5rem;
+    background: #f6f7f8; cursor: pointer; font-weight: 700; font-size: .85rem; color: #0f2c36;
+  }
+  .a11y-btn:hover { background: #eceff1; }
+
+  .a11y-item {
+    display: block; width: 100%; text-align: right; padding: .55rem .6rem; margin-top: .35rem;
+    border: 1px solid rgba(15,44,54,.15); border-radius: .5rem; background: #fff; cursor: pointer;
+    font-size: .9rem; color: #0f2c36;
+  }
+  .a11y-item:hover { background: #f6f7f8; }
+  .a11y-item[aria-pressed="true"] { background: #0f2c36; color: #fff; border-color: #0f2c36; }
+
+  .a11y-reset {
+    display: block; width: 100%; text-align: center; padding: .55rem; margin-top: .75rem;
+    border: none; border-radius: .5rem; background: #D4AF37; color: #0f2c36; font-weight: 800; cursor: pointer;
+  }
+  .a11y-reset:hover { filter: brightness(.96); }
+
+  .a11y-statement { display: block; text-align: center; margin-top: .6rem; font-size: .8rem; color: #16414f; text-decoration: underline; }
+
+  .a11y-item:focus-visible, .a11y-btn:focus-visible, .a11y-reset:focus-visible, .a11y-close:focus-visible {
+    outline: 3px solid #D4AF37; outline-offset: 2px;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const KEY = 'hc_a11y'
+    const el = document.documentElement
+    const toggle = document.querySelector('[data-a11y-toggle]')
+    const panel = document.querySelector('[data-a11y-panel]')
+    if (!toggle || !panel) return
+
+    const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { return {} } }
+    const write = (s) => localStorage.setItem(KEY, JSON.stringify(s))
+
+    const STEPS = [1, 1.1, 1.25, 1.4]
+
+    const apply = (s) => {
+      const scale = STEPS[s.fontStep || 0] || 1
+      if (scale === 1) el.style.removeProperty('--a11y-font-scale')
+      else el.style.setProperty('--a11y-font-scale', String(scale))
+      el.classList.toggle('a11y-contrast', !!s.contrast)
+      el.classList.toggle('a11y-grayscale', !!s.grayscale)
+      el.classList.toggle('a11y-links', !!s.links)
+      el.classList.toggle('a11y-no-motion', !!s.motion)
+      panel.querySelectorAll('[data-a11y]').forEach((b) => {
+        const k = b.getAttribute('data-a11y')
+        if (['contrast', 'grayscale', 'links', 'motion'].includes(k)) {
+          b.setAttribute('aria-pressed', s[k] ? 'true' : 'false')
+        }
+      })
+    }
+
+    let state = read()
+    // מיישרים fontStep שמור מהמפתח הישן (מספר סקייל) לאינדקס אם צריך
+    if (typeof state.fontStep !== 'number') state.fontStep = 0
+    apply(state)
+
+    const openPanel = () => { panel.classList.remove('hidden'); toggle.setAttribute('aria-expanded', 'true') }
+    const closePanel = () => { panel.classList.add('hidden'); toggle.setAttribute('aria-expanded', 'false') }
+
+    toggle.addEventListener('click', () => {
+      panel.classList.contains('hidden') ? openPanel() : closePanel()
+    })
+    panel.querySelector('[data-a11y-close]')?.addEventListener('click', closePanel)
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel() })
+
+    panel.querySelectorAll('[data-a11y]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const action = btn.getAttribute('data-a11y')
+        if (action === 'font-inc') state.fontStep = Math.min((state.fontStep || 0) + 1, STEPS.length - 1)
+        else if (action === 'font-dec') state.fontStep = Math.max((state.fontStep || 0) - 1, 0)
+        else if (action === 'font-reset') state.fontStep = 0
+        else if (action === 'reset') state = { fontStep: 0 }
+        else state[action] = !state[action]
+        write(state)
+        apply(state)
+      })
+    })
+  })()
+</script>

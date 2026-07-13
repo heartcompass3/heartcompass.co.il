@@ -9,6 +9,7 @@ import Footer from '../components/Footer.astro'
 import WhatsAppFloat from '../components/WhatsAppFloat.astro'
 import Tracking from '../components/Tracking.astro'
 import CookieBanner from '../components/CookieBanner.astro'
+import AccessibilityWidget from '../components/AccessibilityWidget.astro'
 
 const {
   title,
@@ -269,12 +270,19 @@ if (isArticlePage) {
   </head>
 
   <body class="min-h-screen selection:bg-accent selection:text-white">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[1001] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
+    >
+      דלג לתוכן הראשי
+    </a>
     <Navigation />
-    <main>
+    <main id="main-content">
       <slot />
     </main>
     <Footer />
     <WhatsAppFloat />
     <CookieBanner />
+    <AccessibilityWidget />
   </body>
 </html>
