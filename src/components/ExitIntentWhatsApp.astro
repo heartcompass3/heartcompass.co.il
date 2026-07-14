@@ -1,0 +1,154 @@
+---
+import site from '../content/pages/site.json'
+
+// כרטיס צף לא־חוסם שמופיע כשגולש עומד לעזוב (דסקטופ) או אחרי דקה (מובייל).
+// מטרה: לתפוס שאלה פתוחה לפני יציאה, בלי מודאל שמכסה מסך (בלי עונש interstitial).
+const waMessage = 'היי יוסי, קראתי באתר ועלתה לי שאלה לפני שנקבע שיחה.'
+const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(waMessage)}`
+---
+
+<div
+  class="hc-exit hidden"
+  data-exit-root
+  role="dialog"
+  aria-labelledby="hc-exit-title"
+  aria-describedby="hc-exit-body"
+>
+  <button type="button" class="hc-exit-close" aria-label="סגירה" data-exit-close>&times;</button>
+
+  <div class="hc-exit-head">
+    <img data-src="/assets/yossi-profile.jpg" alt="יוסי מדלסי" class="hc-exit-avatar" width="48" height="48" />
+    <div>
+      <div class="hc-exit-name">יוסי מדלסי</div>
+      <div class="hc-exit-role">מאמן רגשי · מצפן הלב</div>
+    </div>
+  </div>
+
+  <div id="hc-exit-title" class="hc-exit-title">לפני שתלך, עלתה לך שאלה?</div>
+  <p id="hc-exit-body" class="hc-exit-body">
+    אם משהו נגע בך תוך כדי הקריאה, אפשר פשוט לכתוב לי. בלי התחייבות, נדבר.
+  </p>
+
+  <a
+    href={waHref}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="hc-exit-cta"
+    data-exit-cta
+  >
+    <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true">
+      <path d="M16 3C9.4 3 4 8.3 4 14.8c0 2.2.6 4.2 1.8 6L4 29l8.4-1.8c1.1.3 2.3.5 3.6.5 6.6 0 12-5.3 12-11.9S22.6 3 16 3Zm0 21.6c-1.2 0-2.3-.2-3.3-.6l-.6-.2-5 1.1 1.1-4.8-.3-.6c-1-1.6-1.6-3.4-1.6-5.4C6.3 9.3 10.7 5 16 5s9.7 4.3 9.7 9.6-4.4 10-9.7 10Z"/>
+      <path d="M22.1 18.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-1 .9-.2.1-.4.1-.7-.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6-.1-.1-.7-1.7-1-2.3-.3-.6-.6-.5-.8-.5h-.7c-.2 0-.5.1-.7.4-.2.3-1 1-1 2.4 0 1.4 1 2.7 1.1 2.9.1.2 2 3 4.9 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4 0-.1-.3-.2-.6-.3Z"/>
+    </svg>
+    לכתוב ליוסי
+  </a>
+</div>
+
+<style>
+  .hc-exit {
+    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(12px);
+    width: min(340px, calc(100vw - 2rem)); z-index: 200;
+    background: #fff; border: 1px solid rgba(15,44,54,.12); border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.18); padding: 18px 18px 20px;
+    font-family: 'Assistant', sans-serif; direction: rtl; text-align: right;
+    opacity: 0; transition: opacity .28s ease, transform .28s ease;
+  }
+  .hc-exit.hc-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hc-exit.hidden { display: none; }
+
+  .hc-exit-close {
+    position: absolute; top: 8px; left: 10px; background: none; border: none;
+    font-size: 1.4rem; line-height: 1; color: #7a8a8f; cursor: pointer;
+  }
+  .hc-exit-close:hover { color: #0f2c36; }
+  .hc-exit-close:focus-visible { outline: 2px solid #D4AF37; outline-offset: 2px; border-radius: 4px; }
+
+  .hc-exit-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .hc-exit-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #D4AF37; }
+  .hc-exit-name { font-weight: 800; color: #0f2c36; font-size: .98rem; }
+  .hc-exit-role { font-size: .8rem; color: #5a6a6f; }
+
+  .hc-exit-title { font-weight: 800; color: #0f2c36; font-size: 1.05rem; margin-bottom: 6px; }
+  .hc-exit-body { font-size: .9rem; color: #40525a; line-height: 1.6; margin: 0 0 14px; }
+
+  .hc-exit-cta {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: #25D366; color: #fff; font-weight: 800; font-size: 1rem;
+    padding: 12px; border-radius: 12px; text-decoration: none;
+  }
+  .hc-exit-cta:hover { filter: brightness(.96); }
+  .hc-exit-cta:focus-visible { outline: 3px solid #0f2c36; outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hc-exit { transition: none; }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const KEY = 'hc_exit_wa';
+    const CONSENT_KEY = 'hc_cookie_consent';
+    const CAP_DAYS = 14;
+    const root = document.querySelector('[data-exit-root]');
+    if (!root) return;
+
+    // קאפ: לא להציג שוב בתוך 14 יום
+    try {
+      const seen = parseInt(localStorage.getItem(KEY) || '0', 10);
+      if (seen && Date.now() - seen < CAP_DAYS * 864e5) return;
+    } catch (e) {}
+
+    let shown = false;
+    const markSeen = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {} };
+
+    const canShow = () => {
+      // לא נערמים על באנר העוגיות: מציגים רק אחרי שהוכרעה ההסכמה
+      try {
+        const c = localStorage.getItem(CONSENT_KEY);
+        if (c !== 'accepted' && c !== 'declined') return false;
+      } catch (e) {}
+      return !shown;
+    };
+
+    const show = () => {
+      if (!canShow()) return;
+      shown = true;
+      markSeen();
+      // טוענים את התמונה רק ברגע ההצגה (lazy אמין, בלי loading=lazy שנתקע אחרי display:none)
+      const av = root.querySelector('.hc-exit-avatar');
+      if (av && !av.getAttribute('src') && av.dataset.src) av.setAttribute('src', av.dataset.src);
+      root.classList.remove('hidden');
+      requestAnimationFrame(() => root.classList.add('hc-show'));
+      cleanup();
+    };
+
+    const hide = () => {
+      root.classList.remove('hc-show');
+      setTimeout(() => root.classList.add('hidden'), 280);
+    };
+
+    root.querySelector('[data-exit-close]')?.addEventListener('click', hide);
+    root.querySelector('[data-exit-cta]')?.addEventListener('click', hide);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !root.classList.contains('hidden')) hide();
+    });
+
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    let timer = null;
+    const onMouseOut = (e) => {
+      if (e.clientY <= 0 && !e.relatedTarget) show();
+    };
+    function cleanup() {
+      document.removeEventListener('mouseout', onMouseOut);
+      if (timer) clearTimeout(timer);
+    }
+
+    if (isTouch) {
+      // מובייל: אחרי דקה
+      timer = setTimeout(show, 60000);
+    } else {
+      // דסקטופ: יציאת עכבר לכיוון סגירת הטאב
+      document.addEventListener('mouseout', onMouseOut);
+    }
+  })();
+</script>
