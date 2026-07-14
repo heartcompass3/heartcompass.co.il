@@ -51,7 +51,7 @@ async function sendNotification(fields: Record<string, string>) {
       from: RESEND_FROM,
       to: [NOTIFY_EMAIL],
       subject: fields._subject || 'ליד חדש מהאתר מצפן הלב',
-      html: `<div dir="rtl" style="font-family:sans-serif"><h2>ליד חדש</h2><table>${rows}</table></div>`,
+      html: `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"></head><body><div dir="rtl" style="font-family:sans-serif"><h2>ליד חדש</h2><table>${rows}</table></div></body></html>`,
       reply_to: fields.email || undefined,
     }),
   })
