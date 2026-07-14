@@ -11,7 +11,9 @@ const RESEND_AUDIENCE_ID = import.meta.env.RESEND_AUDIENCE_ID
 // כתובת ברירת המחדל של Resend — עובדת מיידית בלי אימות דומיין.
 // כשהדומיין heartcompass.co.il יאומת, אפשר לעדכן RESEND_FROM ב-Vercel ל-leads@heartcompass.co.il.
 const RESEND_FROM = import.meta.env.RESEND_FROM || 'מצפן הלב <onboarding@resend.dev>'
-const NOTIFY_EMAIL = import.meta.env.LEAD_NOTIFY_EMAIL || 'yossi1974@outlook.co.il'
+// בלי דומיין מאומת ב-Resend, אפשר לשלוח רק לכתובת שאיתה נרשם החשבון.
+// אחרי אימות heartcompass.co.il אפשר להגדיר LEAD_NOTIFY_EMAIL ב-Vercel לכל כתובת רצויה.
+const NOTIFY_EMAIL = import.meta.env.LEAD_NOTIFY_EMAIL || 'heartcompass3@gmail.com'
 
 function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string))
