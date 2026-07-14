@@ -103,15 +103,6 @@ export const POST: APIRoute = async ({ request }) => {
     return errorPage('חסרים שם או מייל בטופס.')
   }
 
-  // אבחון זמני לבעיית קידוד עברית — לא שולח מייל, רק מחזיר איך השרת קרא את הנתונים.
-  // מוסר לאחר האבחון.
-  if (fields.debug === '1') {
-    const bytes = [...new TextEncoder().encode(name)].map((b) => b.toString(16).padStart(2, '0')).join(' ')
-    return new Response(JSON.stringify({ name, nameHex: bytes, allFields: fields }, null, 2), {
-      headers: { 'content-type': 'application/json; charset=utf-8' },
-    })
-  }
-
   const notified = await sendNotification(fields)
   if (!notified) {
     return errorPage('לא הצלחנו לשלוח את הפנייה כרגע. נסה שוב או כתוב לנו בוואטסאפ.')
