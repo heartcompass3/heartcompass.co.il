@@ -91,20 +91,23 @@
     scroll-behavior: auto !important;
   }
 
-  .a11y-root { position: fixed; bottom: 1rem; left: 1rem; z-index: 1000; }
+  /* לשונית בצד שמאל, באמצע הגובה — מיקום מוכר ולא מתנגש עם בועת הוואטסאפ או באנר העוגיות */
+  .a11y-root { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 1000; }
 
   .a11y-toggle {
-    width: 3rem; height: 3rem; border-radius: 9999px;
-    background: #0f2c36; color: #fff; border: 2px solid #fff;
-    box-shadow: 0 4px 14px rgba(0,0,0,.25);
+    width: 2.75rem; height: 3.25rem;
+    border-radius: 0 12px 12px 0;
+    background: #0f2c36; color: #fff; border: 2px solid #fff; border-left: none;
+    box-shadow: 2px 2px 12px rgba(0,0,0,.25);
     display: flex; align-items: center; justify-content: center; cursor: pointer;
   }
   .a11y-toggle:hover { background: #16414f; }
   .a11y-toggle:focus-visible { outline: 3px solid #D4AF37; outline-offset: 2px; }
 
   .a11y-panel {
-    position: absolute; bottom: 3.75rem; left: 0;
-    width: 260px; max-width: calc(100vw - 2rem);
+    position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%);
+    width: 260px; max-width: calc(100vw - 4rem);
+    max-height: calc(100vh - 2rem); overflow-y: auto;
     background: #fff; color: #0f2c36;
     border: 1px solid rgba(15,44,54,.15); border-radius: 1rem;
     box-shadow: 0 10px 30px rgba(0,0,0,.2); padding: 1rem;
