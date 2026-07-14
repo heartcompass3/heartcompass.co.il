@@ -120,14 +120,13 @@ const socialIcons = {
           אני לא שולח ספאם. רק תובנות חדות על דפוסים, פחדים והבחירות שאנחנו עושים מתחת לרדאר.  
           דברים שיכולים להזיז אותך מבפנים.
         </p>
-        <form action="https://formsubmit.co/yossi1974@outlook.co.il" method="POST" class="flex flex-col gap-2">
+        <form action="/api/lead" method="POST" class="flex flex-col gap-2">
           <input type="text" name="name" placeholder="איך קוראים לך?" required class="p-2 rounded text-black" />
           <input type="email" name="email" placeholder="לאן לשלוח לך את זה?" required class="p-2 rounded text-black" />
-          <input type="hidden" name="_captcha" value="false">
           <input type="hidden" name="_subject" value="ליד חדש מהאתר מצפן הלב">
-          <input type="hidden" name="_next" value="https://www.heartcompass.co.il/thank-you">
+          <input type="hidden" name="_next" value="/thank-you">
           <label class="flex items-start gap-2 text-white/60 text-xs leading-snug">
-            <input type="checkbox" name="consent" required class="mt-0.5 shrink-0" />
+            <input type="checkbox" name="consent" value="yes" required class="mt-0.5 shrink-0" />
             <span>
               אני מאשר/ת קבלת תכנים ועדכונים במייל, ומאשר/ת שקראתי את
               <a href="/privacy" class="underline hover:text-white">מדיניות הפרטיות</a>.
