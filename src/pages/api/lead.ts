@@ -81,17 +81,19 @@ export const POST: APIRoute = async ({ request }) => {
     return errorPage('המערכת עדיין לא הוגדרה במלואה. אפשר לפנות ישירות בוואטסאפ.')
   }
 
-  let form: FormData
+  // מפענחים ידנית עם URLSearchParams במקום request.formData(): על ריצת ה-Vercel שלנו
+  // formData() החליף תווי UTF-8 רב-בייט (עברית) ב-U+FFFD (איבוד מידע בלתי הפיך).
+  // URLSearchParams מפענח application/x-www-form-urlencoded לפי התקן, ותקין ל-UTF-8.
+  let fields: Record<string, string> = {}
   try {
-    form = await request.formData()
+    const bodyText = await request.text()
+    const params = new URLSearchParams(bodyText)
+    for (const [key, value] of params.entries()) {
+      fields[key] = value
+    }
   } catch {
     return errorPage('לא הצלחנו לקרוא את הטופס. נסה שוב.')
   }
-
-  const fields: Record<string, string> = {}
-  form.forEach((value, key) => {
-    fields[key] = String(value)
-  })
 
   const name = fields.name?.trim()
   const email = fields.email?.trim()
