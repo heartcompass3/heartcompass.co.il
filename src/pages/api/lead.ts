@@ -125,14 +125,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   const notified = await sendNotification(fields)
 
-  // אבחון זמני: debug=1 מחזיר את תשובת Resend המדויקת במקום דף שגיאה כללי
-  if (fields.debug === '1') {
-    return new Response(JSON.stringify({ resend: notified }, null, 2), {
-      status: 200,
-      headers: { 'content-type': 'application/json; charset=utf-8' },
-    })
-  }
-
   if (!notified.ok) {
     return errorPage('לא הצלחנו לשלוח את הפנייה כרגע. נסה שוב או כתוב לנו בוואטסאפ.')
   }
