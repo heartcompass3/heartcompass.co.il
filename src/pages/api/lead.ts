@@ -55,7 +55,13 @@ async function sendNotification(fields: Record<string, string>) {
       reply_to: fields.email || undefined,
     }),
   })
-  return res.ok
+  if (!res.ok) {
+    // נרשם ללוגים של Vercel כדי שנוכל לאבחן כשלים בלי לחשוף פרטים לגולש
+    const body = await res.text().catch(() => '')
+    console.error('resend-failed', res.status, body.slice(0, 500))
+    return { ok: false as const, status: res.status, body: body.slice(0, 500) }
+  }
+  return { ok: true as const, status: res.status, body: '' }
 }
 
 async function addToAudience(name: string, email: string) {
@@ -104,7 +110,16 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const notified = await sendNotification(fields)
-  if (!notified) {
+
+  // אבחון זמני: debug=1 מחזיר את תשובת Resend המדויקת במקום דף שגיאה כללי
+  if (fields.debug === '1') {
+    return new Response(JSON.stringify({ resend: notified }, null, 2), {
+      status: 200,
+      headers: { 'content-type': 'application/json; charset=utf-8' },
+    })
+  }
+
+  if (!notified.ok) {
     return errorPage('לא הצלחנו לשלוח את הפנייה כרגע. נסה שוב או כתוב לנו בוואטסאפ.')
   }
 
