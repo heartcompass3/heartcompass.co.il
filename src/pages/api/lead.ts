@@ -35,33 +35,47 @@ function errorPage(message: string) {
   )
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 async function sendNotification(fields: Record<string, string>) {
   const rows = Object.entries(fields)
-    .filter(([k]) => !['_next', '_subject'].includes(k))
+    .filter(([k]) => !['_next', '_subject', 'debug'].includes(k))
     .map(([k, v]) => `<tr><td style="padding:4px 10px;color:#667;font-weight:700">${escapeHtml(k)}</td><td style="padding:4px 10px">${escapeHtml(v)}</td></tr>`)
     .join('')
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: RESEND_FROM,
-      to: [NOTIFY_EMAIL],
-      subject: fields._subject || 'ליד חדש מהאתר מצפן הלב',
-      html: `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"></head><body><div dir="rtl" style="font-family:sans-serif"><h2>ליד חדש</h2><table>${rows}</table></div></body></html>`,
-      reply_to: fields.email || undefined,
-    }),
+  const payload = JSON.stringify({
+    from: RESEND_FROM,
+    to: [NOTIFY_EMAIL],
+    subject: fields._subject || 'ליד חדש מהאתר מצפן הלב',
+    html: `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"></head><body><div dir="rtl" style="font-family:sans-serif"><h2>ליד חדש</h2><table>${rows}</table></div></body></html>`,
+    reply_to: fields.email || undefined,
   })
-  if (!res.ok) {
-    // נרשם ללוגים של Vercel כדי שנוכל לאבחן כשלים בלי לחשוף פרטים לגולש
-    const body = await res.text().catch(() => '')
-    console.error('resend-failed', res.status, body.slice(0, 500))
-    return { ok: false as const, status: res.status, body: body.slice(0, 500) }
+
+  // עד 3 ניסיונות: כשל רגעי של Resend (רשת/5xx/429) לא מפיל ליד
+  let last = { ok: false as boolean, status: 0, body: '' }
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+          'content-type': 'application/json',
+        },
+        body: payload,
+      })
+      if (res.ok) return { ok: true as const, status: res.status, body: '' }
+      const body = await res.text().catch(() => '')
+      last = { ok: false, status: res.status, body: body.slice(0, 500) }
+      console.error(`resend-failed attempt ${attempt}`, res.status, last.body)
+      // שגיאת ולידציה (4xx חוץ מ-429) לא תשתפר בניסיון חוזר
+      if (res.status < 500 && res.status !== 429) break
+    } catch (e) {
+      last = { ok: false, status: 0, body: String(e).slice(0, 300) }
+      console.error(`resend-network-error attempt ${attempt}`, last.body)
+    }
+    if (attempt < 3) await sleep(attempt * 800)
   }
-  return { ok: true as const, status: res.status, body: '' }
+  return last
 }
 
 async function addToAudience(name: string, email: string) {
