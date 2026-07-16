@@ -78,10 +78,33 @@ async function sendNotification(fields: Record<string, string>) {
   return last
 }
 
+// מזהה הרשימה: אם לא הוגדר ב-Vercel, מתגלה אוטומטית מהחשבון (הרשימה הראשונה) ונשמר בזיכרון
+let discoveredAudienceId: string | null = null
+
+async function getAudienceId(): Promise<string | null> {
+  if (RESEND_AUDIENCE_ID) return RESEND_AUDIENCE_ID
+  if (discoveredAudienceId) return discoveredAudienceId
+  try {
+    const res = await fetch('https://api.resend.com/audiences', {
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}` },
+    })
+    if (!res.ok) return null
+    const json: any = await res.json()
+    discoveredAudienceId = json?.data?.[0]?.id || null
+  } catch {
+    return null
+  }
+  return discoveredAudienceId
+}
+
 async function addToAudience(name: string, email: string) {
-  if (!RESEND_AUDIENCE_ID) return
+  const audienceId = await getAudienceId()
+  if (!audienceId) {
+    console.error('audience-not-found: contact not added', email)
+    return
+  }
   const [firstName, ...rest] = (name || '').trim().split(/\s+/)
-  await fetch(`https://api.resend.com/audiences/${RESEND_AUDIENCE_ID}/contacts`, {
+  const res = await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${RESEND_API_KEY}`,
@@ -93,7 +116,10 @@ async function addToAudience(name: string, email: string) {
       last_name: rest.join(' ') || undefined,
       unsubscribed: false,
     }),
-  }).catch(() => {})
+  }).catch(() => null)
+  if (res && !res.ok) {
+    console.error('audience-add-failed', res.status, await res.text().catch(() => ''))
+  }
 }
 
 export const POST: APIRoute = async ({ request }) => {
