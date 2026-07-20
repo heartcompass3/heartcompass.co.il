@@ -50,10 +50,14 @@ const brandDeep = '#295157'
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => {
             const meta = categoryMeta[tool.toolCategory] ?? { label: 'כלי', icon: '✦', color: 'bg-accent/10 text-accent' }
-            const href = tool.externalUrl
-              ? tool.externalUrl
-              : `/guide/${tool.slug?.current}`
-            const isExternal = !!tool.externalUrl
+            // דף נחיתה קודם: כרטיס מפנה לדף הפנימי כשיש לו תוכן,
+            // אלא אם סומן במפורש directToTool או שאין slug תקין.
+            const validSlug = tool.slug?.current && !tool.slug.current.includes('://')
+            const useLanding = validSlug && tool.hasLanding && !tool.directToTool
+            const href = useLanding
+              ? `/guide/${tool.slug.current}`
+              : (tool.externalUrl ?? `/guide/${tool.slug?.current}`)
+            const isExternal = !useLanding && !!tool.externalUrl
 
             return (
               <a
@@ -108,7 +112,7 @@ const brandDeep = '#295157'
                   )}
 
                   <div class="mt-auto flex items-center gap-2 font-body font-bold text-accent group-hover:gap-3 transition-all">
-                    <span>{isExternal ? 'פתח את הכלי' : 'קבל גישה'}</span>
+                    <span>{tool.toolCategory === 'guide' ? 'קבל גישה' : 'פתח את הכלי'}</span>
                     <span>←</span>
                   </div>
                 </div>

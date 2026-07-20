@@ -289,6 +289,8 @@ export const TOOLS_QUERY = /* groq */ `
   toolCategory,
   toolTagline,
   externalUrl,
+  directToTool,
+  "hasLanding": count(content) > 0,
   "imageUrl": mainImage.asset->url,
 }
 `

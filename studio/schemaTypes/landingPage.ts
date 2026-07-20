@@ -174,10 +174,20 @@ export default {
     },
     {
       name: 'externalUrl',
-      title: 'קישור חיצוני',
+      title: 'קישור לכלי (אפליקציה חיצונית)',
       type: 'url',
       group: 'tools',
-      description: 'אם הכלי נמצא מחוץ לאתר (base44, אפליקציה...) – הכרטיס יפנה לכאן.',
+      description:
+        'הקישור לכלי עצמו. אם לדף יש תוכן – הכרטיס ב-/tools יוביל קודם לדף הנחיתה, וכפתור ה-CTA בדף יפתח את הקישור הזה. אם אין תוכן – הכרטיס יפנה ישירות לכאן.',
+    },
+    {
+      name: 'directToTool',
+      title: 'דילוג על דף הנחיתה (ישר לכלי)',
+      type: 'boolean',
+      group: 'tools',
+      initialValue: false,
+      description:
+        'להשאיר כבוי כברירת מחדל. הדלקה תגרום לכרטיס ב-/tools לקפוץ ישירות לקישור החיצוני גם כשיש דף נחיתה.',
     },
     {
       name: 'toolOrder',
