@@ -45,6 +45,9 @@ const nextUrl = `https://www.heartcompass.co.il/guide/thanks/${slug}`;
 
 // כלי חיצוני (שאלון/משחק): דף הנחיתה מחמם ומעביר ישר לכלי, בלי טופס חובה.
 // לכידת הליד קורית בתוך הכלי, במסך התוצאה (רגע ה-high intent).
+// סינון בולטים ריקים — מחרוזת ריקה בסאניטי לא תציג וי בלי טקסט
+const bullets = (pageData.bullets ?? []).filter((b: string) => b && b.trim());
+
 const isToolLanding =
   !!pageData.externalUrl && ['quiz', 'game'].includes(pageData.toolCategory);
 
@@ -104,10 +107,10 @@ const faqSchema = pageData.faqItems?.length > 0
           {pageData.subtitle && <p class="text-xl md:text-2xl text-slate-600 leading-relaxed">{pageData.subtitle}</p>}
         </header>
 
-        {pageData.bullets && pageData.bullets.length > 0 && (
+        {bullets.length > 0 && (
           <section class="mb-10">
             <ul class="space-y-4">
-              {pageData.bullets.map((bullet: string) => (
+              {bullets.map((bullet: string) => (
                 <li class="flex items-start text-lg text-slate-800">
                   <span class="text-green-500 ml-3 mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +138,7 @@ const faqSchema = pageData.faqItems?.length > 0
           >
             {pageData.cta || 'פתח את הכלי ←'}
           </a>
-          <p class="text-sm text-slate-400 mt-4 italic">חינמי לחלוטין. בלי הרשמה ובלי פרטים.</p>
+          <p class="text-sm text-slate-400 mt-4 italic">חינמי לחלוטין. בלי הרשמה ובלי תשלום.</p>
         </section>
         ) : (
         <section class="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100">
