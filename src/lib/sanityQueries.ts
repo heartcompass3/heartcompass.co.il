@@ -192,11 +192,16 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
 `
 
 // מאמרים נוספים — אוטומטי לפי תגיות משותפות, ללא המאמר הנוכחי.
-// מיון לפי כמות התגיות המשותפות (רלוונטיות) ואז לפי טריות — כדי שמאמרים
-// ותיקים אך קרובים נושאית יקבלו קישורים נכנסים ולא ייחנקו לטובת החדשים בלבד.
+// מיון לפי כמות מוקדי הכאב המשותפים (הטקסונומיה המדויקת, לא tags הרחב) ואז
+// לפי טריות — כדי שמאמרים ותיקים אך קרובים נושאית יקבלו קישורים נכנסים ולא
+// ייחנקו לטובת החדשים בלבד. נופל חזרה ל-tags רק אם אין חפיפת pains בכלל
+// (לדוגמה מאמר עם מוקד כאב אחד ייחודי).
 export const RELATED_ARTICLES_QUERY = /* groq */ `
-*[_type == "article" && slug.current != $slug && count(tags[@ in $tags]) > 0]
-| order(count(tags[@ in $tags]) desc, coalesce(publishedAt, _createdAt) desc)[0...4]{
+*[_type == "article" && slug.current != $slug && (
+  count(pains[]->slug.current[@ in $painSlugs]) > 0 ||
+  count(tags[@ in $tags]) > 0
+)]
+| order(count(pains[]->slug.current[@ in $painSlugs]) desc, count(tags[@ in $tags]) desc, coalesce(publishedAt, _createdAt) desc)[0...4]{
   _id,
   title,
   goldLine,

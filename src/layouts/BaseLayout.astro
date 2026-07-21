@@ -1,6 +1,7 @@
 ---
 import site from '../content/pages/site.json'
 import '../styles/global.css'
+import { AREA_SERVED } from '../lib/schema'
 
 import SeoHead from '../components/SeoHead.astro'
 
@@ -114,7 +115,7 @@ const defaultServiceSchema = {
   description: resolvedDescription,
   founder: { '@id': `${site.siteUrl}/#person` },
   address: businessAddress,
-  areaServed: [{ '@type': 'Country', name: 'ישראל' }, 'Online'],
+  areaServed: AREA_SERVED,
   // knowsLanguage הוא המאפיין החוקי ל-Organization; availableLanguage שייך רק
   // ל-ContactPoint/ServiceChannel וגורם לשגיאת ולידציה על LocalBusiness.
   knowsLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
@@ -136,8 +137,8 @@ const defaultServiceSchema = {
     'https://www.b144.co.il/מצפן-הלב/נתניה/',
     'https://easy.co.il/page/10158019',
     'https://lee.co.il/b/tQxW9',
-    // פריט Wikidata של העסק (נוסד-על-ידי → הפריט האישי Q140424390)
-    'https://www.wikidata.org/wiki/Q140424600',
+    // הוסר קישור Wikidata שגוי (Q140424600 / Q140424390) — אומת מול ה-API הרשמי
+    // ולא קיים שום פריט כזה. אין כרגע פריט Wikidata אמיתי לעסק או למייסד.
   ],
   knowsAbout: [
     'אימון רגשי',

@@ -36,9 +36,10 @@ if (!article) {
   return Astro.redirect('/articles', 302)
 }
 
-// מאמרים נוספים — אוטומטי לפי תגיות משותפות
-const related = article.tags?.length
-  ? await sanity.fetch(RELATED_ARTICLES_QUERY, { slug, tags: article.tags })
+// מאמרים נוספים — קודם לפי מוקדי כאב משותפים (טקסונומיה מדויקת), נופל ל-tags כגיבוי
+const painSlugs = (article.pains ?? []).map((p: any) => p.slug).filter(Boolean)
+const related = painSlugs.length || article.tags?.length
+  ? await sanity.fetch(RELATED_ARTICLES_QUERY, { slug, painSlugs, tags: article.tags ?? [] })
   : []
 
 // זמן קריאה + ספירת מילים מגוף ה-PortableText
