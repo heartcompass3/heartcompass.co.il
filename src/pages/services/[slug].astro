@@ -4,6 +4,7 @@ import PortableText from '../../components/PortableText.astro'
 import site from '../../content/pages/site.json'
 import { sanity, urlFor } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
+import { AREA_SERVED } from '../../lib/schema'
 
 const { slug } = Astro.params
 
@@ -51,7 +52,7 @@ const serviceSchema = {
   description: description || undefined,
   url: canonical,
   provider: { '@id': `${site.siteUrl}/#person` },
-  areaServed: [{ '@type': 'Country', name: 'ישראל' }, 'Online'],
+  areaServed: AREA_SERVED,
   availableChannel: {
     '@type': 'ServiceChannel',
     availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
