@@ -60,6 +60,11 @@ function urlForDoc(doc: any): string | null {
       return slug ? `${site.siteUrl}/services/${slug}` : null
     case 'page':
       return slug ? `${site.siteUrl}/${slug}` : null
+    case 'pain':
+      return slug ? `${site.siteUrl}/pain/${slug}` : null
+    case 'landingPage':
+      // slug של קישור חיצוני מלא (base44/lovable) אין לו עמוד פנימי לדחוף
+      return slug && !/^https?:\/\//.test(slug) ? `${site.siteUrl}/guide/${slug}` : null
     default:
       return slug ? `${site.siteUrl}/${slug}` : null
   }

@@ -31,6 +31,7 @@ export const GET: APIRoute = async () => {
   let articles = []
   let pages = []
   let pains = []
+  let landingPages = []
 
   try {
     // משיכת המאמרים
@@ -52,6 +53,15 @@ export const GET: APIRoute = async () => {
     // משיכת מוקדי הכאב (Pain Hubs)
     pains = await sanity.fetch(`
       *[_type == "pain" && defined(slug.current) && coalesce(publishedSite, "new") in ["new", "both"]]{
+        "slug": slug.current,
+        _updatedAt
+      }
+    `)
+
+    // משיכת דפי הנחיתה (מדריכים/כלים, /guide/[slug]) — מסמכי landingPage.
+    // slug של קישור חיצוני מלא (base44/lovable וכו') מסונן: אין לו עמוד פנימי לאנדקס.
+    landingPages = await sanity.fetch(`
+      *[_type == "landingPage" && defined(slug.current) && !(slug.current match "http*")]{
         "slug": slug.current,
         _updatedAt
       }
@@ -79,6 +89,7 @@ export const GET: APIRoute = async () => {
   addDocs(articles, '/articles/')
   addDocs(pages, '/')
   addDocs(pains, '/pain/')
+  addDocs(landingPages, '/guide/')
 
   // דה-דופ: שומרים על ה-lastmod החדש ביותר לכל כתובת.
   const byLoc = new Map<string, string>()
