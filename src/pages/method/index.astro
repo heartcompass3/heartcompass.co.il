@@ -4,6 +4,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import PortableText from '../../components/PortableText.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
+import { optImg } from '../../lib/img'
 
 const data = await sanity.fetch(/* groq */ `
 *[_type == "methodPage"][0]{
@@ -53,6 +54,19 @@ const data = await sanity.fetch(/* groq */ `
 if (!data) {
   throw new Error('No methodPage document found in Sanity')
 }
+
+const methodArticles = await sanity.fetch(/* groq */ `
+*[_type == "article" && relatedToMethod == true] | order(coalesce(publishedAt, _createdAt) desc){
+  title,
+  "slug": slug.current,
+  excerpt,
+  goldLine,
+  publishedAt,
+  mainImage{asset->{url}, alt}
+}
+`)
+
+const fmtDate = (d?: string) => (d ? new Date(d).toLocaleDateString('he-IL') : '')
 
 const h1a = data?.hero?.headlineLine1 || 'שיטת מ.ס.ע'
 const h1b = data?.hero?.headlineLine2 || ''
@@ -242,6 +256,55 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
             <div class="prose prose-lg max-w-none prose-headings:font-display prose-p:font-body prose-p:text-foreground/80">
               <PortableText value={body} />
             </div>
+          </div>
+        </section>
+      )}
+
+      <!-- מאמרים על השיטה — מתמלא אוטומטית -->
+      {methodArticles.length > 0 && (
+        <section class="mt-16 mb-4">
+          <h2 class="text-3xl md:text-4xl font-black text-primary font-display mb-3 text-center">
+            מאמרים על השיטה
+          </h2>
+          <p class="text-center text-primary/55 font-body mb-10">
+            {methodArticles.length} מאמרים
+          </p>
+
+          <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+            {methodArticles.map((a: any) => (
+              <a
+                href={`/articles/${a.slug}`}
+                class="bg-white rounded-[2rem] shadow-xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border border-white/50 flex flex-col h-full overflow-hidden hover:-translate-y-2 cursor-pointer group ring-1 ring-black/5"
+              >
+                <div class="h-48 overflow-hidden relative w-full">
+                  <img
+                    src={optImg(a.mainImage?.asset?.url, 600) || '/assets/yossi-hero.jpg'}
+                    alt={a.mainImage?.alt || a.title || `מאמר | ${site.brand}`}
+                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
+                    loading="lazy"
+                  />
+                  {a.publishedAt && (
+                    <div class="absolute top-5 right-5 bg-white/95 px-3 py-1 text-xs font-bold text-primary rounded-full shadow-lg">
+                      {fmtDate(a.publishedAt)}
+                    </div>
+                  )}
+                </div>
+                <div class="p-8 flex-1 flex flex-col text-center items-center w-full">
+                  <h3 class="text-xl font-black text-primary mb-2 font-display leading-tight group-hover:text-gold-dark transition-colors">
+                    {a.title}
+                  </h3>
+                  {a.goldLine && (
+                    <p class="text-accent font-bold tracking-wide mb-3 font-display text-xs">{a.goldLine}</p>
+                  )}
+                  {a.excerpt && (
+                    <p class="text-primary/70 font-body leading-relaxed mb-6 line-clamp-3">{a.excerpt}</p>
+                  )}
+                  <div class="mt-auto flex items-center text-accent font-bold tracking-wide group-hover:gap-2 transition-all">
+                    קרא עוד <span class="mr-2">←</span>
+                  </div>
+                </div>
+              </a>
+            ))}
           </div>
         </section>
       )}
