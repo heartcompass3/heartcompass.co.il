@@ -157,7 +157,7 @@ const personSchema = {
   '@id': `${site.siteUrl}/#person`,
   name: site.fullName,
   url: site.siteUrl,
-  jobTitle: 'מאמן רגשי מוסמך ICF',
+  jobTitle: 'מאמן רגשי מוסמך',
   email: site.email,
   address: businessAddress,
   worksFor: { '@id': `${site.siteUrl}/#business` },
@@ -166,12 +166,7 @@ const personSchema = {
     {
       '@type': 'EducationalOccupationalCredential',
       credentialCategory: 'Professional Certification',
-      name: 'מאמן רגשי מוסמך – ICF (International Coaching Federation)',
-      recognizedBy: {
-        '@type': 'Organization',
-        name: 'International Coaching Federation',
-        url: 'https://coachingfederation.org',
-      },
+      name: 'מאמן רגשי מוסמך',
     },
     {
       '@type': 'EducationalOccupationalCredential',

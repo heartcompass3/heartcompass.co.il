@@ -75,7 +75,7 @@ const toAbsolute = (v: string) =>
 const personDescription =
   page?.excerpt?.trim() ||
   metaDescription ||
-  'יוסי מדלסי — מאמן רגשי מוסמך ICF ומייסד "מצפן הלב" ושיטת מ.ס.ע. מלווה בני נוער, הורים וזוגות בתהליכי עומק לשחרור דפוסים רגשיים.'
+  'יוסי מדלסי — מאמן רגשי מוסמך ומייסד "מצפן הלב" ושיטת מ.ס.ע. מלווה בני נוער, הורים וזוגות בתהליכי עומק לשחרור דפוסים רגשיים.'
 
 const aboutPersonSchema = {
   '@context': 'https://schema.org',
@@ -83,7 +83,7 @@ const aboutPersonSchema = {
   '@id': `${site.siteUrl}/#person`,
   name: site.fullName,
   url: aboutUrl,
-  jobTitle: 'מאמן רגשי מוסמך ICF',
+  jobTitle: 'מאמן רגשי מוסמך',
   description: personDescription,
   email: site.email,
   image: toAbsolute(imageSrc),
@@ -97,12 +97,7 @@ const aboutPersonSchema = {
     {
       '@type': 'EducationalOccupationalCredential',
       credentialCategory: 'Professional Certification',
-      name: 'מאמן רגשי מוסמך – ICF (International Coaching Federation)',
-      recognizedBy: {
-        '@type': 'Organization',
-        name: 'International Coaching Federation',
-        url: 'https://coachingfederation.org',
-      },
+      name: 'מאמן רגשי מוסמך',
     },
     {
       '@type': 'EducationalOccupationalCredential',
@@ -199,14 +194,14 @@ const aboutPersonSchema = {
             )}
           </div>
 
-          <!-- ICF credential badge -->
+          <!-- באדג' הסמכה מקצועית — מקשר לתעודה עצמה (לא לגוף חיצוני) -->
           <div class="mt-10 flex flex-wrap gap-4 justify-center md:justify-start" aria-label="הסמכות מקצועיות">
             <a
-              href="https://coachingfederation.org"
+              href="/assets/certificate-yossi.jpg"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-3 bg-white/80 border border-accent/30 rounded-2xl px-5 py-3 shadow hover:shadow-md transition-shadow no-underline"
-              aria-label="מאמן מוסמך ICF – International Coaching Federation"
+              aria-label="צפייה בתעודת ההסמכה של יוסי מדלסי כמאמן רגשי מוסמך"
             >
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <circle cx="18" cy="18" r="18" fill="#00539B"/>
@@ -216,8 +211,8 @@ const aboutPersonSchema = {
               </svg>
               <div class="text-right">
                 <div class="text-xs text-primary/50 font-body leading-none mb-0.5">הסמכה מקצועית</div>
-                <div class="text-sm font-bold text-primary font-display leading-none">מאמן מוסמך ICF</div>
-                <div class="text-xs text-primary/60 font-body leading-none mt-0.5">International Coaching Federation</div>
+                <div class="text-sm font-bold text-primary font-display leading-none">מאמן רגשי מוסמך</div>
+                <div class="text-xs text-primary/60 font-body leading-none mt-0.5">לצפייה בתעודה</div>
               </div>
             </a>
             <div class="inline-flex items-center gap-3 bg-white/80 border border-accent/30 rounded-2xl px-5 py-3 shadow">
