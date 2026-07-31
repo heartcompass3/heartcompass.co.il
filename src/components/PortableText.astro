@@ -32,15 +32,17 @@ const components = {
     },
     // ──────────────────────────────────────────────────────────────
 
-    // ─── תמונה בגוף המאמר ─────────────────────────────────────────
+    // ─── תמונה בגוף המאמר (לחיצה = הגדלה ב-lightbox) ──────────────
     image: ({ value }) => {
       if (!value?.asset) return ''
 
       const src = urlFor(value).width(900).url()
+      const fullSrc = urlFor(value).width(1800).url()
       const alt = value.alt || ''
       const caption = value.caption || ''
 
-      // ממדים מ-Sanity metadata (אם הגיעו בקוורי) — מונעים CLS
+      // ממדים מ-Sanity metadata (אם הגיעו בקוורי) — מונעים CLS,
+      // ושומרים על היחס האמיתי של התמונה (במקום aspect-ratio קבוע שמעוות אותה)
       const dims = value.asset?.metadata?.dimensions
       const imgW = 900
       const imgH = dims?.height && dims?.width
@@ -49,14 +51,17 @@ const components = {
 
       return `
         <figure class="hc-inline-image">
-          <img
-            src="${src}"
-            alt="${alt}"
-            width="${imgW}"
-            height="${imgH}"
-            loading="lazy"
-            decoding="async"
-          />
+          <button type="button" class="hc-inline-image__trigger" aria-label="הגדלת תמונה">
+            <img
+              src="${src}"
+              data-full="${fullSrc}"
+              alt="${alt}"
+              width="${imgW}"
+              height="${imgH}"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
           ${caption ? `<figcaption>${caption}</figcaption>` : ''}
         </figure>
       `
@@ -187,13 +192,27 @@ const html = value ? toHTML(value, { components }) : ''
     text-align: center;
   }
 
+  .portabletext :global(.hc-inline-image__trigger) {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
   .portabletext :global(.hc-inline-image img) {
     width: 100%;
     height: auto;
-    aspect-ratio: 3 / 2; /* placeholder עד טעינה — מונע CLS */
+    aspect-ratio: auto; /* היחס האמיתי של התמונה (מ-width/height); מונע עיוות */
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: block;
+    transition: transform 0.2s ease;
+  }
+
+  .portabletext :global(.hc-inline-image__trigger:hover img) {
+    transform: scale(1.015);
   }
 
   .portabletext :global(.hc-inline-image figcaption) {
@@ -204,4 +223,90 @@ const html = value ? toHTML(value, { components }) : ''
     text-align: center;
   }
   /* ─────────────────────────────────────────────────────────── */
+</style>
+
+<script>
+  // Lightbox גלובלי לתמונות בגוף המאמר — נבנה פעם אחת, נטען lazy בלחיצה ראשונה.
+  if (!window.__hcLightboxInit) {
+    window.__hcLightboxInit = true
+
+    const ensureLightbox = () => {
+      let lb = document.getElementById('hc-lightbox')
+      if (lb) return lb
+
+      lb = document.createElement('div')
+      lb.id = 'hc-lightbox'
+      lb.className = 'hc-lightbox'
+      lb.innerHTML =
+        '<button type="button" class="hc-lightbox__close" aria-label="סגירה">×</button>' +
+        '<img class="hc-lightbox__img" alt="" />'
+      document.body.appendChild(lb)
+
+      const close = () => lb.classList.remove('is-open')
+      lb.addEventListener('click', (e) => {
+        if (e.target === lb || (e.target as HTMLElement).closest('.hc-lightbox__close')) close()
+      })
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close()
+      })
+
+      return lb
+    }
+
+    document.addEventListener('click', (e) => {
+      const trigger = (e.target as HTMLElement).closest('.hc-inline-image__trigger')
+      if (!trigger) return
+      const img = trigger.querySelector('img')
+      if (!img) return
+
+      const lb = ensureLightbox()
+      const lbImg = lb.querySelector('.hc-lightbox__img') as HTMLImageElement
+      lbImg.src = img.getAttribute('data-full') || img.src
+      lbImg.alt = img.alt || ''
+      lb.classList.add('is-open')
+    })
+  }
+</script>
+
+<style is:global>
+  .hc-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(20, 20, 20, 0.9);
+  }
+
+  .hc-lightbox.is-open {
+    display: flex;
+  }
+
+  .hc-lightbox__img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .hc-lightbox__close {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .hc-lightbox__close:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
 </style>
