@@ -94,7 +94,9 @@ const websiteSchema = {
   alternateName: [site.siteName, site.fullName],
   url: site.siteUrl,
   inLanguage: 'he',
-  publisher: { '@id': `${site.siteUrl}/#person` },
+  // עקביות עם Article.publisher: הישות שמפרסמת את האתר היא העסק, לא האדם —
+  // האדם הוא founder/author, לא publisher.
+  publisher: { '@id': `${site.siteUrl}/#business` },
 }
 
 // כתובת בסיס — נתניה (העסק מתנהל אונליין; כשתיפתח קליניקה נעדכן כאן בלבד).
@@ -157,7 +159,9 @@ const personSchema = {
   '@type': 'Person',
   '@id': `${site.siteUrl}/#person`,
   name: site.fullName,
-  url: site.siteUrl,
+  // עמוד הפרופיל הקנוני של האדם — לא דף הבית (זה של העסק). עקבי עם /about
+  // ועם article.author.url בעמוד המאמר.
+  url: `${site.siteUrl}/about`,
   jobTitle: 'מאמן רגשי מוסמך',
   email: site.email,
   address: businessAddress,
