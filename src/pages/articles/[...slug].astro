@@ -74,7 +74,7 @@ const description = article.excerpt || 'מאמר מתוך מצפן הלב.'
 const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
 // תמונת שיתוף ממוטבת (~1200px, WebP/AVIF) במקום המקור המלא הכבד.
 const ogImage = article.mainImage?.asset?.url
-  ? optImg(article.mainImage.asset.url, 1200)
+  ? optImg(article.mainImage.asset.url, 1200, 80, slug)
   : undefined
 
 const articleSchema = {
@@ -216,7 +216,7 @@ const schemas = faqSchema
         {article.mainImage?.asset?.url && (
           <div class="w-full h-80 rounded-[2rem] overflow-hidden mb-12 shadow-lg">
             <img
-              src={optImg(article.mainImage.asset.url, 1400)}
+              src={optImg(article.mainImage.asset.url, 1400, 80, slug)}
               alt={article.mainImage.alt || article.title || `מאמר | ${site.brand}`}
               class="w-full h-full object-cover"
               loading="eager"
@@ -421,7 +421,7 @@ const schemas = faqSchema
                 {a.mainImage?.asset?.url && (
                   <div class="h-44 overflow-hidden relative w-full">
                     <img
-                      src={optImg(a.mainImage.asset.url, 600)}
+                      src={optImg(a.mainImage.asset.url, 600, 80, a.slug?.current)}
                       alt={a.mainImage.alt || a.title || `מאמר | ${site.brand}`}
                       width="600" height="352"
                       class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"

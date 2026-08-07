@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 import { sanity } from '../lib/sanity'
+import { withFilename } from '../lib/img'
 
 // SSR (לא prerender): המפה נמשכת חיה מ-Sanity בכל בקשה, כך שתוכן חדש
 // (מוקדי כאב, מאמרים) נכנס מיד בלי צורך ב-redeploy. יש קאש משלה (s-maxage=60)
@@ -86,13 +87,20 @@ export const GET: APIRoute = async () => {
 
   const addDocs = (docs: any[], prefix: string) =>
     docs
-      .map(d =>
-        cleanSlug(d.slug) && {
-          slug: cleanSlug(d.slug),
-          _updatedAt: d._updatedAt,
-          image: d.mainImage?.asset?.url ? { url: d.mainImage.asset.url, alt: d.mainImage.alt } : undefined,
-        }
-      )
+      .map(d => {
+        const slug = cleanSlug(d.slug)
+        return (
+          slug && {
+            slug,
+            _updatedAt: d._updatedAt,
+            // שם קובץ תיאורי (ה-slug של המאמר) ב-URL בפועל, לא רק כ-alt —
+            // ראו src/lib/img.ts withFilename.
+            image: d.mainImage?.asset?.url
+              ? { url: withFilename(d.mainImage.asset.url, slug) || d.mainImage.asset.url, alt: d.mainImage.alt }
+              : undefined,
+          }
+        )
+      })
       .filter((d): d is { slug: string; _updatedAt: string; image?: { url: string; alt?: string } } => !!d && isValidSlug(d.slug))
       .forEach(d =>
         entries.push({ loc: encodeURI(`${baseUrl}${prefix}${d.slug}`), lastmod: d._updatedAt, image: d.image })
