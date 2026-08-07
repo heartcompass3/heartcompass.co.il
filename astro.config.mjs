@@ -23,7 +23,9 @@ export default defineConfig({
       expiration: 600,
       // /api (IndexNow + cron) ו-/sitemap.xml מוחרגים — צריכים להישאר טריים
       // (ל-sitemap יש קאש משלו של 60ש'), לא להיתפס בקאש ISR של 10 דק'.
-      exclude: [/^\/api\//, '/sitemap.xml'],
+      // /unsubscribe מוחרג כי הוא תלוי ב-query string (?email=) ובמצב אישי
+      // לכל מבקר — אסור להגיש למישהו את הגרסה המקוממת של מבקר קודם.
+      exclude: [/^\/api\//, '/sitemap.xml', /^\/unsubscribe/],
     },
   }),
   redirects: {

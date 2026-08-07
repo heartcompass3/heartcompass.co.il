@@ -71,6 +71,14 @@ export default defineType({
     }),
 
     defineField({
+      name: 'contentUpdatedAt',
+      title: 'תאריך עדכון תוכן (עדכן ידנית!)',
+      type: 'datetime',
+      description:
+        'עדכנו את השדה הזה רק כשעשיתם שינוי תוכן משמעותי במאמר (לא תיקון טעות כתיב או שינוי שדה טכני). זה מה שמוצג לקורא כ"עודכן ב-", נשלף ל-dateModified ב-JSON-LD, ולתאריך lastmod במפת האתר. אם ריק, נופל חזרה לתאריך הפרסום — לא לתאריך השמירה האחרון ב-Sanity, כדי שעריכות טכניות לא יזייפו אות רעננות לגוגל.',
+    }),
+
+    defineField({
       name: 'author',
       title: 'מחבר',
       type: 'reference',

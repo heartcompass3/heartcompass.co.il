@@ -51,8 +51,11 @@ const bodyText = (Array.isArray(article.body) ? article.body : [])
   .join(' ')
 const wordCount = bodyText.trim() ? bodyText.trim().split(/\s+/).length : 0
 const readTime = Math.max(1, Math.round(wordCount / 200))
-const updatedDate = article._updatedAt
-  ? new Date(article._updatedAt).toLocaleDateString('he-IL')
+// תאריך עדכון תוכן אמיתי (contentUpdatedAt מעודכן ידנית) — לא _updatedAt הטכני
+// של Sanity, שמשתנה בכל שמירה כולל תיקונים טכניים שלא רלוונטיים לקורא/לגוגל.
+const displayUpdatedAt = article.contentUpdatedAt || article.publishedAt
+const updatedDate = displayUpdatedAt
+  ? new Date(displayUpdatedAt).toLocaleDateString('he-IL')
   : ''
 
 // תוכן עניינים — מכותרות H2/H3 בגוף (חייב להתאים ל-id ב-PortableText)
@@ -100,8 +103,9 @@ const articleSchema = {
     },
   },
   datePublished: article.publishedAt || undefined,
-  // תאריך עדכון אמיתי מ-Sanity (freshness signal); נופל חזרה לתאריך הפרסום.
-  dateModified: article._updatedAt || article.publishedAt || undefined,
+  // תאריך עדכון תוכן אמיתי (contentUpdatedAt); נופל חזרה לתאריך הפרסום —
+  // לא ל-_updatedAt הטכני, כדי לא לזייף אות רעננות על עריכות שוליות.
+  dateModified: displayUpdatedAt || undefined,
   mainEntityOfPage: {
     '@type': 'WebPage',
     '@id': canonical,

@@ -34,11 +34,13 @@ export const GET: APIRoute = async () => {
   let landingPages = []
 
   try {
-    // משיכת המאמרים
+    // משיכת המאמרים. lastmod נגזר מ-contentUpdatedAt (מעודכן ידנית בעריכות
+    // תוכן משמעותיות בלבד) ולא מ-_updatedAt הטכני, שמשתנה בכל שמירה כולל
+    // תיקונים טכניים — ומזייף אות רעננות לגוגל.
     articles = await sanity.fetch(`
       *[_type == "article" && defined(slug.current)]{
         "slug": slug.current,
-        _updatedAt
+        "_updatedAt": coalesce(contentUpdatedAt, publishedAt, _updatedAt)
       }
     `)
 

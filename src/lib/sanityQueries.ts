@@ -96,32 +96,6 @@ export const SITE_SETTINGS_QUERY = /* groq */ `
 }
 `
 
-export const METHOD_PAGE_QUERY = /* groq */ `
-*[_type == "methodPage"][0]{
-  seo,
-
-  hero{
-    h1,
-    goldLine,
-    opening,
-    ctaLabel,
-    ctaHref
-  },
-
-  msaCore{
-    shortLine
-  },
-
-  body,
-
-  cards[]{
-    title,
-    text,
-    href
-  }
-}
-`
-
 // =======================
 // Articles (Sanity)
 // =======================
@@ -159,6 +133,7 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
   slug,
   excerpt,
   publishedAt,
+  contentUpdatedAt,
   authorLine,
   mainImage{
     alt,
@@ -273,24 +248,6 @@ export const PAINS_LIST_QUERY = /* groq */ `
   "slug": slug.current,
   excerpt,
   "count": count(*[_type == "article" && references(^._id)])
-}
-`
-
-export const CATEGORY_QUERY = /* groq */ `
-*[_type == "category" && slug.current == $slug][0]{
-  _id,
-
-  title,
-  slug,
-  description,
-  heroText,
-
-  faqTitle,
-
-  faq[]{
-    question,
-    answer
-  }
 }
 `
 
