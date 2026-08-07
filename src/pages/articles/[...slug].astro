@@ -80,6 +80,7 @@ const articleSchema = {
   headline: article.title,
   description,
   abstract: article.aiCitation || undefined,
+  disambiguatingDescription: article.aiContext || undefined,
   image: ogImage ? [ogImage] : undefined,
   author: {
     '@type': 'Person',

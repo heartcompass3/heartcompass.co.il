@@ -167,6 +167,7 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
   painTags,
   pains[]->{ title, "slug": slug.current },
   aiCitation,
+  aiContext,
   keyTakeaways{
     heading,
     items
