@@ -19,6 +19,10 @@ const page = await sanity.fetch(
       faq[]{
         question, answer
       },
+      stagesTitle,
+      stages[]{
+        key, title, text
+      },
       closing
     },
     aiCitation,
@@ -49,6 +53,8 @@ const intro = page?.specialty?.intro || ''
 const faqTitle = page?.specialty?.faqTitle || 'שאלות ותשובות'
 const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || ''
+const stagesTitle = page?.specialty?.stagesTitle || 'מה קורה בפועל'
+const stages = page?.specialty?.stages || []
 
 const breadcrumbSchema = buildBreadcrumbListSchema({
   siteUrl: site.siteUrl,
@@ -150,6 +156,20 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
         <p class="mb-12 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
           {intro}
         </p>
+      )}
+
+      {stages.length > 0 && (
+        <section class="mb-16">
+          <h2 class="text-3xl font-black text-primary font-display text-center mb-10">{stagesTitle}</h2>
+          <div class="grid gap-6 md:grid-cols-3">
+            {stages.map((stage: any, index: number) => (
+              <div class="bg-white rounded-2xl p-6 shadow-md border border-primary/10">
+                <div class="text-accent font-black text-xl mb-2">{index + 1}. {stage.title}</div>
+                <p class="text-primary/80 leading-relaxed">{stage.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {faqs.length > 0 && (

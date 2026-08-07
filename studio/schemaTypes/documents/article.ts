@@ -187,7 +187,76 @@ export default defineType({
       type: 'text',
       rows: 3,
       description:
-        'מידע עובדתי נוסף שעוזר ל-AI להבין ולצטט את המאמר נכון. נשלף ל-JSON-LD (disambiguatingDescription) ואינו מוצג בעמוד. אופציונלי.',
+        'מידע עובדתי נוסף שעוזר ל-AI להבין ולצטט את המאמר נכון. נשלף ל-JSON-LD (disambiguatingDescription) ואינו מוצג בעמוד. טקסט הסבר בלבד — בלי קישורים גולמיים ובלי הערות עבודה פנימיות; מקורות ומחקרים שייכים לשדה "מקורות" למטה. אופציונלי.',
+    }),
+    // ─────────────────────────────────────────────────────────────
+
+    // ─── חדש: מקורות (מוצג לקורא + JSON-LD citation) ─────────────
+    defineField({
+      name: 'sources',
+      title: 'מקורות',
+      type: 'array',
+      description:
+        'מחקרים/מקורות שהמאמר מתבסס עליהם. מוצגים לקורא בתחתית המאמר, וממופים ל-citation ב-JSON-LD (AEO/E-E-A-T). את הקישורים הגולמיים יש להוסיף כאן, לא בתוך "הקשר נוסף ל-AI".',
+      of: [
+        {
+          type: 'object',
+          name: 'source',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'כותרת המקור',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'authors',
+              title: 'מחברים',
+              type: 'string',
+              description: 'לדוגמה: Calvocoressi et al.',
+            }),
+            defineField({
+              name: 'publisher',
+              title: 'כתב עת / גוף מפרסם',
+              type: 'string',
+              description: 'לדוגמה: Journal of Anxiety Disorders, Yale School of Public Health',
+            }),
+            defineField({
+              name: 'year',
+              title: 'שנה',
+              type: 'string',
+            }),
+            defineField({
+              name: 'url',
+              title: 'קישור',
+              type: 'url',
+            }),
+            defineField({
+              name: 'sourceType',
+              title: 'סוג מקור',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'מחקר אקדמי', value: 'academic' },
+                  { title: 'ארגון מקצועי', value: 'organization' },
+                  { title: 'ספר', value: 'book' },
+                  { title: 'כתבה / אתר', value: 'article' },
+                ],
+              },
+            }),
+            defineField({
+              name: 'note',
+              title: 'תקציר קצר (מה המקור מראה)',
+              type: 'text',
+              rows: 2,
+              description: 'משפט אחד: מה המחקר הזה מוצא או מראה. יוצג לקורא לצד המקור.',
+            }),
+          ],
+          preview: {
+            select: { title: 'title', subtitle: 'publisher' },
+          },
+        },
+      ],
     }),
     // ─────────────────────────────────────────────────────────────
 

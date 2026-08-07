@@ -21,6 +21,7 @@ const {
   noindex,
   noIndex,
   ogImage,
+  ogImageAlt,
   pageType,
   schema,
   // preload אופציונלי לתמונת ה-LCP (הירו): { srcset, sizes } או { href }
@@ -249,6 +250,7 @@ if (isArticlePage) {
       canonical={resolvedCanonical}
       noIndex={resolvedNoIndex}
       ogImage={ogImage}
+      ogImageAlt={ogImageAlt}
       pageType={pageType}
       schema={mergedSchema}
     />

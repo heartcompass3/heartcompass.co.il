@@ -3,7 +3,10 @@
 
 export const HOME_PAGE_QUERY = /* groq */ `
 *[_type == "homePage"][0]{
-  seo,
+  seo{
+    ...,
+    ogImage{ asset->{url} }
+  },
   hero,
   "heroImageDims": hero.image.asset->metadata.dimensions{ width, height },
   h1,
@@ -27,7 +30,10 @@ export const HOME_PAGE_QUERY = /* groq */ `
 
 export const CONTACT_PAGE_QUERY = /* groq */ `
 *[_type == "contactPage"][0]{
-  seo,
+  seo{
+    ...,
+    ogImage{ asset->{url} }
+  },
   left{
     title,
     text,
@@ -168,6 +174,9 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
   pains[]->{ title, "slug": slug.current },
   aiCitation,
   aiContext,
+  sources[]{
+    title, authors, publisher, year, url, sourceType, note
+  },
   keyTakeaways{
     heading,
     items

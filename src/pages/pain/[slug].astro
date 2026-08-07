@@ -31,6 +31,7 @@ const noIndex = pain.seo?.noindex === true
 // אחרת נופל חזרה לתמונת ברירת המחדל של המותג ב-SeoHead.
 const ogSource = articles.find((a: any) => a.mainImage?.asset?.url)
 const ogImage = ogSource ? optImg(ogSource.mainImage.asset.url, 1200) : undefined
+const ogImageAlt = ogSource?.mainImage?.alt || undefined
 
 // ── Schema: CollectionPage (ה-hub) + רשימת המאמרים + AEO ──────────
 const collectionSchema = {
@@ -87,6 +88,7 @@ const fmtDate = (d?: string) =>
   canonical={canonical}
   noIndex={noIndex}
   ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
   pageType="website"
   schema={schemas}
 >

@@ -7,6 +7,7 @@ const {
   canonical,
   noIndex = false,
   ogImage,
+  ogImageAlt,
   pageType = 'website',
   author,
   schema = [],
@@ -47,6 +48,7 @@ const defaultOgImage = `${site.siteUrl}/assets/og-image.jpg`
 const resolvedOgImage = toAbsoluteUrl(ogImage) || defaultOgImage
 
 const resolvedAuthor = clean(author) || site.fullName
+const resolvedOgImageAlt = clean(ogImageAlt) || resolvedTitle
 ---
 
 <title>{resolvedTitle}</title>
@@ -62,13 +64,13 @@ const resolvedAuthor = clean(author) || site.fullName
 <meta property="og:description" content={resolvedDescription} />
 <meta property="og:url" content={resolvedCanonical} />
 <meta property="og:image" content={resolvedOgImage} />
-<meta property="og:image:alt" content={resolvedTitle} />
+<meta property="og:image:alt" content={resolvedOgImageAlt} />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={resolvedTitle} />
 <meta name="twitter:description" content={resolvedDescription} />
 <meta name="twitter:image" content={resolvedOgImage} />
-<meta name="twitter:image:alt" content={resolvedTitle} />
+<meta name="twitter:image:alt" content={resolvedOgImageAlt} />
 
 {Array.isArray(schema) &&
   schema.map((s) => (

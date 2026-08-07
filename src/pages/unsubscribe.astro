@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
+
+const email = (Astro.url.searchParams.get('email') || '').trim()
+const done = Astro.url.searchParams.get('done') === '1'
+const errored = Astro.url.searchParams.get('error') === '1'
+---
+
+<BaseLayout title={`הסרה מרשימת התפוצה | ${site.brand}`} noIndex={true}>
+  <section class="animate-fade-in py-24 bg-background min-h-screen flex items-center">
+    <div class="max-w-lg mx-auto px-6 w-full">
+      <div class="bg-white rounded-[2.5rem] shadow-xl border border-white p-10 md:p-14 text-center">
+        {done ? (
+          <>
+            <h1 class="text-3xl font-black text-primary font-display mb-4">הוסרת בהצלחה</h1>
+            <p class="text-primary/70 font-body leading-relaxed">
+              הוסרת מרשימת התפוצה של {site.brand}. לא נשלח אליך יותר דיוור. אם שינית את דעתך, אפשר תמיד לחזור ולהירשם דרך האתר.
+            </p>
+          </>
+        ) : errored ? (
+          <>
+            <h1 class="text-3xl font-black text-primary font-display mb-4">משהו השתבש</h1>
+            <p class="text-primary/70 font-body leading-relaxed mb-8">
+              לא הצלחנו לעבד את הבקשה כרגע. אפשר לנסות שוב, או לכתוב לנו ישירות ונטפל בזה ידנית.
+            </p>
+            <a
+              href={site.primaryCtaHref}
+              class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
+            >
+              לכתוב לנו בוואטסאפ <span aria-hidden="true">←</span>
+            </a>
+          </>
+        ) : email ? (
+          <>
+            <h1 class="text-3xl font-black text-primary font-display mb-4">להסיר אותך מרשימת התפוצה?</h1>
+            <p class="text-primary/70 font-body leading-relaxed mb-2">
+              הכתובת <span class="font-bold text-primary dir-ltr inline-block">{email}</span> תוסר מרשימת הדיוור של {site.brand}.
+            </p>
+            <p class="text-primary/50 font-body text-sm leading-relaxed mb-8">
+              לא ישפיע על שום דבר אחר בקשר בינינו — רק על מיילים שיווקיים עתידיים.
+            </p>
+            <form method="POST" action="/api/unsubscribe">
+              <input type="hidden" name="email" value={email} />
+              <button
+                type="submit"
+                class="w-full inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
+              >
+                כן, הסר אותי
+              </button>
+            </form>
+          </>
+        ) : (
+          <>
+            <h1 class="text-3xl font-black text-primary font-display mb-4">קישור חסר</h1>
+            <p class="text-primary/70 font-body leading-relaxed mb-8">
+              לא מצאנו כתובת מייל בקישור הזה. אם תרצה להסיר את עצמך מרשימת התפוצה, כתוב לנו ונטפל בזה.
+            </p>
+            <a
+              href={site.primaryCtaHref}
+              class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
+            >
+              לכתוב לנו בוואטסאפ <span aria-hidden="true">←</span>
+            </a>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

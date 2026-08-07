@@ -91,7 +91,7 @@ const seoTitle = data?.seo?.title || `${h1a} | ${site.brand}`
 const seoDescription =
   data?.seo?.description ||
   gold ||
-  'מודל מ.ס.ע: מיפוי, סילוק וסלילה, עצמאות. תהליך מדורג לשחרור דפוסים מהשורש.'
+  'מודל מ.ס.ע: מיפוי, סילוק, עצמאות. תהליך מדורג לשחרור דפוסים מהשורש.'
 
 const canonical = data?.seo?.canonical || undefined
 const noindex = data?.seo?.noindex || false
@@ -117,9 +117,13 @@ const faqSchema = faqItems.length > 0 ? {
 
 const methodSchema = {
   '@context': 'https://schema.org',
-  '@type': 'EducationalOccupationalCredential',
+  '@type': 'WebPage',
+  '@id': `${site.siteUrl}/method#webpage`,
+  url: `${site.siteUrl}/method`,
   name: seoTitle,
   description: seoDescription,
+  inLanguage: 'he',
+  about: { '@id': `${site.siteUrl}/#business` },
   ...(aiCitation ? { abstract: aiCitation } : {}),
   ...(aiContext ? { disambiguatingDescription: aiContext } : {}),
   ...(painTags.length > 0 ? { keywords: painTags.join(', ') } : {}),
