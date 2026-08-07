@@ -5,7 +5,7 @@ export const HOME_PAGE_QUERY = /* groq */ `
 *[_type == "homePage"][0]{
   seo{
     ...,
-    ogImage{ asset->{url} }
+    ogImage{ alt, asset->{url} }
   },
   hero,
   "heroImageDims": hero.image.asset->metadata.dimensions{ width, height },
@@ -32,7 +32,7 @@ export const CONTACT_PAGE_QUERY = /* groq */ `
 *[_type == "contactPage"][0]{
   seo{
     ...,
-    ogImage{ asset->{url} }
+    ogImage{ alt, asset->{url} }
   },
   left{
     title,

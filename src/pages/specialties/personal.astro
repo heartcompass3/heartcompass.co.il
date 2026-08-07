@@ -35,6 +35,7 @@ const page = await sanity.fetch(
       canonical,
       noindex,
       ogImage{
+        alt,
         asset->{url}
       }
     }
@@ -55,6 +56,7 @@ const description = page?.seo?.description || page?.excerpt || fallback.gold
 const canonical = page?.seo?.canonical || new URL(Astro.url.pathname, site.siteUrl).toString()
 const noindex = page?.seo?.noindex || false
 const ogImage = page?.seo?.ogImage?.asset?.url || undefined
+const ogImageAlt = page?.seo?.ogImage?.alt || undefined
 
 const h1 = page?.title || fallback.title
 const gold = page?.excerpt || fallback.gold
@@ -142,6 +144,7 @@ if (faqSchema) {
   canonical={canonical}
   noindex={noindex}
   ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
   schema={schemaArray}
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen">

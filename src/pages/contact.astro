@@ -14,6 +14,7 @@ const seoDescription =
   contact?.seo?.description || 'תיאום שיחה קצרה. הדרך הכי פשוטה להתחיל היא הודעת WhatsApp.'
 const noindex = contact?.seo?.noindex
 const seoOgImage = contact?.seo?.ogImage?.asset?.url
+const seoOgImageAlt = contact?.seo?.ogImage?.alt
 
 // Data
 const email = settings?.contact?.email || site.email || 'yossi@heartcompass.co.il'
@@ -37,7 +38,7 @@ const rightHelper =
   'אם אתה לא בטוח מה לכתוב, פשוט רשום: “אני רוצה להבין מה הצעד הבא.”'
 ---
 
-<BaseLayout title={seoTitle} description={seoDescription} noindex={noindex} ogImage={seoOgImage}>
+<BaseLayout title={seoTitle} description={seoDescription} noindex={noindex} ogImage={seoOgImage} ogImageAlt={seoOgImageAlt}>
   <div class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-6xl mx-auto px-6">
       <div class="bg-white rounded-[3.5rem] shadow-2xl overflow-hidden border border-white flex flex-col md:flex-row min-h-[650px]">

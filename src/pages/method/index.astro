@@ -48,7 +48,7 @@ const data = await sanity.fetch(/* groq */ `
     description,
     canonical,
     noindex,
-    ogImage{asset->{url}}
+    ogImage{alt, asset->{url}}
   }
 }
 `)
@@ -98,6 +98,7 @@ const seoDescription =
 const canonical = data?.seo?.canonical || undefined
 const noindex = data?.seo?.noindex || false
 const ogImage = data?.seo?.ogImage?.asset?.url || undefined
+const ogImageAlt = data?.seo?.ogImage?.alt || undefined
 
 // ── AEO ──────────────────────────────────────────────────────────
 const aiCitation = data?.aiCitation || ''
@@ -139,7 +140,7 @@ const methodSchema = {
 const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
 ---
 
-<BaseLayout title={seoTitle} description={seoDescription} canonical={canonical} noindex={noindex} ogImage={ogImage} schema={schemas}>
+<BaseLayout title={seoTitle} description={seoDescription} canonical={canonical} noindex={noindex} ogImage={ogImage} ogImageAlt={ogImageAlt} schema={schemas}>
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-6xl mx-auto px-6">
 

@@ -13,6 +13,7 @@ const seoTitle = home.seo?.title
 const seoDescription = home.seo?.description
 const noindex = home.seo?.noindex
 const seoOgImage = home.seo?.ogImage?.asset?.url
+const seoOgImageAlt = home.seo?.ogImage?.alt
 
 // HERO
 const hero = home.hero ?? {}
@@ -118,6 +119,7 @@ const brandDeep = '#295157'
   description={seoDescription}
   noindex={noindex}
   ogImage={seoOgImage}
+  ogImageAlt={seoOgImageAlt}
   preload={{ srcset: heroSrcset, sizes: heroSizes, href: heroImg }}
   schema={[...(aeoSchema ? [aeoSchema] : []), ...(faqSchema ? [faqSchema] : [])]}
 >

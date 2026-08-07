@@ -26,6 +26,9 @@ const {
   schema,
   // preload אופציונלי לתמונת ה-LCP (הירו): { srcset, sizes } או { href }
   preload,
+  // og:type="article" בלבד — article:published_time / modified_time / author
+  publishedTime,
+  modifiedTime,
 } = Astro.props
 
 const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
@@ -256,6 +259,8 @@ if (isArticlePage) {
       ogImage={ogImage}
       ogImageAlt={ogImageAlt}
       pageType={pageType}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
       schema={mergedSchema}
     />
 

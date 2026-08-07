@@ -23,6 +23,14 @@ export default defineType({
       title: 'תמונת OG (שיתוף)',
       type: 'image',
       options: {hotspot: true},
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'תיאור נגישות (Alt)',
+          type: 'string',
+          description: 'נשלף ל-og:image:alt ו-twitter:image:alt. בלי זה, נופל חזרה לכותרת העמוד.',
+        }),
+      ],
     }),
     defineField({
       name: 'noindex',

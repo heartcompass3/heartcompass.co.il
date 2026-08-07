@@ -181,6 +181,8 @@ const schemas = faqSchema
   ogImage={ogImage}
   ogImageAlt={article.mainImage?.alt}
   pageType="article"
+  publishedTime={article.publishedAt}
+  modifiedTime={displayUpdatedAt}
   schema={schemas}
 >
   <article class="animate-fade-in py-24 bg-background min-h-screen">
@@ -217,6 +219,8 @@ const schemas = faqSchema
           <div class="w-full h-80 rounded-[2rem] overflow-hidden mb-12 shadow-lg">
             <img
               src={optImg(article.mainImage.asset.url, 1400, 80, slug)}
+              srcset={`${optImg(article.mainImage.asset.url, 700, 80, slug)} 700w, ${optImg(article.mainImage.asset.url, 1400, 80, slug)} 1400w, ${optImg(article.mainImage.asset.url, 2100, 80, slug)} 2100w`}
+              sizes="(max-width: 768px) 100vw, 900px"
               alt={article.mainImage.alt || article.title || `מאמר | ${site.brand}`}
               class="w-full h-full object-cover"
               loading="eager"
