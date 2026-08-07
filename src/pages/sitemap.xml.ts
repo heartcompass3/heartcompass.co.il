@@ -39,13 +39,16 @@ export const GET: APIRoute = async () => {
   try {
     // משיכת המאמרים. lastmod נגזר מ-contentUpdatedAt (מעודכן ידנית בעריכות
     // תוכן משמעותיות בלבד) ולא מ-_updatedAt הטכני, שמשתנה בכל שמירה כולל
-    // תיקונים טכניים — ומזייף אות רעננות לגוגל. mainImage נכנס ל-image sitemap
-    // (המלצת גוגל: תמונות שלא תמיד מתגלות אורגנית כדאי לחשוף במפה).
+    // תיקונים טכניים — ומזייף אות רעננות לגוגל. mainImage + תמונות מגוף
+    // המאמר נכנסות ל-image sitemap (המלצת גוגל: תמונות שלא תמיד מתגלות
+    // אורגנית כדאי לחשוף במפה). "bodyImages" ממוין רק תמונות מתוך body,
+    // לא כל ה-PortableText, כדי לא לגרור payload כבד סתם.
     articles = await sanity.fetch(`
       *[_type == "article" && defined(slug.current)]{
         "slug": slug.current,
         "_updatedAt": coalesce(contentUpdatedAt, publishedAt, _updatedAt),
-        mainImage{ alt, asset->{url} }
+        mainImage{ alt, asset->{url} },
+        "bodyImages": body[_type == "image"]{ alt, asset->{url} }
       }
     `)
 
@@ -80,30 +83,31 @@ export const GET: APIRoute = async () => {
 
   // איסוף כל הכתובות לרשימה אחת, ואז דה-דופ לפי loc.
   // (עמודי תשתית מקודדים-קשיח חופפים למסמכי "page" עם אותו slug — דה-דופ מונע כפילויות.)
-  type Entry = { loc: string; lastmod: string; image?: { url: string; alt?: string } }
+  type Entry = { loc: string; lastmod: string; images: { url: string; alt?: string }[] }
   const entries: Entry[] = []
 
-  staticPages.forEach(p => entries.push({ loc: `${baseUrl}${p.url}`, lastmod: p.lastmod }))
+  staticPages.forEach(p => entries.push({ loc: `${baseUrl}${p.url}`, lastmod: p.lastmod, images: [] }))
 
   const addDocs = (docs: any[], prefix: string) =>
     docs
       .map(d => {
         const slug = cleanSlug(d.slug)
-        return (
-          slug && {
-            slug,
-            _updatedAt: d._updatedAt,
-            // שם קובץ תיאורי (ה-slug של המאמר) ב-URL בפועל, לא רק כ-alt —
-            // ראו src/lib/img.ts withFilename.
-            image: d.mainImage?.asset?.url
-              ? { url: withFilename(d.mainImage.asset.url, slug) || d.mainImage.asset.url, alt: d.mainImage.alt }
-              : undefined,
-          }
-        )
+        if (!slug) return null
+        // שם קובץ תיאורי (ה-slug של המאמר, +אינדקס לתמונות גוף נוספות) ב-URL
+        // בפועל, לא רק כ-alt — ראו src/lib/img.ts withFilename.
+        const images: { url: string; alt?: string }[] = []
+        if (d.mainImage?.asset?.url) {
+          images.push({ url: withFilename(d.mainImage.asset.url, slug) || d.mainImage.asset.url, alt: d.mainImage.alt })
+        }
+        ;(d.bodyImages || []).forEach((img: any, i: number) => {
+          if (!img?.asset?.url) return
+          images.push({ url: withFilename(img.asset.url, `${slug}-${i + 1}`) || img.asset.url, alt: img.alt })
+        })
+        return { slug, _updatedAt: d._updatedAt, images }
       })
-      .filter((d): d is { slug: string; _updatedAt: string; image?: { url: string; alt?: string } } => !!d && isValidSlug(d.slug))
+      .filter((d): d is { slug: string; _updatedAt: string; images: { url: string; alt?: string }[] } => !!d && isValidSlug(d.slug))
       .forEach(d =>
-        entries.push({ loc: encodeURI(`${baseUrl}${prefix}${d.slug}`), lastmod: d._updatedAt, image: d.image })
+        entries.push({ loc: encodeURI(`${baseUrl}${prefix}${d.slug}`), lastmod: d._updatedAt, images: d.images })
       )
 
   addDocs(articles, '/articles/')
@@ -111,21 +115,21 @@ export const GET: APIRoute = async () => {
   addDocs(pains, '/pain/')
   addDocs(landingPages, '/guide/')
 
-  // דה-דופ: שומרים על ה-lastmod החדש ביותר לכל כתובת (עם התמונה שלה).
+  // דה-דופ: שומרים על ה-lastmod החדש ביותר לכל כתובת (עם התמונות שלה).
   const byLoc = new Map<string, Entry>()
   for (const e of entries) {
     const prev = byLoc.get(e.loc)
     if (!prev || (e.lastmod && e.lastmod > prev.lastmod)) byLoc.set(e.loc, e)
   }
 
-  const urls = [...byLoc.values()].map(({ loc, lastmod, image }) => `
+  const urls = [...byLoc.values()].map(({ loc, lastmod, images }) => `
       <url>
         <loc>${loc}</loc>
         <lastmod>${lastmod}</lastmod>
-        ${image ? `<image:image>
+        ${images.map(image => `<image:image>
           <image:loc>${escapeXml(image.url)}</image:loc>
           ${image.alt ? `<image:caption>${escapeXml(image.alt)}</image:caption>` : ''}
-        </image:image>` : ''}
+        </image:image>`).join('')}
       </url>
     `)
 

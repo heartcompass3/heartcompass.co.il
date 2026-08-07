@@ -121,6 +121,10 @@ const methodSchema = {
   '@id': `${site.siteUrl}/method#webpage`,
   url: `${site.siteUrl}/method`,
   name: seoTitle,
+  // רבים מקלידים "שיטת מסע" בלי הנקודות של מ.ס.ע. "מסע" לבדו כבר שייך לשיטה
+  // טיפולית אחרת (Brandon Bays), אז לא תובעים את המילה הגולמית — רק צירופים
+  // ממותגים/חד-משמעיים שמזהים את מ.ס.ע עצמו.
+  alternateName: ['שיטת מסע (מיפוי סילוק עצמאות)', 'מסע מיפוי סילוק עצמאות'],
   description: seoDescription,
   inLanguage: 'he',
   about: { '@id': `${site.siteUrl}/#business` },

@@ -304,7 +304,7 @@ const schemas = faqSchema
         )}
 
         <div class="mt-14 prose prose-xl max-w-none text-primary/80 font-body leading-9">
-          <PortableText value={article.body} />
+          <PortableText value={article.body} filenamePrefix={slug} />
         </div>
 
         {/* ─── שאלות נפוצות ──────────────────────────────────────── */}

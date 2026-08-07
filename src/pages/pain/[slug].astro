@@ -138,7 +138,7 @@ const fmtDate = (d?: string) =>
       <!-- גוף מורחב -->
       {pain.body && (
         <div class="prose prose-lg max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 md:p-12 mb-16">
-          <PortableText value={pain.body} />
+          <PortableText value={pain.body} filenamePrefix={slug} />
         </div>
       )}
 

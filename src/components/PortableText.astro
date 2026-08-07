@@ -2,8 +2,12 @@
 import { toHTML } from '@portabletext/to-html'
 import { urlFor } from '../lib/sanity'
 import { slugify } from '../lib/slug'
+import { withFilename } from '../lib/img'
 
-const { value } = Astro.props
+// filenamePrefix (בד"כ slug הדף/המאמר) — בסיס לשם קובץ תיאורי לתמונות בגוף
+// (Sanity vanity filename). אופציונלי: בלי זה, תמונות הגוף נשארות עם hash גולמי.
+const { value, filenamePrefix } = Astro.props
+let inlineImageIndex = 0
 
 const headingId = (v: any) => slugify((v?.children || []).map((c: any) => c.text || '').join(''))
 
@@ -36,8 +40,10 @@ const components = {
     image: ({ value }) => {
       if (!value?.asset) return ''
 
-      const src = urlFor(value).width(900).url()
-      const fullSrc = urlFor(value).width(1800).url()
+      inlineImageIndex += 1
+      const filename = filenamePrefix ? `${filenamePrefix}-${inlineImageIndex}` : undefined
+      const src = withFilename(urlFor(value).width(900).url(), filename) || urlFor(value).width(900).url()
+      const fullSrc = withFilename(urlFor(value).width(1800).url(), filename) || urlFor(value).width(1800).url()
       const alt = value.alt || ''
       const caption = value.caption || ''
 
