@@ -211,6 +211,7 @@ export const PAIN_BY_SLUG_QUERY = /* groq */ `
 *[_type == "pain" && slug.current == $slug && coalesce(publishedSite, "new") in ["new", "both"]][0]{
   _id,
   _updatedAt,
+  contentUpdatedAt,
   title,
   goldLine,
   "slug": slug.current,

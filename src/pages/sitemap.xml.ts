@@ -20,23 +20,26 @@ export const GET: APIRoute = async () => {
   const escapeXml = (s: string) =>
     s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-  // עמודי התשתית
-  const staticPages = [
-    { url: '/', lastmod: buildDate },
-    { url: '/about', lastmod: buildDate },
-    { url: '/method', lastmod: buildDate },
-    { url: '/articles', lastmod: buildDate },
-    { url: '/specialties', lastmod: buildDate },
-    // מרכז הכלים — עכשיו יעד של עשרות קישורים פנימיים ("אבחון קצר"), חייב להיות באינדקס
-    { url: '/tools', lastmod: buildDate }
-  ]
-
   let articles = []
   let pages = []
   let pains = []
   let landingPages = []
+  let homeUpdatedAt = ''
+  let methodUpdatedAt = ''
+  let aboutUpdatedAt = ''
 
   try {
+    // תאריכי עדכון אמיתיים (contentUpdatedAt) לעמודי הסינגלטון — לא buildDate
+    // שמשתנה בכל דיפלוי בלי קשר לשינוי תוכן בפועל.
+    const home = await sanity.fetch(`*[_type == "homePage"][0]{contentUpdatedAt, _updatedAt}`)
+    homeUpdatedAt = home?.contentUpdatedAt || home?._updatedAt || ''
+
+    const method = await sanity.fetch(`*[_type == "methodPage"][0]{contentUpdatedAt, _updatedAt}`)
+    methodUpdatedAt = method?.contentUpdatedAt || method?._updatedAt || ''
+
+    const about = await sanity.fetch(`*[_type == "page" && slug.current == "about"][0]{contentUpdatedAt, _updatedAt}`)
+    aboutUpdatedAt = about?.contentUpdatedAt || about?._updatedAt || ''
+
     // משיכת המאמרים. lastmod נגזר מ-contentUpdatedAt (מעודכן ידנית בעריכות
     // תוכן משמעותיות בלבד) ולא מ-_updatedAt הטכני, שמשתנה בכל שמירה כולל
     // תיקונים טכניים — ומזייף אות רעננות לגוגל. mainImage + תמונות מגוף
@@ -52,19 +55,19 @@ export const GET: APIRoute = async () => {
       }
     `)
 
-    // משיכת דפי ההתמחויות (סכימת "page")
+    // משיכת דפי ההתמחויות (סכימת "page") — contentUpdatedAt, לא _updatedAt הטכני
     pages = await sanity.fetch(`
       *[_type == "page" && defined(slug.current)]{
         "slug": slug.current,
-        _updatedAt
+        "_updatedAt": coalesce(contentUpdatedAt, _createdAt)
       }
     `)
 
-    // משיכת מוקדי הכאב (Pain Hubs)
+    // משיכת מוקדי הכאב (Pain Hubs) — contentUpdatedAt, לא _updatedAt הטכני
     pains = await sanity.fetch(`
       *[_type == "pain" && defined(slug.current) && coalesce(publishedSite, "new") in ["new", "both"]]{
         "slug": slug.current,
-        _updatedAt
+        "_updatedAt": coalesce(contentUpdatedAt, _createdAt)
       }
     `)
 
@@ -80,6 +83,19 @@ export const GET: APIRoute = async () => {
   } catch (error) {
     console.error('❌ Error fetching dynamic routes from Sanity:', error)
   }
+
+  // עמודי התשתית — תאריך תוכן אמיתי איפה שיש מסמך יחיד תואם; buildDate רק
+  // כברירת מחדל וכ-fallback לעמודי אינדקס/ריכוז בלי מסמך תוכן משלהם (/articles,
+  // /specialties, /tools).
+  const staticPages = [
+    { url: '/', lastmod: homeUpdatedAt || buildDate },
+    { url: '/about', lastmod: aboutUpdatedAt || buildDate },
+    { url: '/method', lastmod: methodUpdatedAt || buildDate },
+    { url: '/articles', lastmod: buildDate },
+    { url: '/specialties', lastmod: buildDate },
+    // מרכז הכלים — עכשיו יעד של עשרות קישורים פנימיים ("אבחון קצר"), חייב להיות באינדקס
+    { url: '/tools', lastmod: buildDate }
+  ]
 
   // איסוף כל הכתובות לרשימה אחת, ואז דה-דופ לפי loc.
   // (עמודי תשתית מקודדים-קשיח חופפים למסמכי "page" עם אותו slug — דה-דופ מונע כפילויות.)

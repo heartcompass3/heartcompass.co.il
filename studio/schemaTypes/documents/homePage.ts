@@ -27,6 +27,15 @@ export default defineType({
       group: 'seo',
     }),
 
+    defineField({
+      name: 'contentUpdatedAt',
+      title: 'תאריך עדכון תוכן (עדכן ידנית!)',
+      type: 'datetime',
+      group: 'seo',
+      description:
+        'עדכנו רק כשיש שינוי תוכן משמעותי (לא תיקון טעות כתיב). נשלף ל-dateModified ב-JSON-LD ולתאריך lastmod במפת האתר, במקום תאריך השמירה הטכני האחרון ב-Sanity.',
+    }),
+
     // ─── AEO (נסתר — JSON-LD בלבד) ──────────────────────────────
     defineField({
       name: 'aiCitation',

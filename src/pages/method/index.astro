@@ -8,6 +8,8 @@ import { optImg } from '../../lib/img'
 
 const data = await sanity.fetch(/* groq */ `
 *[_type == "methodPage"][0]{
+  _updatedAt,
+  contentUpdatedAt,
   hero{
     headlineLine1,
     headlineLine2,
@@ -127,6 +129,7 @@ const methodSchema = {
   alternateName: ['שיטת מסע (מיפוי סילוק עצמאות)', 'מסע מיפוי סילוק עצמאות'],
   description: seoDescription,
   inLanguage: 'he',
+  dateModified: data?.contentUpdatedAt || data?._updatedAt || undefined,
   about: { '@id': `${site.siteUrl}/#business` },
   ...(aiCitation ? { abstract: aiCitation } : {}),
   ...(aiContext ? { disambiguatingDescription: aiContext } : {}),

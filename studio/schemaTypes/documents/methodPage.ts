@@ -14,6 +14,14 @@ export default defineType({
     }),
 
     defineField({
+      name: 'contentUpdatedAt',
+      title: 'תאריך עדכון תוכן (עדכן ידנית!)',
+      type: 'datetime',
+      description:
+        'עדכנו רק כשיש שינוי תוכן משמעותי (לא תיקון טעות כתיב). נשלף ל-dateModified ב-JSON-LD ולתאריך lastmod במפת האתר, במקום תאריך השמירה הטכני האחרון ב-Sanity.',
+    }),
+
+    defineField({
       name: 'hero',
       title: 'Hero',
       type: 'object',

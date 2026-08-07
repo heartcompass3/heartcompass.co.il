@@ -195,6 +195,14 @@ export default defineType({
       initialValue: 10,
       description: '1 = ראשון. מספר נמוך מופיע קודם.',
     }),
+    defineField({
+      name: 'contentUpdatedAt',
+      title: 'תאריך עדכון תוכן (עדכן ידנית!)',
+      type: 'datetime',
+      group: 'settings',
+      description:
+        'עדכנו רק כשיש שינוי תוכן משמעותי (לא תיקון טעות כתיב). נשלף ל-dateModified ב-JSON-LD ולתאריך lastmod במפת האתר, במקום תאריך השמירה הטכני האחרון ב-Sanity.',
+    }),
   ],
 
   preview: {

@@ -43,6 +43,8 @@ const collectionSchema = {
   description,
   abstract: pain.aiCitation || undefined,
   inLanguage: 'he',
+  // dateModified אמיתי (contentUpdatedAt, מעודכן ידנית) — לא _updatedAt הטכני.
+  dateModified: pain.contentUpdatedAt || pain._updatedAt || undefined,
   isPartOf: { '@id': `${site.siteUrl}/#website` },
   about: pain.definition
     ? { '@type': 'Thing', name: pain.title, description: pain.definition }
