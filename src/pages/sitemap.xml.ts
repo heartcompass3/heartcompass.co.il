@@ -16,6 +16,8 @@ export const GET: APIRoute = async () => {
   // (רווחים/טאבים בתוך ה-slug = כתובת לא חוקית שלא נפתרת). מקודד עברית ל-%xx.
   const cleanSlug = (s: string) => (s || '').trim().replace(/^\/+/, '')
   const isValidSlug = (s: string) => !!s && !/\s/.test(s)
+  const escapeXml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
   // עמודי התשתית
   const staticPages = [
@@ -36,11 +38,13 @@ export const GET: APIRoute = async () => {
   try {
     // משיכת המאמרים. lastmod נגזר מ-contentUpdatedAt (מעודכן ידנית בעריכות
     // תוכן משמעותיות בלבד) ולא מ-_updatedAt הטכני, שמשתנה בכל שמירה כולל
-    // תיקונים טכניים — ומזייף אות רעננות לגוגל.
+    // תיקונים טכניים — ומזייף אות רעננות לגוגל. mainImage נכנס ל-image sitemap
+    // (המלצת גוגל: תמונות שלא תמיד מתגלות אורגנית כדאי לחשוף במפה).
     articles = await sanity.fetch(`
       *[_type == "article" && defined(slug.current)]{
         "slug": slug.current,
-        "_updatedAt": coalesce(contentUpdatedAt, publishedAt, _updatedAt)
+        "_updatedAt": coalesce(contentUpdatedAt, publishedAt, _updatedAt),
+        mainImage{ alt, asset->{url} }
       }
     `)
 
@@ -75,17 +79,23 @@ export const GET: APIRoute = async () => {
 
   // איסוף כל הכתובות לרשימה אחת, ואז דה-דופ לפי loc.
   // (עמודי תשתית מקודדים-קשיח חופפים למסמכי "page" עם אותו slug — דה-דופ מונע כפילויות.)
-  type Entry = { loc: string; lastmod: string }
+  type Entry = { loc: string; lastmod: string; image?: { url: string; alt?: string } }
   const entries: Entry[] = []
 
   staticPages.forEach(p => entries.push({ loc: `${baseUrl}${p.url}`, lastmod: p.lastmod }))
 
   const addDocs = (docs: any[], prefix: string) =>
     docs
-      .map(d => cleanSlug(d.slug) && { slug: cleanSlug(d.slug), _updatedAt: d._updatedAt })
-      .filter((d): d is { slug: string; _updatedAt: string } => !!d && isValidSlug(d.slug))
+      .map(d =>
+        cleanSlug(d.slug) && {
+          slug: cleanSlug(d.slug),
+          _updatedAt: d._updatedAt,
+          image: d.mainImage?.asset?.url ? { url: d.mainImage.asset.url, alt: d.mainImage.alt } : undefined,
+        }
+      )
+      .filter((d): d is { slug: string; _updatedAt: string; image?: { url: string; alt?: string } } => !!d && isValidSlug(d.slug))
       .forEach(d =>
-        entries.push({ loc: encodeURI(`${baseUrl}${prefix}${d.slug}`), lastmod: d._updatedAt })
+        entries.push({ loc: encodeURI(`${baseUrl}${prefix}${d.slug}`), lastmod: d._updatedAt, image: d.image })
       )
 
   addDocs(articles, '/articles/')
@@ -93,22 +103,26 @@ export const GET: APIRoute = async () => {
   addDocs(pains, '/pain/')
   addDocs(landingPages, '/guide/')
 
-  // דה-דופ: שומרים על ה-lastmod החדש ביותר לכל כתובת.
-  const byLoc = new Map<string, string>()
+  // דה-דופ: שומרים על ה-lastmod החדש ביותר לכל כתובת (עם התמונה שלה).
+  const byLoc = new Map<string, Entry>()
   for (const e of entries) {
     const prev = byLoc.get(e.loc)
-    if (!prev || (e.lastmod && e.lastmod > prev)) byLoc.set(e.loc, e.lastmod)
+    if (!prev || (e.lastmod && e.lastmod > prev.lastmod)) byLoc.set(e.loc, e)
   }
 
-  const urls = [...byLoc.entries()].map(([loc, lastmod]) => `
+  const urls = [...byLoc.values()].map(({ loc, lastmod, image }) => `
       <url>
         <loc>${loc}</loc>
         <lastmod>${lastmod}</lastmod>
+        ${image ? `<image:image>
+          <image:loc>${escapeXml(image.url)}</image:loc>
+          ${image.alt ? `<image:caption>${escapeXml(image.alt)}</image:caption>` : ''}
+        </image:image>` : ''}
       </url>
     `)
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     ${urls.join('')}
   </urlset>`
 
