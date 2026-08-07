@@ -10,7 +10,18 @@ export default defineType({
       name: 'title',
       title: 'כותרת ראשית',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().custom(async (title, context) => {
+          if (!title) return true
+          const { document, getClient } = context
+          const client = getClient({ apiVersion: '2026-04-23' })
+          const id = document?._id?.replace(/^drafts\./, '')
+          const duplicate = await client.fetch(
+            `count(*[_type == "article" && title == $title && !(_id in [$id, "drafts." + $id])])`,
+            { title, id }
+          )
+          return duplicate > 0 ? 'כבר קיים מאמר עם הכותרת הזאת בדיוק — כותרות זהות מבלבלות חיפוש וקישור פנימי' : true
+        }),
       description:
         'כותרת חקירתית וברורה. מגדירה בעיה או תופעה. לא סלוגן ולא הבטחה.',
     }),
@@ -106,6 +117,8 @@ export default defineType({
         },
       ],
 
+      validation: (Rule) => Rule.required().min(1).error('קהל יעד חובה — משפיע על באילו דפים המאמר יופיע אוטומטית'),
+
       options: {
         list: [
           { title: 'זוגיות', value: 'זוגיות' },
@@ -120,6 +133,61 @@ export default defineType({
 
       description:
         'בחירת תחומים תציג את המאמר אוטומטית בדפים המתאימים באתר.',
+    }),
+
+    // ─── חדש: SEO (כותרת/תיאור נפרדים מהתצוגה הגלויה) ─────────────
+    defineField({
+      name: 'seo',
+      title: 'SEO (אופציונלי — override)',
+      type: 'object',
+      options: { collapsible: true, collapsed: true },
+      description:
+        'רק אם צריך כותרת/תיאור שונים ממה שמוצג לקורא בפועל (title/excerpt). אם ריק, נופל חזרה אליהם אוטומטית.',
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'כותרת SEO (Title Tag)',
+          type: 'string',
+          validation: (Rule) => Rule.max(60).warning('מומלץ עד 60 תווים'),
+        }),
+        defineField({
+          name: 'description',
+          title: 'תיאור SEO (Meta Description)',
+          type: 'text',
+          rows: 3,
+          validation: (Rule) => Rule.max(160).warning('מומלץ עד 160 תווים'),
+        }),
+      ],
+    }),
+
+    // ─── חדש: כוונת חיפוש + תפקיד באשכול התוכן ────────────────────
+    defineField({
+      name: 'searchIntent',
+      title: 'כוונת חיפוש',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'מידעי (informational)', value: 'informational' },
+          { title: 'מסחרי (commercial)', value: 'commercial' },
+          { title: 'ניווטי (navigational)', value: 'navigational' },
+        ],
+      },
+      description: 'מה המחפש רוצה להשיג. עוזר להחליט אם המאמר עונה על השאלה הנכונה.',
+    }),
+    defineField({
+      name: 'contentRole',
+      title: 'תפקיד באשכול התוכן',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'מאמר עוגן (pillar)', value: 'anchor' },
+          { title: 'מאמר המשך/תומך', value: 'supporting' },
+          { title: 'עדכון עונתי/זמני', value: 'update' },
+          { title: 'Legacy — לא לקדם בהצעות/קישורים אוטומטיים', value: 'legacy' },
+        ],
+      },
+      description:
+        '"Legacy" מסמן מאמרים ישנים (למשל קריירה/עסקים) שלא רוצים שיוצעו אוטומטית כ"מאמרים נוספים" למאמרים חדשים.',
     }),
 
     // ─── חדש: מוקדי כאב (Pain Hubs) — חוצי-תחום ──────────────────
@@ -194,6 +262,24 @@ export default defineType({
       title: 'הקשר נוסף ל-AI (נסתר)',
       type: 'text',
       rows: 3,
+      validation: (Rule) =>
+        Rule.custom((value: string | undefined) => {
+          if (!value) return true
+          if (/https?:\/\//i.test(value)) {
+            return 'יש קישור גולמי בטקסט — מקורות שייכים לשדה "מקורות" למטה, לא לכאן (הוא נשלף אוטומטית ל-JSON-LD citation ומוצג לקורא).'
+          }
+          const systemNotePatterns = [
+            /לפי בקשת/, /מאמר \d+ מתוך/, /חלק מסדרת/, /לא חלק מסדרה/,
+            /מיועדים לאימות מנועי חיפוש/, /אינם מוצגים לגולש/, /מצב כתיבה/,
+          ]
+          if (systemNotePatterns.some((p) => p.test(value))) {
+            return {
+              warning:
+                'נראה שיש כאן הערת עבודה פנימית (תזמון/הנחיה) ולא הקשר עובדתי על המאמר עצמו — היא תיחשף בפועל ב-JSON-LD הציבורי.',
+            }
+          }
+          return true
+        }),
       description:
         'מידע עובדתי נוסף שעוזר ל-AI להבין ולצטט את המאמר נכון. נשלף ל-JSON-LD (disambiguatingDescription) ואינו מוצג בעמוד. טקסט הסבר בלבד — בלי קישורים גולמיים ובלי הערות עבודה פנימיות; מקורות ומחקרים שייכים לשדה "מקורות" למטה. אופציונלי.',
     }),

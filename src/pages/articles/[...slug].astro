@@ -68,8 +68,11 @@ const headings = (Array.isArray(article.body) ? article.body : [])
   .filter((h: any) => h.text)
 const showToc = headings.length >= 3
 
-const title = `${article.title} | ${site.brand}`
-const description = article.excerpt || 'מאמר מתוך מצפן הלב.'
+// seo.title/description הם override אופציונלי — ברירת המחדל היא מה שהקורא רואה בפועל
+const title = article.seo?.title?.trim()
+  ? article.seo.title
+  : `${article.title} | ${site.brand}`
+const description = article.seo?.description?.trim() || article.excerpt || 'מאמר מתוך מצפן הלב.'
 
 const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
 // תמונת שיתוף ממוטבת (~1200px, WebP/AVIF) במקום המקור המלא הכבד.

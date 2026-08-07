@@ -135,6 +135,8 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
   publishedAt,
   contentUpdatedAt,
   authorLine,
+  seo{ title, description },
+  contentRole,
   mainImage{
     alt,
     asset->{
@@ -182,7 +184,7 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
 // ייחנקו לטובת החדשים בלבד. נופל חזרה ל-tags רק אם אין חפיפת pains בכלל
 // (לדוגמה מאמר עם מוקד כאב אחד ייחודי).
 export const RELATED_ARTICLES_QUERY = /* groq */ `
-*[_type == "article" && slug.current != $slug && (
+*[_type == "article" && slug.current != $slug && contentRole != "legacy" && (
   count(pains[]->slug.current[@ in $painSlugs]) > 0 ||
   count(tags[@ in $tags]) > 0
 )]
