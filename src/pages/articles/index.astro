@@ -9,7 +9,7 @@ import { optImg } from '../../lib/img'
 const articles = await sanity.fetch(ARTICLES_QUERY)
 
 const title = `מאמרים | ${site.brand}`
-const description = 'מאמרים, תובנות וכלים מעשיים מתוך מצפן הלב.'
+const description = 'מאמרים וכלים מעשיים להורים, בני נוער וזוגות: פחדים, דפוסים, חרדה, תקשורת ובחירה חדשה מתוך מצפן הלב.'
 
 // Build a lightweight index for client-side search
 const searchIndex = (articles ?? []).map((a) => ({
