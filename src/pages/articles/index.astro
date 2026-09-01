@@ -81,10 +81,11 @@ const searchIndex = (articles ?? []).map((a) => ({
               >
                 <div class="h-56 overflow-hidden relative w-full">
                   <img
-                    src={a.mainImage?.asset?.url || '/assets/yossi-hero.jpg'}
+                    src={optImg(a.mainImage?.asset?.url, 600) || '/assets/yossi-hero.jpg'}
                     alt={a.mainImage?.alt || a.title || `מאמר | ${site.brand}`}
                     class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
                     loading="lazy"
+                    decoding="async"
                   />
                   <div class="absolute top-6 right-6 bg-white/95 px-4 py-1.5 text-xs font-bold text-primary rounded-full shadow-lg z-20">
                     {a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('he-IL') : ''}
