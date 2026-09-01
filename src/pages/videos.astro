@@ -1,9 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from '../components/Breadcrumbs.astro'
+import { buildWhatsAppHref } from '../lib/whatsapp'
 import site from '../content/pages/site.json'
 
 const channelId = 'UCo3tMRDrFY_zUlgeJXyvxjQ'
+const videoWhatsAppHref = buildWhatsAppHref(
+  site.whatsAppPhone,
+  'היי יוסי, הגעתי דרך עמוד הווידאו. צפיתי בסרטון ורוצה לשאול על משהו שנגע בי או קרה אצלנו בבית.',
+)
 
 const fallbackVideos = [
   { id: 'C3tFtybKkR0', title: 'איך "שכחת שוב" הופך בסוף ל"ככה אתה"?', published: '2026-08-31' },
@@ -122,7 +127,7 @@ const videoSchemas = videos.map((video) => ({
       <div class="max-w-3xl mx-auto mt-16 rounded-[2rem] bg-primary text-white p-8 md:p-10 text-center">
         <h2 class="text-2xl md:text-3xl font-black font-display mb-3">סרטון נגע במשהו שקורה אצלכם בבית?</h2>
         <p class="text-white/75 font-body leading-relaxed mb-6">אפשר להתחיל בשיחה פשוטה, בלי להתחייב ובלי לדעת מראש את כל התשובות.</p>
-        <a href={`https://wa.me/${site.whatsAppPhone}`} class="inline-flex rounded-full bg-white text-primary px-6 py-3 font-body font-bold hover:bg-accent hover:text-white transition">לדבר עם יוסי</a>
+        <a href={videoWhatsAppHref} data-track-event="whatsapp_click" data-track-label="videos" class="inline-flex rounded-full bg-white text-primary px-6 py-3 font-body font-bold hover:bg-accent hover:text-white transition">לדבר עם יוסי</a>
       </div>
     </div>
   </section>

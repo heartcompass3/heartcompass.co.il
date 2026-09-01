@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import PortableText from '../components/PortableText.astro'
 import { sanity, urlFor } from '../lib/sanity'
 import { HOME_PAGE_QUERY } from '../lib/sanityQueries'
+import { buildWhatsAppHref } from '../lib/whatsapp'
 import site from '../content/pages/site.json'
 
 const home = await sanity.fetch(HOME_PAGE_QUERY)
@@ -44,6 +45,11 @@ const heroH =
 
 const primaryCtaHref = hero.primaryCtaHref
 const primaryCtaLabel = hero.primaryCtaText || 'בוא נדבר תכל׳ס ←'
+const homepageWhatsAppMessage =
+  'היי יוסי, הגעתי דרך דף הבית של מצפן הלב. אשמח לספר בקצרה מה קורה אצלנו ולהבין אם התהליך מתאים.'
+const primaryCtaHrefWithMessage = primaryCtaHref?.includes('wa.me')
+  ? buildWhatsAppHref(site.whatsAppPhone, homepageWhatsAppMessage)
+  : primaryCtaHref
 
 const secondaryCtaHref = hero.secondaryCtaHref || '/about'
 const secondaryCtaLabel = hero.secondaryCtaText || 'נעים להכיר, יוסי'
@@ -165,7 +171,7 @@ const brandDeep = '#295157'
           <div class="mt-10 hidden lg:flex gap-6 justify-center">
             {primaryCtaHref && (
               <a
-                href={primaryCtaHref}
+                href={primaryCtaHrefWithMessage}
                 class="h-14 min-w-[240px] inline-flex items-center justify-center rounded-2xl bg-accent px-10 font-body font-bold text-primary shadow hover:opacity-90 transition"
               >
                 {primaryCtaLabel}
@@ -204,7 +210,7 @@ const brandDeep = '#295157'
           <div class="mt-6 flex flex-col gap-4 lg:hidden">
             {primaryCtaHref && (
               <a
-                href={primaryCtaHref}
+                href={primaryCtaHrefWithMessage}
                 class="h-14 inline-flex items-center justify-center rounded-2xl bg-accent px-8 font-body font-bold text-primary shadow hover:opacity-90 transition"
               >
                 {primaryCtaLabel}

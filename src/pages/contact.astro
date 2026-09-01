@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import site from '../content/pages/site.json'
 import { sanity } from '../lib/sanity'
 import { CONTACT_PAGE_QUERY, SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
+import { buildWhatsAppHref } from '../lib/whatsapp'
 
 // מושכים גם Site Settings וגם Contact Page
 const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
@@ -18,7 +19,10 @@ const seoOgImageAlt = contact?.seo?.ogImage?.alt
 
 // Data
 const email = settings?.contact?.email || site.email || 'yossi@heartcompass.co.il'
-const whatsappHref = settings?.whatsapp?.href || site.primaryCtaHref || '#'
+const whatsappHref = buildWhatsAppHref(
+  site.whatsAppPhone,
+  'היי יוסי, הגעתי דרך עמוד צור קשר. אשמח לספר בקצרה מה קורה ולהבין איך אפשר להתחיל.',
+)
 
 // טקסטים מהדוקומנט, עם fallback קשיח כדי שלא יישבר אם עוד לא יצרת מסמך
 const leftTitle = contact?.left?.title || 'תיאום שיחה קצרה'
