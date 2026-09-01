@@ -30,6 +30,14 @@ if (nav.length && !nav.some((item) => item?.href === '/videos')) {
   nav = [...nav, { label: 'וידאו', href: '/videos' }]
 }
 
+// שמור על סדר ניווט הגיוני: תוכן לפני יצירת קשר.
+const videoIndex = nav.findIndex((item) => item?.href === '/videos')
+const contactIndex = nav.findIndex((item) => item?.href === '/contact')
+if (videoIndex >= 0 && contactIndex >= 0 && videoIndex > contactIndex) {
+  const [videoItem] = nav.splice(videoIndex, 1)
+  nav.splice(contactIndex, 0, videoItem)
+}
+
 if (!nav.length) {
   nav = fallbackNav
 }
