@@ -4,14 +4,12 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { PAINS_LIST_QUERY } from '../../lib/sanityQueries'
-import { INFO_CENTERS, articleMatchesCenter } from '../../lib/infoCenters'
 
 const pains = (await sanity.fetch(PAINS_LIST_QUERY)) ?? []
-const articles = (await sanity.fetch(`*[_type == "article"]{title, tags, painTags}`)) ?? []
 
 const title = `מרכז המידע — מוקדי כאב | ${site.brand}`
 const description =
-  'מרכז המידע של מצפן הלב: מרכזי ידע ומוקדי כאב על הורות, מתבגרים, חרדה, זוגיות, ערך עצמי ודפוסים רגשיים.'
+  'מרכז המידע של מצפן הלב: מוקדי כאב על הורות, מתבגרים, חרדה, זוגיות, ערך עצמי ודפוסים רגשיים — וכל המאמרים שמפרקים אותם לעומק.'
 const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
 
 const collectionSchema = {
@@ -59,29 +57,6 @@ const collectionSchema = {
           מוקדי הכאב המרכזיים שאנחנו עוסקים בהם. כל מוקד מרכז את כל המאמרים שמפרקים אותו לעומק ומראים את הדרך לשחרור הדפוס מהשורש.
         </p>
       </header>
-
-      <section class="mb-16" aria-labelledby="info-centers-title">
-        <div class="flex items-end justify-between gap-4 mb-8">
-          <div>
-            <p class="text-accent font-bold font-body mb-2">מפת התוכן</p>
-            <h2 id="info-centers-title" class="text-3xl md:text-4xl font-black text-primary font-display">מרכזי מידע לפי מה שקורה לכם</h2>
-          </div>
-          <span class="hidden md:block text-primary/45 font-body text-sm">{articles.length} מאמרים באתר</span>
-        </div>
-        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {INFO_CENTERS.map((center) => (
-            <a href={center.href} class="group bg-white rounded-[2rem] border border-primary/10 p-7 shadow-sm hover:-translate-y-1 hover:shadow-xl hover:border-accent/40 transition-all">
-              <p class="text-accent font-bold font-body text-sm mb-2">{center.eyebrow}</p>
-              <h3 class="text-2xl font-black text-primary font-display mb-3 group-hover:text-gold-dark transition-colors">{center.title}</h3>
-              <p class="text-primary/70 font-body leading-relaxed mb-5">{center.description}</p>
-              <div class="flex items-center justify-between text-sm font-body">
-                <span class="text-primary/45">{articles.filter((a: any) => articleMatchesCenter(a, center)).length} מאמרים</span>
-                <span class="text-accent font-bold">למרכז המידע ←</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
 
       {pains.length === 0 ? (
         <p class="text-center text-primary/60 font-body text-lg">בקרוב.</p>

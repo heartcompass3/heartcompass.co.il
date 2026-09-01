@@ -1,7 +1,6 @@
 import type { APIRoute } from 'astro'
 import { sanity } from '../lib/sanity'
 import { withFilename } from '../lib/img'
-import { INFO_CENTERS } from '../lib/infoCenters'
 
 // SSR (לא prerender): המפה נמשכת חיה מ-Sanity בכל בקשה, כך שתוכן חדש
 // (מוקדי כאב, מאמרים) נכנס מיד בלי צורך ב-redeploy. יש קאש משלה (s-maxage=60)
@@ -96,8 +95,7 @@ export const GET: APIRoute = async () => {
     { url: '/specialties', lastmod: buildDate },
     // מרכז הכלים — עכשיו יעד של עשרות קישורים פנימיים ("אבחון קצר"), חייב להיות באינדקס
     { url: '/tools', lastmod: buildDate },
-    { url: '/videos', lastmod: buildDate },
-    ...INFO_CENTERS.map((center) => ({ url: center.href, lastmod: buildDate }))
+    { url: '/videos', lastmod: buildDate }
   ]
 
   // איסוף כל הכתובות לרשימה אחת, ואז דה-דופ לפי loc.
