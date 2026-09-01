@@ -72,6 +72,8 @@ const whatsappSvg = `
       {warmups.map((w) => (
         <a
           href={buildWhatsAppLink(w.message)}
+          data-track-event="whatsapp_click"
+          data-track-label="warmup"
           target="_blank"
           rel="noopener noreferrer"
           class="px-3 py-2 rounded-xl bg-accent/10 hover:bg-accent/15 transition font-body text-sm text-foreground"
@@ -82,6 +84,8 @@ const whatsappSvg = `
 
       <a
         href={baseHref}
+        data-track-event="whatsapp_click"
+        data-track-label="direct"
         target="_blank"
         rel="noopener noreferrer"
         class="px-3 py-2 rounded-xl border border-accent/15 hover:bg-accent/5 transition font-body text-sm text-foreground"

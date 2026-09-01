@@ -67,6 +67,14 @@ const consentGatedSnippet =
           ${gtmSnippet}
           ${gaSnippet}
           ${metaSnippet}
+          document.addEventListener('click',function(event){
+            var target=event.target.closest('[data-track-event]');
+            if(!target || typeof window.gtag!=='function')return;
+            window.gtag('event',target.getAttribute('data-track-event'),{
+              event_category:'engagement',
+              event_label:target.getAttribute('data-track-label')||target.textContent.trim().slice(0,80)
+            });
+          });
         }
         function check(){
           if(localStorage.getItem(KEY)==='accepted'){loadTracking();return true;}

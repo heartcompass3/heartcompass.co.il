@@ -198,9 +198,11 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
           <div class="mt-10 text-center">
             <a
               href={site.primaryCtaHref}
+              data-track-event="service_cta"
+              data-track-label="youth"
               class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
             >
-              {site.primaryCtaLabel} <span aria-hidden="true">←</span>
+              נבדוק אם ליווי כזה מתאים <span aria-hidden="true">←</span>
             </a>
           </div>
         </div>
