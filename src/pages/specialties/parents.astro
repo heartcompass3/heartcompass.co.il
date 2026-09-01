@@ -6,8 +6,11 @@ import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
 import { buildServiceSchema } from '../../lib/schema'
 import { ARTICLES_QUERY } from '../../lib/sanityQueries'
+import { buildWhatsAppHref } from '../../lib/whatsapp'
 
 const SLUG = 'specialties/parents'
+const ctaMessage = 'היי יוסי, הגעתי דרך עמוד הדרכת ההורים. יש לנו קושי שחוזר בבית מול הילד/ה או המתבגר/ת, ואני רוצה להבין איך התהליך יכול לעזור לנו להגיב אחרת ולבנות קרבה.'
+const ctaHref = buildWhatsAppHref(site.whatsAppPhone, ctaMessage)
 
 const page = await sanity.fetch(
   `*[_type=="page" && slug.current == $slug][0]{
@@ -197,12 +200,12 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
 
           <div class="mt-10 text-center">
             <a
-              href={site.primaryCtaHref}
+              href={ctaHref}
               data-track-event="service_cta"
               data-track-label="parents"
               class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
             >
-              נבדוק איך מחזירים שקט הביתה <span aria-hidden="true">←</span>
+              בואו נדבר על מה שקורה בבית <span aria-hidden="true">←</span>
             </a>
           </div>
         </div>

@@ -6,9 +6,12 @@ import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
 import { buildServiceSchema } from '../../lib/schema'
 import { ARTICLES_QUERY } from '../../lib/sanityQueries'
+import { buildWhatsAppHref } from '../../lib/whatsapp'
 
 const SLUG_FULL = 'specialties/personal'
 const SLUG_SHORT = 'personal'
+const ctaMessage = 'היי יוסי, הגעתי דרך עמוד התהליך האישי. אני מרגיש/ה שיש דפוס או תקיעות שחוזרים על עצמם, ואני רוצה לצאת למסע ולהבין מה יכול להיות הצעד הבא עבורי.'
+const ctaHref = buildWhatsAppHref(site.whatsAppPhone, ctaMessage)
 
 const page = await sanity.fetch(
   `*[_type=="page" && slug.current in [$full, $short]][0]{
@@ -232,12 +235,12 @@ if (faqSchema) {
 
       <div class="text-center pb-16">
         <a
-          href={site.primaryCtaHref}
+          href={ctaHref}
           data-track-event="service_cta"
           data-track-label="personal"
           class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
         >
-          נדבר על הצעד הבא <span aria-hidden="true">←</span>
+          אני רוצה לצאת למסע <span aria-hidden="true">←</span>
         </a>
       </div>
 
