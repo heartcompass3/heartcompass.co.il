@@ -41,9 +41,25 @@ try {
 
 const title = `וידאו | ${site.brand}`
 const description = 'סרטונים של יוסי מדלסי על הורות, מתבגרים, פחדים, דפוסים ובחירה מתוך מצפן הלב.'
+
+const videoSchemas = videos.map((video) => ({
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: video.title,
+  description: video.title,
+  thumbnailUrl: `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`,
+  uploadDate: video.published || undefined,
+  embedUrl: `https://www.youtube.com/embed/${video.id}`,
+  contentUrl: `https://www.youtube.com/watch?v=${video.id}`,
+  publisher: {
+    '@type': 'Organization',
+    name: site.brand,
+    url: site.siteUrl,
+  },
+}))
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} schema={videoSchemas}>
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-7xl mx-auto px-6">
       <Breadcrumbs items={[{ name: 'וידאו' }]} />
@@ -61,15 +77,18 @@ const description = 'סרטונים של יוסי מדלסי על הורות, מ
       <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
         {videos.map((video) => (
           <article class="overflow-hidden rounded-[2rem] bg-white border border-primary/10 shadow-lg hover:-translate-y-1 transition-transform">
-            <div class="aspect-video bg-primary/5">
-              <iframe
-                src={`https://www.youtube.com/embed/${video.id}`}
-                title={video.title}
-                loading="lazy"
-                class="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-              ></iframe>
+            <div class="aspect-video bg-primary/5" data-video-shell>
+              <button
+                type="button"
+                class="relative w-full h-full bg-cover bg-center group"
+                style={`background-image: linear-gradient(rgba(15,44,54,.2), rgba(15,44,54,.45)), url(https://i.ytimg.com/vi/${video.id}/hqdefault.jpg)`}
+                data-video-id={video.id}
+                aria-label={`הפעלת הסרטון: ${video.title}`}
+              >
+                <span class="absolute inset-0 flex items-center justify-center">
+                  <span class="flex items-center justify-center w-16 h-16 rounded-full bg-accent text-primary text-2xl shadow-xl transition-transform group-hover:scale-110" aria-hidden="true">▶</span>
+                </span>
+              </button>
             </div>
             <div class="p-6 text-right">
               <p class="text-xs text-primary/45 font-body mb-2">{video.published ? new Date(video.published).toLocaleDateString('he-IL') : ''}</p>
@@ -87,3 +106,21 @@ const description = 'סרטונים של יוסי מדלסי על הורות, מ
     </div>
   </section>
 </BaseLayout>
+
+<script is:inline>
+  document.querySelectorAll('[data-video-shell] button[data-video-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const videoId = button.dataset.videoId;
+      if (!videoId) return;
+
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1`;
+      iframe.title = button.getAttribute('aria-label') || 'סרטון YouTube';
+      iframe.loading = 'eager';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.className = 'w-full h-full border-0';
+      button.replaceWith(iframe);
+    });
+  });
+</script>

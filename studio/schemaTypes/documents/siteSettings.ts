@@ -102,6 +102,8 @@ export default defineType({
                   { title: 'facebook', value: 'facebook' },
                   { title: 'linkedin', value: 'linkedin' },
                   { title: 'blog', value: 'blog' },
+                  { title: 'youtube', value: 'youtube' },
+                  { title: 'tiktok', value: 'tiktok' },
                   { title: 'whatsapp', value: 'whatsapp' },
                 ],
               },

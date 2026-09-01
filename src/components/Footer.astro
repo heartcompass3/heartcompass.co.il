@@ -138,8 +138,10 @@ socialIcons.tiktok = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
           דברים שיכולים להזיז אותך מבפנים.
         </p>
         <form action="/api/lead" method="POST" class="flex flex-col gap-2">
-          <input type="text" name="name" placeholder="איך קוראים לך?" required class="p-2 rounded text-black" />
-          <input type="email" name="email" placeholder="לאן לשלוח לך את זה?" required class="p-2 rounded text-black" />
+          <label class="sr-only" for="footer-name">שם מלא</label>
+          <input id="footer-name" type="text" name="name" placeholder="איך קוראים לך?" required class="p-2 rounded text-black" />
+          <label class="sr-only" for="footer-email">כתובת מייל</label>
+          <input id="footer-email" type="email" name="email" placeholder="לאן לשלוח לך את זה?" required class="p-2 rounded text-black" />
           <input type="hidden" name="_subject" value="ליד חדש מהאתר מצפן הלב">
           <input type="hidden" name="_next" value="/thank-you">
           <label class="flex items-start gap-2 text-white/60 text-xs leading-snug">
