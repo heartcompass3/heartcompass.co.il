@@ -19,8 +19,9 @@ export function buildServiceSchema(params: {
   url: string
   description?: string
   serviceType?: string
+  audience?: string
 }) {
-  const { siteUrl, name, url, description, serviceType } = params
+  const { siteUrl, name, url, description, serviceType, audience } = params
 
   return {
     '@context': 'https://schema.org',
@@ -29,6 +30,12 @@ export function buildServiceSchema(params: {
     name,
     ...(serviceType ? { serviceType } : {}),
     ...(description ? { description } : {}),
+    ...(audience ? {
+      audience: {
+        '@type': 'PeopleAudience',
+        audienceType: audience,
+      },
+    } : {}),
     url,
     provider: { '@id': `${siteUrl}/#person` },
     brand: { '@id': `${siteUrl}/#business` },

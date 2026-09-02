@@ -49,6 +49,30 @@ export const CONTACT_PAGE_QUERY = /* groq */ `
 }
 `
 
+export const VIDEO_PAGE_QUERY = /* groq */ `
+*[_type == "page" && slug.current == "videos"][0]{
+  _id,
+  _updatedAt,
+  contentUpdatedAt,
+  title,
+  excerpt,
+  body,
+  aiCitation,
+  painTags,
+  aiContext,
+  seo{
+    title,
+    description,
+    canonical,
+    noindex,
+    ogImage{
+      alt,
+      asset->{url}
+    }
+  }
+}
+`
+
 export const SITE_SETTINGS_QUERY = /* groq */ `
 *[_type == "siteSettings"][0]{
   title,

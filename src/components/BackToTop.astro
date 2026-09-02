@@ -1,0 +1,36 @@
+<button
+  type="button"
+  class="fixed bottom-6 right-6 z-[140] flex h-11 w-11 translate-y-3 items-center justify-center rounded-full border border-white/20 bg-primary text-white opacity-0 shadow-lg transition-all duration-200 pointer-events-none hover:bg-accent hover:text-primary focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent"
+  aria-label="חזרה לראש העמוד"
+  title="חזרה למעלה"
+  data-back-to-top
+>
+  <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+    <path d="m6 14 6-6 6 6" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</button>
+
+<script is:inline>
+  (() => {
+    const button = document.querySelector('[data-back-to-top]');
+    if (!button) return;
+
+    const update = () => {
+      const visible = window.scrollY > 700;
+      button.classList.toggle('opacity-0', !visible);
+      button.classList.toggle('translate-y-3', !visible);
+      button.classList.toggle('pointer-events-none', !visible);
+      button.classList.toggle('opacity-100', visible);
+      button.classList.toggle('translate-y-0', visible);
+    };
+
+    button.addEventListener('click', () => {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+    });
+
+    window.addEventListener('scroll', update, { passive: true });
+    document.addEventListener('astro:after-swap', update);
+    update();
+  })();
+</script>
