@@ -18,6 +18,24 @@ const page = await sanity.fetch(
     excerpt,
     specialty{
       intro,
+      practicalGuidance{
+        label,
+        title,
+        intro,
+        steps[]{
+          _key,
+          title,
+          text
+        },
+        withoutTeen{
+          title,
+          text
+        },
+        safety{
+          title,
+          text
+        }
+      },
       faqTitle,
       faq[]{
         question, answer
@@ -55,6 +73,32 @@ const ogImageAlt = page?.seo?.ogImage?.alt || undefined
 const h1 = page?.title || ''
 const gold = page?.excerpt || ''
 const intro = page?.specialty?.intro || ''
+const practicalGuidance = page?.specialty?.practicalGuidance || {}
+const guidanceLabel = practicalGuidance.label || 'מה קורה בתהליך עם בני נוער?'
+const guidanceTitle = practicalGuidance.title || 'לא לוחצים לספר הכול. מתחילים ממה שמכביד עכשיו.'
+const guidanceIntro = practicalGuidance.intro || 'לא כל מתבגר מגיע עם מילים למה שעובר עליו. לפעמים הוא מגיע כי קשה לו בבית הספר, עם חברים או בבית; לפעמים הוא פשוט מרגיש שמשהו לא מסתדר. מתחילים מרגע אמיתי מהחיים שלו, בלי למהר להגדיר אותו ובלי להפוך אותו לבעיה שצריך לתקן.'
+const guidanceSteps = practicalGuidance.steps || [
+  {
+    title: 'נותנים שם למה שקורה',
+    text: 'מסתכלים על רגע מסוים: הודעה שלא נענתה, מבחן, מפגש חברתי או ריב בבית. כך אפשר לדבר על החוויה בלי להישאר במילים כלליות כמו "הכול מעצבן".',
+  },
+  {
+    title: 'מזהים מה מפעיל את הלחץ',
+    text: 'בודקים מה מסתתר מתחת להסתגרות, לכעס או להימנעות — פחד מדחייה, לחץ להצליח, בושה או תחושה שאין מקום להיות מי שאני.',
+  },
+  {
+    title: 'בוחרים צעד שאפשר לנסות',
+    text: 'לא מכוונים לשינוי ענק. בונים פעולה קטנה שמתאימה למתבגר עצמו, ואז בודקים מה השתנה ומה עוד צריך.',
+  },
+]
+const withoutTeen = practicalGuidance.withoutTeen || {
+  title: 'ההורה נשאר חלק מהתמונה',
+  text: 'הליווי הוא של המתבגר ובקצב שלו. ההורים מקבלים מקום להבין את התמונה בבית, אבל נשמרת לו פרטיות כדי שיוכל לדבר בחופשיות. אותה סיטואציה יכולה להיחוות אחרת אצל כל אחד בבית — ולכן חשוב לתת מקום לשתי נקודות המבט.',
+}
+const safety = practicalGuidance.safety || {
+  title: 'מתי חשוב לפנות גם לעזרה טיפולית או רפואית?',
+  text: 'כשיש חשש לפגיעה עצמית, מחשבות אובדניות, שימוש בחומרים, שינוי חד ומתמשך בתפקוד, באכילה או בשינה — פונים בהקדם לאיש או אשת מקצוע בתחום בריאות הנפש או לרופא/ת המשפחה. ליווי רגשי אינו תחליף למענה רפואי או נפשי כשנדרש כזה.',
+}
 const faqTitle = page?.specialty?.faqTitle || 'שאלות ותשובות'
 const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || ''
@@ -93,6 +137,7 @@ const serviceSchema = buildServiceSchema({
   url: canonical,
   description,
   serviceType: 'אימון רגשי לבני נוער ומתבגרים',
+  audience: 'בני נוער ומתבגרים המתמודדים עם הסתגרות, לחץ חברתי, חרדה, כעס או ירידה בביטחון העצמי, והוריהם',
 })
 
 const serviceSchemaAeo = {
@@ -159,6 +204,42 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
           {intro}
         </p>
       )}
+
+      <section class="mb-16 bg-white rounded-[2.5rem] p-8 md:p-12 shadow-elegant border border-primary/10">
+        <div class="max-w-3xl mx-auto">
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{guidanceLabel}</p>
+          <h2 class="text-3xl font-black text-primary font-display mb-5">
+            {guidanceTitle}
+          </h2>
+          <p class="text-primary/75 font-body leading-relaxed text-lg mb-8">
+            {guidanceIntro}
+          </p>
+          <ol class="grid gap-5 md:grid-cols-3 list-none p-0 m-0">
+            {guidanceSteps.map((step, index) => (
+              <li class="rounded-2xl bg-background p-5 border border-primary/10">
+                <span class="block text-accent font-black text-xl mb-2">{index + 1}</span>
+                <h3 class="font-black text-primary text-lg mb-2">{step.title}</h3>
+                <p class="text-primary/75 leading-relaxed">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section class="mb-16 grid gap-6 md:grid-cols-2">
+        <div class="rounded-3xl bg-accent/10 border-r-4 border-accent p-8">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{withoutTeen.title}</h2>
+          <p class="text-primary/80 font-body leading-relaxed">
+            {withoutTeen.text}
+          </p>
+        </div>
+        <div class="rounded-3xl bg-white border border-primary/10 p-8 shadow-sm">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{safety.title}</h2>
+          <p class="text-primary/80 font-body leading-relaxed">
+            {safety.text}
+          </p>
+        </div>
+      </section>
 
       {stages.length > 0 && (
         <section class="mb-16">
