@@ -18,6 +18,24 @@ const page = await sanity.fetch(
     excerpt,
     specialty{
       intro,
+      practicalGuidance{
+        label,
+        title,
+        intro,
+        steps[]{
+          _key,
+          title,
+          text
+        },
+        withoutTeen{
+          title,
+          text
+        },
+        safety{
+          title,
+          text
+        }
+      },
       faqTitle,
       faq[]{
         question, answer
@@ -55,6 +73,13 @@ const ogImageAlt = page?.seo?.ogImage?.alt || undefined
 const h1 = page?.title || ''
 const gold = page?.excerpt || ''
 const intro = page?.specialty?.intro || ''
+const practicalGuidance = page?.specialty?.practicalGuidance || {}
+const guidanceLabel = practicalGuidance.label || 'מה מקבלים בהדרכת הורים לנוער?'
+const guidanceTitle = practicalGuidance.title || 'לא עוד עצה כללית. בודקים מה קורה בבית ובוחרים צעד שאפשר ליישם.'
+const guidanceIntro = practicalGuidance.intro || 'לא צריך לפתור את כל גיל ההתבגרות בפגישה אחת. מתחילים מרגע קונקרטי שחוזר בבית – שיחה שנגמרת בטריקת דלת, ויכוח על מסכים או תחושה שאי אפשר להגיע אליו – ומבינים מה מפעיל את שני הצדדים באותו רגע.'
+const guidanceSteps = practicalGuidance.steps || []
+const withoutTeen = practicalGuidance.withoutTeen || {}
+const safety = practicalGuidance.safety || {}
 const faqTitle = page?.specialty?.faqTitle || 'שאלות ותשובות'
 const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || ''
@@ -163,44 +188,36 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
 
       <section class="mb-16 bg-white rounded-[2.5rem] p-8 md:p-12 shadow-elegant border border-primary/10">
         <div class="max-w-3xl mx-auto">
-          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">מה מקבלים בהדרכת הורים לנוער?</p>
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{guidanceLabel}</p>
           <h2 class="text-3xl font-black text-primary font-display mb-5">
-            לא עוד עצה כללית. בודקים מה קורה בבית ובוחרים צעד שאפשר ליישם.
+            {guidanceTitle}
           </h2>
           <p class="text-primary/75 font-body leading-relaxed text-lg mb-8">
-            לא צריך לפתור את כל גיל ההתבגרות בפגישה אחת. מתחילים מרגע קונקרטי שחוזר בבית - שיחה שנגמרת בדלת טרוקה, ויכוח על מסכים או תחושה שאי אפשר להגיע אליו - ומבינים מה מפעיל את שני הצדדים באותו רגע.
+            {guidanceIntro}
           </p>
           <ol class="grid gap-5 md:grid-cols-3 list-none p-0 m-0">
-            <li class="rounded-2xl bg-background p-5 border border-primary/10">
-              <span class="block text-accent font-black text-xl mb-2">1</span>
-              <h3 class="font-black text-primary text-lg mb-2">ממפים את המעגל</h3>
-              <p class="text-primary/75 leading-relaxed">מה ההורה רואה, מה המתבגר עשוי לחוות, ומה גורם לשיחה להסתבך שוב.</p>
-            </li>
-            <li class="rounded-2xl bg-background p-5 border border-primary/10">
-              <span class="block text-accent font-black text-xl mb-2">2</span>
-              <h3 class="font-black text-primary text-lg mb-2">בוחרים תגובה אחרת</h3>
-              <p class="text-primary/75 leading-relaxed">מנסחים צעד קטן שמתאים לבית שלכם - לא כלל שאמור לעבוד לכל משפחה.</p>
-            </li>
-            <li class="rounded-2xl bg-background p-5 border border-primary/10">
-              <span class="block text-accent font-black text-xl mb-2">3</span>
-              <h3 class="font-black text-primary text-lg mb-2">בונים סמכות וקשר</h3>
-              <p class="text-primary/75 leading-relaxed">בודקים מה השתנה, מה עדיין מפעיל, ואיך שומרים על גבול בלי להפוך את הבית לזירת מאבק.</p>
-            </li>
+            {guidanceSteps.map((step, index) => (
+              <li class="rounded-2xl bg-background p-5 border border-primary/10">
+                <span class="block text-accent font-black text-xl mb-2">{index + 1}</span>
+                <h3 class="font-black text-primary text-lg mb-2">{step.title}</h3>
+                <p class="text-primary/75 leading-relaxed">{step.text}</p>
+              </li>
+            ))}
           </ol>
         </div>
       </section>
 
       <section class="mb-16 grid gap-6 md:grid-cols-2">
         <div class="rounded-3xl bg-accent/10 border-r-4 border-accent p-8">
-          <h2 class="text-2xl font-black text-primary font-display mb-4">אפשר להתחיל גם כשהמתבגר לא רוצה להגיע</h2>
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{withoutTeen.title}</h2>
           <p class="text-primary/80 font-body leading-relaxed">
-            לפעמים הוא עדיין לא רוצה לדבר, ולפעמים הוא חושש שינסו לתקן אותו. העבודה עם ההורה יכולה להתחיל קודם: לשנות את המעגל בבית, להוריד לחץ ולבנות תנאים שבהם קל יותר להתקרב. אין הבטחה שהמתבגר יצטרף, אבל לא חייבים להישאר בלי דרך עד שזה יקרה.
+            {withoutTeen.text}
           </p>
         </div>
         <div class="rounded-3xl bg-white border border-primary/10 p-8 shadow-sm">
-          <h2 class="text-2xl font-black text-primary font-display mb-4">מתי לא נשארים עם זה לבד</h2>
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{safety.title}</h2>
           <p class="text-primary/80 font-body leading-relaxed">
-            כשיש חשש לפגיעה עצמית או באחרים, אלימות, שימוש בחומרים, ירידה חדה בתפקוד, הפרעת אכילה, דיכאון משמעותי או סכנה מיידית - קודם פונים לעזרה רפואית או נפשית מתאימה. הדרכת הורים אינה אבחון ואינה תחליף למענה חירום או טיפול קליני כשאלה נדרשים.
+            {safety.text}
           </p>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import {defineType, defineField} from 'sanity'
+import {defineType, defineField, defineArrayMember} from 'sanity'
 
 export default defineType({
   name: 'page',
@@ -70,6 +70,88 @@ export default defineType({
           title: 'טקסט פתיחה קצר (אחרי H1+שורת זהב)',
           type: 'text',
           rows: 5,
+        }),
+
+        defineField({
+          name: 'practicalGuidance',
+          title: 'מה מקבלים בתהליך – מקטע עומק',
+          type: 'object',
+          description:
+            'מקטע אופציונלי שמסביר בצורה מעשית מה קורה בתהליך. בדף ההורים הוא מופיע לפני שלבי מ.ס.ע.',
+          options: {
+            collapsed: true,
+            collapsible: true,
+          },
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'כותרת קטנה מעל המקטע',
+              type: 'string',
+            }),
+            defineField({
+              name: 'title',
+              title: 'כותרת המקטע',
+              type: 'string',
+            }),
+            defineField({
+              name: 'intro',
+              title: 'פסקת פתיחה',
+              type: 'text',
+              rows: 4,
+            }),
+            defineField({
+              name: 'steps',
+              title: 'הצעדים המעשיים',
+              type: 'array',
+              validation: (Rule) => Rule.max(4),
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'guidanceStep',
+                  title: 'צעד',
+                  fields: [
+                    defineField({
+                      name: 'title',
+                      title: 'כותרת',
+                      type: 'string',
+                      validation: (Rule) => Rule.required(),
+                    }),
+                    defineField({
+                      name: 'text',
+                      title: 'הסבר',
+                      type: 'text',
+                      rows: 3,
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                  preview: {
+                    select: {
+                      title: 'title',
+                      subtitle: 'text',
+                    },
+                  },
+                }),
+              ],
+            }),
+            defineField({
+              name: 'withoutTeen',
+              title: 'אפשר להתחיל בלי המתבגר/ת',
+              type: 'object',
+              fields: [
+                defineField({name: 'title', title: 'כותרת', type: 'string'}),
+                defineField({name: 'text', title: 'טקסט', type: 'text', rows: 5}),
+              ],
+            }),
+            defineField({
+              name: 'safety',
+              title: 'גבולות המענה ומתי לפנות לעזרה נוספת',
+              type: 'object',
+              fields: [
+                defineField({name: 'title', title: 'כותרת', type: 'string'}),
+                defineField({name: 'text', title: 'טקסט', type: 'text', rows: 5}),
+              ],
+            }),
+          ],
         }),
 
         // =========================
