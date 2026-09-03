@@ -15,6 +15,7 @@ const categoryMeta = {
   guide: { label: 'מדריך', icon: '📖', color: 'bg-accent/10 text-accent' },
   quiz:  { label: 'שאלון אבחון', icon: '🧩', color: 'bg-primary/10 text-primary' },
   game:  { label: 'משחק', icon: '🎮', color: 'bg-emerald-100 text-emerald-700' },
+  interactive: { label: 'כלי מעשי', icon: '🧭', color: 'bg-sky-100 text-sky-800' },
 }
 
 const brandDeep = '#295157'
@@ -54,10 +55,12 @@ const brandDeep = '#295157'
             // אלא אם סומן במפורש directToTool או שאין slug תקין.
             const validSlug = tool.slug?.current && !tool.slug.current.includes('://')
             const useLanding = validSlug && tool.hasLanding && !tool.directToTool
-            const href = useLanding
+            const href = tool.internalToolPath
+              ? tool.internalToolPath
+              : useLanding
               ? `/guide/${tool.slug.current}`
               : (tool.externalUrl ?? `/guide/${tool.slug?.current}`)
-            const isExternal = !useLanding && !!tool.externalUrl
+            const isExternal = !tool.internalToolPath && !useLanding && !!tool.externalUrl
 
             return (
               <a

@@ -161,6 +161,7 @@ export default {
           { title: '📖 מדריך', value: 'guide' },
           { title: '🧩 שאלון אבחון', value: 'quiz' },
           { title: '🎮 משחק', value: 'game' },
+          { title: '🧭 כלי מעשי', value: 'interactive' },
         ],
         layout: 'radio',
       },
@@ -181,6 +182,18 @@ export default {
         'הקישור לכלי עצמו. אם לדף יש תוכן – הכרטיס ב-/tools יוביל קודם לדף הנחיתה, וכפתור ה-CTA בדף יפתח את הקישור הזה. אם אין תוכן – הכרטיס יפנה ישירות לכאן.',
     },
     {
+      name: 'internalToolPath',
+      title: 'כתובת של כלי פנימי באתר',
+      type: 'string',
+      group: 'tools',
+      description:
+        'לכלי שנבנה בתוך האתר. להתחיל ב־/ למשל /tools/parent-moment. כשיש כתובת כאן, הכרטיס בדף הכלים יפנה אליה.',
+      validation: (Rule: any) =>
+        Rule.custom((value: string | undefined) =>
+          !value || value.startsWith('/') ? true : 'הכתובת חייבת להתחיל ב־/'
+        ),
+    },
+    {
       name: 'directToTool',
       title: 'דילוג על דף הנחיתה (ישר לכלי)',
       type: 'boolean',
@@ -196,6 +209,92 @@ export default {
       group: 'tools',
       description: '1 = ראשון. מספר נמוך = מופיע קודם.',
       initialValue: 10,
+    },
+    {
+      name: 'interactiveTool',
+      title: 'תוכן לכלי המעשי',
+      type: 'object',
+      group: 'tools',
+      description: 'ממלאים רק לכלי פנימי אינטראקטיבי. כל הטקסט שמוצג לגולש נשלט מכאן.',
+      fields: [
+        {
+          name: 'eyebrow',
+          title: 'כותרת קטנה מעל הכלי',
+          type: 'string',
+        },
+        {
+          name: 'firstQuestion',
+          title: 'שאלה ראשונה',
+          type: 'string',
+        },
+        {
+          name: 'firstOptions',
+          title: 'אפשרויות לשאלה הראשונה',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              name: 'interactiveOption',
+              fields: [
+                { name: 'key', title: 'מזהה פנימי באנגלית', type: 'string', validation: (Rule: any) => Rule.required() },
+                { name: 'label', title: 'טקסט שמופיע לגולש', type: 'string', validation: (Rule: any) => Rule.required() },
+              ],
+              preview: { select: { title: 'label' } },
+            },
+          ],
+        },
+        {
+          name: 'secondQuestion',
+          title: 'שאלה שנייה',
+          type: 'string',
+        },
+        {
+          name: 'secondOptions',
+          title: 'אפשרויות לשאלה השנייה',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              name: 'interactiveResponseOption',
+              fields: [
+                { name: 'key', title: 'מזהה פנימי באנגלית', type: 'string', validation: (Rule: any) => Rule.required() },
+                { name: 'label', title: 'טקסט שמופיע לגולש', type: 'string', validation: (Rule: any) => Rule.required() },
+              ],
+              preview: { select: { title: 'label' } },
+            },
+          ],
+        },
+        {
+          name: 'results',
+          title: 'תוצאות לפי התגובה של ההורה',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              name: 'interactiveResult',
+              fields: [
+                { name: 'key', title: 'מזהה שמתחבר לאפשרות השנייה', type: 'string', validation: (Rule: any) => Rule.required() },
+                { name: 'title', title: 'כותרת התוצאה', type: 'string', validation: (Rule: any) => Rule.required() },
+                { name: 'text', title: 'הסבר קצר', type: 'text', rows: 3, validation: (Rule: any) => Rule.required() },
+                { name: 'nextStep', title: 'צעד קטן לרגע הבא', type: 'text', rows: 3, validation: (Rule: any) => Rule.required() },
+                { name: 'phrase', title: 'משפט שאפשר לומר', type: 'string', validation: (Rule: any) => Rule.required() },
+              ],
+              preview: { select: { title: 'title' } },
+            },
+          ],
+        },
+        {
+          name: 'safetyTitle',
+          title: 'כותרת הבהרה מקצועית',
+          type: 'string',
+        },
+        {
+          name: 'safetyText',
+          title: 'טקסט הבהרה מקצועית',
+          type: 'text',
+          rows: 3,
+        },
+      ],
     },
   ],
 
