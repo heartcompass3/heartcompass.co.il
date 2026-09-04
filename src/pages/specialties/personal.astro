@@ -19,6 +19,24 @@ const page = await sanity.fetch(
     excerpt,
     specialty{
       intro,
+      practicalGuidance{
+        label,
+        title,
+        intro,
+        steps[]{
+          _key,
+          title,
+          text
+        },
+        withoutTeen{
+          title,
+          text
+        },
+        safety{
+          title,
+          text
+        }
+      },
       faqTitle,
       faq[]{
         question, answer
@@ -64,6 +82,23 @@ const ogImageAlt = page?.seo?.ogImage?.alt || undefined
 const h1 = page?.title || fallback.title
 const gold = page?.excerpt || fallback.gold
 const intro = page?.specialty?.intro || fallback.intro
+const practicalGuidance = page?.specialty?.practicalGuidance || {}
+const guidanceLabel = practicalGuidance.label || 'מה קורה בתהליך אישי?'
+const guidanceTitle = practicalGuidance.title || 'לא מנסים להשתיק את הדפוס — מגלים מה הוא מנסה להגן עליו.'
+const guidanceIntro = practicalGuidance.intro || 'מתחילים מרגע ממשי: הודעה שלא שלחת, גבול שלא הצבת, קשר שקשה לעזוב או החלטה שנדחית שוב. מבררים מה המשמעות שהרגע קיבל אצלך, מה הוא מפעיל בגוף ובמחשבה, ואיזו תגובה אוטומטית מנסה להגן עליך. משם אפשר לבחור תנועה חדשה ולתת לה הוכחה בחיים.'
+const guidanceSteps = practicalGuidance.steps || [
+  { title: 'ממפים רגע חי', text: 'מזהים את הרצף: מה קרה, איזו משמעות עלתה, מה הרגשת ואיך הגבת. לא כדי לשפוט את עצמך — כדי לראות מה מנהל.' },
+  { title: 'פוגשים את ההגנה', text: 'בודקים ממה הדפוס ניסה להגן ומה המחיר שלו היום. ההבנה היא התחלה, לא סוף התהליך.' },
+  { title: 'בונים הוכחה חדשה', text: 'מתרגמים את הבחירה לצעד קטן וברור, בודקים מה אפשרי ומסמנים גם הצלחה קטנה כהוכחה חדשה למסוגלות.' },
+]
+const withoutTeen = practicalGuidance.withoutTeen || {
+  title: 'לא צריך להגיע עם הגדרה מדויקת לבעיה',
+  text: 'אפשר להתחיל גם עם התחושה שמשהו חוזר על עצמו — בדחיינות, בקשרים, בביטחון, בכעס או בהחלטות. ביחד מגלים איזה דפוס חי שם ומה נכון לבדוק קודם.',
+}
+const safety = practicalGuidance.safety || {
+  title: 'מתי חשוב לפנות גם לטיפול או למענה רפואי?',
+  text: 'במצוקה חריפה, פגיעה עצמית, מחשבות אובדניות, שימוש בחומרים, ניתוק משמעותי או שינוי חד ומתמשך בתפקוד — חשוב לפנות בהקדם לאיש או אשת מקצוע בתחום בריאות הנפש, לרופא/ת המשפחה או למענה חירום מתאים.',
+}
 const faqTitle = page?.specialty?.faqTitle || fallback.faqTitle
 const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || fallback.closing
@@ -190,6 +225,34 @@ if (faqSchema) {
       <p class="mb-12 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
         {intro}
       </p>
+
+      <section class="mb-16 bg-white rounded-[2.5rem] p-8 md:p-12 shadow-elegant border border-primary/10">
+        <div class="max-w-3xl mx-auto">
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{guidanceLabel}</p>
+          <h2 class="text-3xl font-black text-primary font-display mb-5">{guidanceTitle}</h2>
+          <p class="text-primary/75 font-body leading-relaxed text-lg mb-8">{guidanceIntro}</p>
+          <ol class="grid gap-5 md:grid-cols-3 list-none p-0 m-0">
+            {guidanceSteps.map((step, index) => (
+              <li class="rounded-2xl bg-background p-5 border border-primary/10">
+                <span class="block text-accent font-black text-xl mb-2">{index + 1}</span>
+                <h3 class="font-black text-primary text-lg mb-2">{step.title}</h3>
+                <p class="text-primary/75 leading-relaxed">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section class="mb-16 grid gap-6 md:grid-cols-2">
+        <div class="rounded-3xl bg-accent/10 border-r-4 border-accent p-8">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{withoutTeen.title}</h2>
+          <p class="text-primary/80 font-body leading-relaxed">{withoutTeen.text}</p>
+        </div>
+        <div class="rounded-3xl bg-white border border-primary/10 p-8 shadow-sm">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{safety.title}</h2>
+          <p class="text-primary/80 font-body leading-relaxed">{safety.text}</p>
+        </div>
+      </section>
 
       {stages.length > 0 && (
         <section class="mb-16">

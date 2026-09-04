@@ -18,6 +18,24 @@ const page = await sanity.fetch(
     excerpt,
     specialty{
       intro,
+      practicalGuidance{
+        label,
+        title,
+        intro,
+        steps[]{
+          _key,
+          title,
+          text
+        },
+        withoutTeen{
+          title,
+          text
+        },
+        safety{
+          title,
+          text
+        }
+      },
       faqTitle,
       faq[]{
         question, answer
@@ -55,6 +73,23 @@ const ogImageAlt = page?.seo?.ogImage?.alt || undefined
 const h1 = page?.title || ''
 const gold = page?.excerpt || ''
 const intro = page?.specialty?.intro || ''
+const practicalGuidance = page?.specialty?.practicalGuidance || {}
+const guidanceLabel = practicalGuidance.label || 'מה קורה בתהליך זוגי?'
+const guidanceTitle = practicalGuidance.title || 'לא מחפשים מי צודק. בודקים מה קורה ברגע שבו שניכם מפסיקים להרגיש בטוחים.'
+const guidanceIntro = practicalGuidance.intro || 'כשאותו ויכוח חוזר, בדרך כלל לא הוויכוח עצמו הוא העניין. אחד מנסה להתקרב או לקבל ודאות, השני מתרחק או מתגונן, ושניהם נשארים לבד בתוך אותה לולאה. מתחילים מרגע אמיתי מהחיים שלכם ומנסים לראות את המעגל — בלי להאשים ובלי להכתיר צד אחד כאשם.'
+const guidanceSteps = practicalGuidance.steps || [
+  { title: 'בוחרים רגע שחוזר', text: 'לא מדברים על כל הזוגיות בבת אחת. בוחרים שיחה, שתיקה או ויכוח שקרה לאחרונה ומסתכלים עליו לאט.' },
+  { title: 'ממפים את הלולאה', text: 'בודקים מה כל אחד שמע, ממה הוא ניסה להגן ואיך התגובה שלו הפעילה את הצד השני. כך המאבק מפסיק להיות רק „אתה נגדיי”.' },
+  { title: 'יוצרים תנועה אחרת', text: 'מתרגלים בקשה, גבול או עצירה שמתאימים לשניכם, ובודקים מה אפשר לעשות אחרת בפעם הבאה — צעד אחד ולא הבטחה גדולה.' },
+]
+const withoutTeen = practicalGuidance.withoutTeen || {
+  title: 'אפשר להתחיל גם כשעוד לא מסכימים על הכול',
+  text: 'לא צריך להגיע עם תשובה מי אשם או עם החלטה סופית לגבי הקשר. מספיק ששניכם מוכנים להסתכל בכנות על מה שקורה ביניכם ולבדוק אם אפשר ליצור יותר ביטחון, שיחה ובחירה.',
+}
+const safety = practicalGuidance.safety || {
+  title: 'מתי תהליך זוגי אינו המקום הנכון להתחיל בו?',
+  text: 'כשיש אלימות, פחד, שליטה, איומים או פגיעה מתמשכת — הבטיחות קודמת לעבודה על תקשורת. במצבים כאלה חשוב לפנות לעזרה מקצועית מתאימה ולגורמי חירום לפי הצורך.',
+}
 const faqTitle = page?.specialty?.faqTitle || 'שאלות ותשובות'
 const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || ''
@@ -163,6 +198,34 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
           {intro}
         </p>
       )}
+
+      <section class="mb-16 bg-white rounded-[2.5rem] p-8 md:p-12 shadow-elegant border border-primary/10">
+        <div class="max-w-3xl mx-auto">
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{guidanceLabel}</p>
+          <h2 class="text-3xl font-black text-primary font-display mb-5">{guidanceTitle}</h2>
+          <p class="text-primary/75 font-body leading-relaxed text-lg mb-8">{guidanceIntro}</p>
+          <ol class="grid gap-5 md:grid-cols-3 list-none p-0 m-0">
+            {guidanceSteps.map((step, index) => (
+              <li class="rounded-2xl bg-background p-5 border border-primary/10">
+                <span class="block text-accent font-black text-xl mb-2">{index + 1}</span>
+                <h3 class="font-black text-primary text-lg mb-2">{step.title}</h3>
+                <p class="text-primary/75 leading-relaxed">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section class="mb-16 grid gap-6 md:grid-cols-2">
+        <div class="rounded-3xl bg-accent/10 border-r-4 border-accent p-8">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{withoutTeen.title}</h2>
+          <p class="text-primary/80 font-body leading-relaxed">{withoutTeen.text}</p>
+        </div>
+        <div class="rounded-3xl bg-white border border-primary/10 p-8 shadow-sm">
+          <h2 class="text-2xl font-black text-primary font-display mb-4">{safety.title}</h2>
+          <p class="text-primary/80 font-body leading-relaxed">{safety.text}</p>
+        </div>
+      </section>
 
       {stages.length > 0 && (
         <section class="mb-16">
