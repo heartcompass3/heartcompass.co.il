@@ -131,11 +131,37 @@ export default defineType({
                     },
                   },
                 }),
+                defineArrayMember({
+                  type: 'object',
+                  name: 'practicalGuidanceStep',
+                  title: 'צעד',
+                  fields: [
+                    defineField({
+                      name: 'title',
+                      title: 'כותרת',
+                      type: 'string',
+                      validation: (Rule) => Rule.required(),
+                    }),
+                    defineField({
+                      name: 'text',
+                      title: 'הסבר',
+                      type: 'text',
+                      rows: 3,
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                  preview: {
+                    select: {
+                      title: 'title',
+                      subtitle: 'text',
+                    },
+                  },
+                }),
               ],
             }),
             defineField({
               name: 'withoutTeen',
-              title: 'התאמה — נקודה חשובה',
+              title: 'התאמה, נקודה חשובה',
               type: 'object',
               fields: [
                 defineField({name: 'title', title: 'כותרת', type: 'string'}),
@@ -153,7 +179,7 @@ export default defineType({
             }),
             defineField({
               name: 'professionalTrust',
-              title: 'מי מלווה — סמכות והקשר',
+              title: 'מי מלווה, סמכות והקשר',
               type: 'object',
               fields: [
                 defineField({name: 'title', title: 'כותרת', type: 'string'}),
