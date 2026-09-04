@@ -1,0 +1,41 @@
+---
+type Card = { title?: string; text?: string }
+
+const {
+  gettingStarted = {},
+  fitNote = {},
+  safety = {},
+  professionalTrust = {},
+} = Astro.props as {
+  gettingStarted?: Card
+  fitNote?: Card
+  safety?: Card
+  professionalTrust?: Card
+}
+---
+
+<section class="mb-16 grid gap-6 md:grid-cols-3" aria-label="לפני שמתחילים">
+  <div class="rounded-3xl bg-accent/10 border-r-4 border-accent p-7">
+    <p class="mb-2 text-sm font-black text-accent">כך מתחילים</p>
+    <h2 class="font-display text-2xl font-black text-primary">{gettingStarted.title}</h2>
+    <p class="mt-4 font-body leading-relaxed text-primary/80">{gettingStarted.text}</p>
+  </div>
+
+  <div class="rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
+    <p class="mb-2 text-sm font-black text-accent">התאמה</p>
+    <h2 class="font-display text-2xl font-black text-primary">{fitNote.title}</h2>
+    <p class="mt-4 font-body leading-relaxed text-primary/80">{fitNote.text}</p>
+  </div>
+
+  <div class="rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
+    <p class="mb-2 text-sm font-black text-accent">מי מלווה</p>
+    <h2 class="font-display text-2xl font-black text-primary">{professionalTrust.title}</h2>
+    <p class="mt-4 font-body leading-relaxed text-primary/80">{professionalTrust.text}</p>
+    <a href="/about" class="mt-4 inline-block font-bold text-accent underline underline-offset-4">להכיר את יוסי ואת ההכשרות</a>
+  </div>
+</section>
+
+<section class="mb-16 rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
+  <h2 class="font-display text-2xl font-black text-primary">{safety.title}</h2>
+  <p class="mt-4 font-body leading-relaxed text-primary/80">{safety.text}</p>
+</section>

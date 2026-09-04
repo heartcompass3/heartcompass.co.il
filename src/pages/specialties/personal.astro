@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import SpecialtyDecisionCards from '../../components/SpecialtyDecisionCards.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
@@ -33,6 +34,14 @@ const page = await sanity.fetch(
           text
         },
         safety{
+          title,
+          text
+        },
+        gettingStarted{
+          title,
+          text
+        },
+        professionalTrust{
           title,
           text
         }
@@ -99,6 +108,8 @@ const safety = practicalGuidance.safety || {
   title: 'מתי חשוב לפנות גם לטיפול או למענה רפואי?',
   text: 'במצוקה חריפה, פגיעה עצמית, מחשבות אובדניות, שימוש בחומרים, ניתוק משמעותי או שינוי חד ומתמשך בתפקוד — חשוב לפנות בהקדם לאיש או אשת מקצוע בתחום בריאות הנפש, לרופא/ת המשפחה או למענה חירום מתאים.',
 }
+const gettingStarted = practicalGuidance.gettingStarted || { title: 'מתחילים מרגע אחד שחוזר על עצמו', text: 'שולחים הודעה קצרה על מה שמכביד עכשיו. בשיחה הראשונה בודקים מה חי, מה אתם מבקשים לשנות ומה יכול להיות צעד פתיחה נכון.' }
+const professionalTrust = practicalGuidance.professionalTrust || { title: 'יוסי מדלסי — מאמן רגשי מוסמך', text: 'התהליך אינו עוסק בתיקון עצמי, אלא בזיהוי מה מנהל, בעבודה עם הדפוס ובבניית בחירה, מסוגלות וביטחון להתמודד.' }
 const faqTitle = page?.specialty?.faqTitle || fallback.faqTitle
 const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || fallback.closing
@@ -243,16 +254,7 @@ if (faqSchema) {
         </div>
       </section>
 
-      <section class="mb-16 grid gap-6 md:grid-cols-2">
-        <div class="rounded-3xl bg-accent/10 border-r-4 border-accent p-8">
-          <h2 class="text-2xl font-black text-primary font-display mb-4">{withoutTeen.title}</h2>
-          <p class="text-primary/80 font-body leading-relaxed">{withoutTeen.text}</p>
-        </div>
-        <div class="rounded-3xl bg-white border border-primary/10 p-8 shadow-sm">
-          <h2 class="text-2xl font-black text-primary font-display mb-4">{safety.title}</h2>
-          <p class="text-primary/80 font-body leading-relaxed">{safety.text}</p>
-        </div>
-      </section>
+      <SpecialtyDecisionCards gettingStarted={gettingStarted} fitNote={withoutTeen} safety={safety} professionalTrust={professionalTrust} />
 
       {stages.length > 0 && (
         <section class="mb-16">

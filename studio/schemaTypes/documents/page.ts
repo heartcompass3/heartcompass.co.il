@@ -135,11 +135,29 @@ export default defineType({
             }),
             defineField({
               name: 'withoutTeen',
-              title: 'אפשר להתחיל בלי המתבגר/ת',
+              title: 'התאמה — נקודה חשובה',
               type: 'object',
               fields: [
                 defineField({name: 'title', title: 'כותרת', type: 'string'}),
                 defineField({name: 'text', title: 'טקסט', type: 'text', rows: 5}),
+              ],
+            }),
+            defineField({
+              name: 'gettingStarted',
+              title: 'כך מתחילים',
+              type: 'object',
+              fields: [
+                defineField({name: 'title', title: 'כותרת', type: 'string'}),
+                defineField({name: 'text', title: 'טקסט', type: 'text', rows: 4}),
+              ],
+            }),
+            defineField({
+              name: 'professionalTrust',
+              title: 'מי מלווה — סמכות והקשר',
+              type: 'object',
+              fields: [
+                defineField({name: 'title', title: 'כותרת', type: 'string'}),
+                defineField({name: 'text', title: 'טקסט', type: 'text', rows: 4}),
               ],
             }),
             defineField({

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import SpecialtyDecisionCards from '../../components/SpecialtyDecisionCards.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
@@ -32,6 +33,14 @@ const page = await sanity.fetch(
           text
         },
         safety{
+          title,
+          text
+        },
+        gettingStarted{
+          title,
+          text
+        },
+        professionalTrust{
           title,
           text
         }
@@ -90,6 +99,8 @@ const safety = practicalGuidance.safety || {
   title: 'מתי תהליך זוגי אינו המקום הנכון להתחיל בו?',
   text: 'כשיש אלימות, פחד, שליטה, איומים או פגיעה מתמשכת — הבטיחות קודמת לעבודה על תקשורת. במצבים כאלה חשוב לפנות לעזרה מקצועית מתאימה ולגורמי חירום לפי הצורך.',
 }
+const gettingStarted = practicalGuidance.gettingStarted || { title: 'מתחילים ממה שקורה ביניכם עכשיו', text: 'שולחים הודעה קצרה על הדפוס שחוזר ביניכם. בשיחה הראשונה בודקים אם זהו מרחב מתאים ומה נכון לקחת כנקודת התחלה.' }
+const professionalTrust = practicalGuidance.professionalTrust || { title: 'יוסי מדלסי — מאמן רגשי מוסמך', text: 'העבודה מתחילה בהקשבה למה שכל אחד חווה בתוך הקשר, בלי להכריע מי צודק ובלי להבטיח שינוי שלא תלוי בשניכם.' }
 const faqTitle = page?.specialty?.faqTitle || 'שאלות ותשובות'
 const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || ''
@@ -216,16 +227,7 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
         </div>
       </section>
 
-      <section class="mb-16 grid gap-6 md:grid-cols-2">
-        <div class="rounded-3xl bg-accent/10 border-r-4 border-accent p-8">
-          <h2 class="text-2xl font-black text-primary font-display mb-4">{withoutTeen.title}</h2>
-          <p class="text-primary/80 font-body leading-relaxed">{withoutTeen.text}</p>
-        </div>
-        <div class="rounded-3xl bg-white border border-primary/10 p-8 shadow-sm">
-          <h2 class="text-2xl font-black text-primary font-display mb-4">{safety.title}</h2>
-          <p class="text-primary/80 font-body leading-relaxed">{safety.text}</p>
-        </div>
-      </section>
+      <SpecialtyDecisionCards gettingStarted={gettingStarted} fitNote={withoutTeen} safety={safety} professionalTrust={professionalTrust} />
 
       {stages.length > 0 && (
         <section class="mb-16">
