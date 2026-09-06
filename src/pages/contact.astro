@@ -12,7 +12,7 @@ const contact = await sanity.fetch(CONTACT_PAGE_QUERY)
 // SEO
 const seoTitle = contact?.seo?.title || `צור קשר | ${site.brand}`
 const seoDescription =
-  contact?.seo?.description || 'תיאום שיחה קצרה. הדרך הכי פשוטה להתחיל היא הודעת WhatsApp.'
+  contact?.seo?.description || 'אפשר לשלוח הודעת WhatsApp קצרה ולספר מה קורה. באתר מחכה מידע על דרך העבודה ועל תהליכי הליווי.'
 const noindex = contact?.seo?.noindex
 const seoOgImage = contact?.seo?.ogImage?.asset?.url
 const seoOgImageAlt = contact?.seo?.ogImage?.alt
@@ -25,11 +25,11 @@ const whatsappHref = buildWhatsAppHref(
 )
 
 // טקסטים מהדוקומנט, עם fallback קשיח כדי שלא יישבר אם עוד לא יצרת מסמך
-const leftTitle = contact?.left?.title || 'תיאום שיחה קצרה'
+const leftTitle = contact?.left?.title || 'יצירת קשר'
 const leftText =
   contact?.left?.text ||
-  'כדי לא להעמיס, כרגע הדרך הכי מהירה היא WhatsApp. תכתוב לי כמה שאלות מוכנות בפתחו של הירוק למטה.'
-const leftCtaLabel = contact?.left?.ctaLabel || "בוא נדבר תכל'ס"
+  'אפשר לכתוב לי בוואטסאפ ולספר בקצרה מה קורה. באתר מחכה מידע על דרך העבודה ועל תהליכי הליווי.'
+const leftCtaLabel = contact?.left?.ctaLabel || "לכתוב לי בוואטסאפ"
 const leftHelper =
   contact?.left?.helper ||
   'אם אתה יודע כבר מה הכאב המרכזי, תכתוב אותו במשפט אחד. זה מספיק כדי להתחיל.'

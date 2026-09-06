@@ -3,7 +3,7 @@ import site from '../content/pages/site.json'
 
 // כרטיס צף לא־חוסם שמופיע כשגולש עומד לעזוב (דסקטופ) או אחרי דקה (מובייל).
 // מטרה: לתפוס שאלה פתוחה לפני יציאה, בלי מודאל שמכסה מסך (בלי עונש interstitial).
-const waMessage = 'היי יוסי, קראתי באתר ועלתה לי שאלה לפני שנקבע שיחה.'
+const waMessage = 'היי יוסי, קראתי באתר ואני רוצה לשתף בקצרה במה שקורה.'
 const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(waMessage)}`
 ---
 
@@ -26,7 +26,7 @@ const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(wa
 
   <div id="hc-exit-title" class="hc-exit-title">לפני שתלך, עלתה לך שאלה?</div>
   <p id="hc-exit-body" class="hc-exit-body">
-    אם משהו נגע בך תוך כדי הקריאה, אפשר פשוט לכתוב לי. בלי התחייבות, נדבר.
+    אם משהו נגע בך תוך כדי הקריאה, אפשר לכתוב לי בוואטסאפ ולספר בקצרה מה קורה.
   </p>
 
   <a
