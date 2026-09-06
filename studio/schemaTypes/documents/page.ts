@@ -74,10 +74,10 @@ export default defineType({
 
         defineField({
           name: 'practicalGuidance',
-          title: 'מה מקבלים בתהליך, מקטע עומק',
+          title: 'ערך, החלטה והכנה לפגישה הראשונה',
           type: 'object',
           description:
-            'מקטע אופציונלי שמסביר בצורה מעשית מה קורה בתהליך. בדף ההורים הוא מופיע לפני שלבי מ.ס.ע.',
+            'כל קבוצה עונה על שאלה אחרת: מה יכול להשתנות, מה קורה בתהליך, והאם נכון להתחיל. אין לחזור על אותו מסר בין השדות.',
           options: {
             collapsed: true,
             collapsible: true,
@@ -101,14 +101,14 @@ export default defineType({
             }),
             defineField({
               name: 'steps',
-              title: 'הצעדים המעשיים',
+              title: 'מה אפשר לבנות בתהליך',
               type: 'array',
               validation: (Rule) => Rule.max(4),
               of: [
                 defineArrayMember({
                   type: 'object',
                   name: 'guidanceStep',
-                  title: 'צעד',
+                  title: 'תוצאה אפשרית',
                   fields: [
                     defineField({
                       name: 'title',
@@ -134,7 +134,7 @@ export default defineType({
                 defineArrayMember({
                   type: 'object',
                   name: 'practicalGuidanceStep',
-                  title: 'צעד',
+                  title: 'תוצאה אפשרית',
                   fields: [
                     defineField({
                       name: 'title',
@@ -161,7 +161,7 @@ export default defineType({
             }),
             defineField({
               name: 'withoutTeen',
-              title: 'התאמה, נקודה חשובה',
+              title: 'שאלת החלטה לפני שמתחילים',
               type: 'object',
               fields: [
                 defineField({name: 'title', title: 'כותרת', type: 'string'}),
@@ -170,7 +170,7 @@ export default defineType({
             }),
             defineField({
               name: 'gettingStarted',
-              title: 'כך מתחילים',
+              title: 'מה חשוב לדעת לפני הפגישה הראשונה',
               type: 'object',
               fields: [
                 defineField({name: 'title', title: 'כותרת', type: 'string'}),
@@ -179,7 +179,7 @@ export default defineType({
             }),
             defineField({
               name: 'professionalTrust',
-              title: 'מי מלווה, סמכות והקשר',
+              title: 'למה הדרך הזו',
               type: 'object',
               fields: [
                 defineField({name: 'title', title: 'כותרת', type: 'string'}),
@@ -252,14 +252,14 @@ export default defineType({
 
         defineField({
           name: 'stagesTitle',
-          title: 'כותרת לפני השלבים (אופציונלי)',
+          title: 'כותרת תהליך הליווי',
           type: 'string',
-          initialValue: 'מה קורה בפועל',
+          initialValue: 'איך נראה תהליך הליווי',
         }),
 
         defineField({
           name: 'stages',
-          title: 'שלבים (מיפוי, סילוק, עצמאות)',
+          title: 'שלבי תהליך הליווי',
           type: 'array',
 
           validation: (Rule) => Rule.max(3),

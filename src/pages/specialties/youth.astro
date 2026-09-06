@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import PortableText from '../../components/PortableText.astro'
 import SpecialtyDecisionCards from '../../components/SpecialtyDecisionCards.astro'
+import SpecialtyOutcomeCards from '../../components/SpecialtyOutcomeCards.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
@@ -118,6 +119,7 @@ const faqs = page?.specialty?.faq || []
 const closing = page?.specialty?.closing || ''
 const stagesTitle = page?.specialty?.stagesTitle || 'מה קורה בפועל'
 const stages = page?.specialty?.stages || []
+const outcomeCards = guidanceSteps
 
 const breadcrumbSchema = buildBreadcrumbListSchema({
   siteUrl: site.siteUrl,
@@ -219,6 +221,7 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
         </p>
       )}
 
+      {false && (
       <section class="mb-16 bg-white rounded-[2.5rem] p-8 md:p-12 shadow-elegant border border-primary/10">
         <div class="max-w-3xl mx-auto">
           <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{guidanceLabel}</p>
@@ -229,7 +232,7 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
             {guidanceIntro}
           </p>
           <ol class="grid gap-5 md:grid-cols-3 list-none p-0 m-0">
-            {guidanceSteps.map((step, index) => (
+            {[].map((step, index) => (
               <li class="rounded-2xl bg-background p-5 border border-primary/10">
                 <span class="block text-accent font-black text-xl mb-2">{index + 1}</span>
                 <h3 class="font-black text-primary text-lg mb-2">{step.title}</h3>
@@ -239,6 +242,7 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
           </ol>
         </div>
       </section>
+      )}
 
       {deepDive.length > 0 && (
         <section class="mb-16 rounded-[2.5rem] border border-primary/10 bg-white p-8 shadow-elegant md:p-12" aria-labelledby="youth-deep-dive">
@@ -266,6 +270,8 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
           </div>
         </section>
       )}
+
+      <SpecialtyOutcomeCards label={guidanceLabel} title={guidanceTitle} outcomes={outcomeCards} />
 
       {faqs.length > 0 && (
         <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white mb-16">

@@ -1,0 +1,31 @@
+---
+type Outcome = { title?: string; text?: string }
+
+const {
+  label = 'מה אפשר לבנות בתהליך',
+  title = 'השינוי נבנה בהדרגה, בתוך החיים עצמם.',
+  outcomes = [],
+} = Astro.props as {
+  label?: string
+  title?: string
+  outcomes?: Outcome[]
+}
+---
+
+{outcomes.length > 0 && (
+  <section class="mb-16" aria-labelledby="specialty-outcomes">
+    <div class="mx-auto mb-8 max-w-3xl text-center">
+      <p class="mb-3 text-sm font-black tracking-wide text-accent">{label}</p>
+      <h2 id="specialty-outcomes" class="font-display text-3xl font-black text-primary">{title}</h2>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      {outcomes.map((outcome) => (
+        <article class="rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
+          <h3 class="font-display text-2xl font-black text-primary">{outcome.title}</h3>
+          <p class="mt-4 font-body leading-relaxed text-primary/80">{outcome.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+)}
