@@ -56,7 +56,7 @@ export default defineType({
 
     defineField({
       name: 'specialty',
-      title: 'דף התמחות – מבנה מסע',
+      title: 'דף התמחות, מבנה מסע',
       type: 'object',
 
       options: {
@@ -74,7 +74,7 @@ export default defineType({
 
         defineField({
           name: 'practicalGuidance',
-          title: 'מה מקבלים בתהליך – מקטע עומק',
+          title: 'מה מקבלים בתהליך, מקטע עומק',
           type: 'object',
           description:
             'מקטע אופציונלי שמסביר בצורה מעשית מה קורה בתהליך. בדף ההורים הוא מופיע לפני שלבי מ.ס.ע.',
@@ -349,19 +349,19 @@ export default defineType({
     }),
 
     // =========================
-    // AEO (נסתר — JSON-LD בלבד)
+    // AEO, נסתר, JSON-LD בלבד
     // =========================
 
     defineField({
       name: 'aiCitation',
-      title: 'לחישה ל-AI — תשובה במשפט',
+      title: 'לחישה ל-AI, תשובה במשפט',
       type: 'text',
       rows: 2,
       description: 'משפט אחד שעונה על מהות הדף. נשלף ל-JSON-LD לציטוט AI. לא חובה.',
     }),
     defineField({
       name: 'painTags',
-      title: 'תגיות כאב (נסתר — לזחלנים ו-AI)',
+      title: 'תגיות כאב, נסתר לזחלנים ול-AI',
       type: 'array',
       of: [{type: 'string'}],
       options: {layout: 'tags'},

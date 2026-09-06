@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import PortableText from '../../components/PortableText.astro'
 import SpecialtyDecisionCards from '../../components/SpecialtyDecisionCards.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
@@ -17,6 +18,7 @@ const page = await sanity.fetch(
   `*[_type=="page" && slug.current == $slug][0]{
     title,
     excerpt,
+    body,
     specialty{
       intro,
       practicalGuidance{
@@ -81,6 +83,7 @@ const ogImageAlt = page?.seo?.ogImage?.alt || undefined
 
 const h1 = page?.title || ''
 const gold = page?.excerpt || ''
+const deepDive = page?.body || []
 const intro = page?.specialty?.intro || ''
 const practicalGuidance = page?.specialty?.practicalGuidance || {}
 const guidanceLabel = practicalGuidance.label || 'מה קורה בתהליך עם בני נוער?'
@@ -236,6 +239,17 @@ const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSch
           </ol>
         </div>
       </section>
+
+      {deepDive.length > 0 && (
+        <section class="mb-16 rounded-[2.5rem] border border-primary/10 bg-white p-8 shadow-elegant md:p-12" aria-labelledby="youth-deep-dive">
+          <div class="mx-auto max-w-3xl">
+            <p class="mb-3 text-sm font-black tracking-wide text-accent">להבין את התהליך לעומק</p>
+            <div id="youth-deep-dive" class="text-primary/80 font-body text-lg leading-relaxed">
+              <PortableText value={deepDive} />
+            </div>
+          </div>
+        </section>
+      )}
 
       <SpecialtyDecisionCards gettingStarted={gettingStarted} fitNote={withoutTeen} safety={safety} professionalTrust={professionalTrust} />
 
