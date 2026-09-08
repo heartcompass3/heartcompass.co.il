@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import PortableText from '../../components/PortableText.astro'
+import { sanity } from '../../lib/sanity'
+import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
+import { buildWhatsAppHref } from '../../lib/whatsapp'
+import site from '../../content/pages/site.json'
+
+const pageData = await sanity.fetch(`*[_type == "landingPage" && slug.current == "teen-conversation-guide"][0]{
+  title, subtitle, seoDescription, mainImage{alt,asset->{url}}, content, bullets, cta, trustText,
+  faqItems[]{question,answer}, newsletterConsent, newsletterConsentText,
+  parentConversationMap{intro,situationQuestion,situations[]{key,label},innerQuestion,innerSignals[]{key,label},responseQuestion,responses[]{key,label},profiles[]{key,title,summary,blindSpot,move,phrase,objection},safetyTitle,safetyText}
+}`)
+
+if (!pageData) return new Response('Not found', { status: 404 })
+
+const canonical = `${site.siteUrl}/guide/teen-conversation-guide`
+const nextUrl = `${site.siteUrl}/guide/thanks/teen-conversation-guide`
+const map = pageData.parentConversationMap ?? {}
+const situations = map.situations?.length ? map.situations : [
+  { key: 'short-answer', label: 'אני שואל/ת איך היה, ומקבל/ת רק „בסדר”' },
+  { key: 'closed-door', label: 'הוא או היא נכנסים לחדר וסוגרים את הדלת' },
+  { key: 'argument', label: 'שיחה פשוטה הופכת מהר לוויכוח או להתפרצות' },
+]
+const innerSignals = map.innerSignals?.length ? map.innerSignals : [
+  { key: 'worry', label: 'אני נבהל/ת שמשהו קורה ואני לא יודע/ת' },
+  { key: 'distance', label: 'אני מרגיש/ה שמרחיקים אותי ולא נותנים לי מקום' },
+  { key: 'loss-of-control', label: 'אני מרגיש/ה שאני מאבד/ת שליטה על מה שקורה בבית' },
+]
+const responses = map.responses?.length ? map.responses : [
+  { key: 'ask', label: 'אני שואל/ת עוד ועוד' },
+  { key: 'solve', label: 'אני מסביר/ה, מציע/ה פתרונות או משכנע/ת' },
+  { key: 'boundary', label: 'אני מתקשה/ת, מבקר/ת או מציב/ה גבול מיד' },
+]
+const fallbackProfiles = [
+  { key: 'worry', title: 'הדאגה מבקשת ודאות — והמתבגר עלול לשמוע לחץ.', summary: 'כשאין מידע, טבעי לרצות לאסוף אותו מהר. אבל רצף שאלות עלול להפוך את השיחה לרגע שבו צריך להתגונן, במקום לרגע שאפשר לנוח בו.', blindSpot: 'לא צריך לוותר על הדאגה; צריך להפריד בין הידיעה שאתם זקוקים לה לבין הקצב שבו אפשר לדבר.', move: 'שאלו שאלה אחת פשוטה, ואז השאירו פתח. סמנו שאתם זמינים ושאפשר לחזור לזה.', phrase: '„לא חייבים לדבר עכשיו. חשוב לי שתדע/י שאני כאן, גם אם אין לך מילים.”', objection: 'אם מתקבלת תשובה של „עזוב/י אותי”, אפשר לענות: „בסדר. אני עוזב/ת עכשיו, לא אותך.”' },
+  { key: 'distance', title: 'הריחוק כואב — אבל ניסיון לסגור אותו מיד עלול להרחיב אותו.', summary: 'כשמרגישים שנדחקים החוצה, קל לנסות להחזיר קרבה באמצעות עוד נוכחות, עוד בירור או עוד הסבר. עבור המתבגר, זה עלול להישמע כמו חוסר אמון במרחב שלו.', blindSpot: 'מרחב אינו בהכרח ניתוק. אפשר לשמור קשר גם בלי לדרוש שיחה עכשיו.', move: 'החליפו את הדרישה לשיחה באמירה שמחזיקה גם קרבה וגם מרחב.', phrase: '„אני רואה שאת/ה צריך/ה רגע לעצמך. כשתרצה/י, אשמח לשמוע מה עובר עליך.”', objection: 'אם אין תגובה, אל תחזרו מיד על אותה בקשה. חזרו לנוכחות רגילה ושקטה, ובדקו שוב בזמן אחר.' },
+  { key: 'loss-of-control', title: 'כשאין אחיזה, קל להדק — אבל הידוק מהיר מזמין התנגדות.', summary: 'חוסר ודאות בבית יכול לגרום לנו לעבור מהר לפתרונות, לכללים או לביקורת. לפעמים הגבול נחוץ; השאלה היא אם הוא מגיע אחרי שהבנו מה קורה, או במקום להבין.', blindSpot: 'גבול יעיל לא חייב להישען על מאבק כוח. אפשר להיות ברורים בלי להפוך את הרגע למשפט.', move: 'לפני גבול או פתרון, תנו שם קצר למה שאתם רואים ושאלו אם זה זמן מתאים לדבר.', phrase: '„חשוב לי לדבר על זה. אני לא רוצה לריב — מתי יהיה לך יותר אפשרי שנשב לעשר דקות?”', objection: 'אם עולה ויכוח, אפשר לעצור: „אני שומע/ת ששנינו מוצפים. נחזור לזה כשנוכל לדבר בלי לפגוע.”' },
+]
+const profiles = map.profiles?.length ? map.profiles : fallbackProfiles
+const faqSchema = pageData.faqItems?.length ? { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: pageData.faqItems.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })) } : null
+const breadcrumbSchema = buildBreadcrumbListSchema({ siteUrl: site.siteUrl, brandName: site.brand, crumbs: [{ name: 'כלים ומדריכים', item: `${site.siteUrl}/tools` }, { name: pageData.title, item: canonical }] })
+const whatsappHref = buildWhatsAppHref(site.whatsAppPhone, 'היי יוסי, עברתי על מפת השיחה עם המתבגר/ת. אני רוצה להבין איך אפשר להפוך את זה לשינוי בבית שלנו.')
+const schema = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]
+---
+
+<BaseLayout title={pageData.title} description={pageData.seoDescription || pageData.subtitle} canonical={canonical} ogImage={pageData.mainImage?.asset?.url} ogImageAlt={pageData.mainImage?.alt || pageData.title} schema={schema} preload={pageData.mainImage?.asset?.url ? { href: pageData.mainImage.asset.url } : undefined}>
+  <section class="bg-secondary/70 py-5"><div class="container mx-auto max-w-6xl px-5"><Breadcrumbs withSchema={false} items={[{ name: 'כלים ומדריכים', href: '/tools' }, { name: pageData.title }]} /></div></section>
+
+  <section class="overflow-hidden bg-primary text-white">
+    <div class="container mx-auto grid max-w-6xl gap-10 px-5 py-14 lg:grid-cols-2 lg:items-center lg:py-20">
+      <div>
+        <p class="mb-4 font-semibold text-accent">להורים למתבגרים</p>
+        <h1 class="font-display text-4xl font-bold leading-tight md:text-6xl">{pageData.title}</h1>
+        {pageData.subtitle && <p class="mt-6 max-w-xl text-xl leading-relaxed text-white/85">{pageData.subtitle}</p>}
+        <a href="#map" class="mt-8 inline-flex rounded-xl bg-accent px-6 py-4 font-bold text-accent-foreground transition hover:brightness-110">בואו נמפה את הרגע בבית</a>
+      </div>
+      {pageData.mainImage?.asset?.url && <img src={pageData.mainImage.asset.url} alt={pageData.mainImage.alt || pageData.title} width="836" height="470" class="aspect-[16/10] w-full rounded-2xl object-cover shadow-elegant" fetchpriority="high" />}
+    </div>
+  </section>
+
+  <section class="py-14"><div class="container mx-auto max-w-4xl px-5">
+    <div class="portabletext text-lg text-muted-foreground"><PortableText value={pageData.content} /></div>
+    {pageData.bullets?.length > 0 && <ul class="mt-8 grid gap-4 sm:grid-cols-2">{pageData.bullets.filter(Boolean).map((bullet) => <li class="rounded-xl border bg-card p-4 font-medium"><span class="ml-2 text-accent">✓</span>{bullet}</li>)}</ul>}
+  </div></section>
+
+  <section id="map" class="scroll-mt-24 bg-secondary py-16"><div class="container mx-auto max-w-4xl px-5">
+    <header class="mx-auto mb-8 max-w-2xl text-center"><p class="font-semibold text-accent">לא אבחון ולא מבחן</p><h2 class="mt-2 font-display text-4xl font-bold">מפה לרגע שבו השיחה נתקעת</h2><p class="mt-4 leading-relaxed text-muted-foreground">{map.intro || 'שלושה צעדים קצרים יעזרו לזהות מה מופעל אצלכם ברגע הזה — ואיזה צעד קטן יכול לאפשר שיחה אחרת.'}</p></header>
+    <div class="rounded-2xl border bg-card p-5 shadow-elegant md:p-8">
+      <div class="mb-8 flex items-center gap-2 text-sm font-semibold text-muted-foreground"><span data-step-indicator="1" class="rounded-full bg-primary px-3 py-1 text-white">1</span><span>מה קורה</span><span>←</span><span data-step-indicator="2" class="rounded-full bg-muted px-3 py-1">2</span><span>מה זה מפעיל</span><span>←</span><span data-step-indicator="3" class="rounded-full bg-muted px-3 py-1">3</span><span>איך מגיבים</span></div>
+      <div data-map-step="1"><h3 class="font-display text-2xl font-bold">{map.situationQuestion || 'באיזה רגע אתם מזהים את עצמכם?'}</h3><div class="mt-5 grid gap-3">{situations.map((item) => <button type="button" class="map-option text-right" data-choice="situation" data-key={item.key}>{item.label}</button>)}</div></div>
+      <div data-map-step="2" hidden><h3 class="font-display text-2xl font-bold">{map.innerQuestion || 'ומה קורה בכם באותו רגע?'}</h3><div class="mt-5 grid gap-3">{innerSignals.map((item) => <button type="button" class="map-option text-right" data-choice="inner" data-key={item.key}>{item.label}</button>)}</div><button type="button" class="map-back mt-6 text-sm font-semibold underline" data-back="1">חזרה</button></div>
+      <div data-map-step="3" hidden><h3 class="font-display text-2xl font-bold">{map.responseQuestion || 'ומה אתם בדרך כלל עושים אחר כך?'}</h3><div class="mt-5 grid gap-3">{responses.map((item) => <button type="button" class="map-option text-right" data-choice="response" data-key={item.key}>{item.label}</button>)}</div><button type="button" class="map-back mt-6 text-sm font-semibold underline" data-back="2">חזרה</button></div>
+      <section id="map-result" data-map-result hidden tabindex="-1" class="mt-4 rounded-2xl bg-primary p-6 text-white md:p-8"><p class="font-semibold text-accent">המפה של הרגע שלכם</p><h3 data-result-title class="mt-2 font-display text-3xl font-bold"></h3><p data-result-summary class="mt-4 text-lg leading-relaxed text-white/90"></p><div class="mt-6 grid gap-4 md:grid-cols-2"><div class="rounded-xl bg-white/10 p-5"><h4 class="font-bold">מה קל לפספס</h4><p data-result-blindspot class="mt-2 leading-relaxed text-white/85"></p></div><div class="rounded-xl bg-white/10 p-5"><h4 class="font-bold">הצעד הקטן הבא</h4><p data-result-move class="mt-2 leading-relaxed text-white/85"></p></div></div><blockquote data-result-phrase class="mt-6 border-r-4 border-accent bg-white/10 p-5 text-xl font-semibold leading-relaxed"></blockquote><p data-result-objection class="mt-5 leading-relaxed text-white/85"></p><div class="mt-7 flex flex-wrap gap-3"><a href="#get-guide" class="rounded-xl bg-accent px-5 py-3 font-bold text-accent-foreground">לקבל את המדריך המלא</a><a href={whatsappHref} target="_blank" rel="noopener" class="rounded-xl border border-white/50 px-5 py-3 font-bold">רוצה לחשוב על זה יחד</a><button type="button" data-restart class="rounded-xl px-3 py-3 underline">להתחיל מחדש</button></div></section>
+    </div>
+  </div></section>
+
+  <section class="py-16"><div class="container mx-auto max-w-4xl px-5"><div class="rounded-2xl border-r-4 border-accent bg-card p-6 shadow-sm"><h2 class="font-display text-2xl font-bold">{map.safetyTitle || 'חשוב לומר: המפה לא מחליפה היכרות עם המשפחה שלכם'}</h2><p class="mt-3 leading-relaxed text-muted-foreground">{map.safetyText || 'היא נועדה לעזור לעצור לפני התגובה האוטומטית ולבחור צעד קטן אחר. אם יש מצוקה מתמשכת, פגיעה בעצמי, אלימות או חשש לבטיחות — חשוב לפנות לעזרה מקצועית או דחופה בהתאם למצב.'}</p></div></div></section>
+
+  <section id="get-guide" class="scroll-mt-24 bg-primary py-16 text-white"><div class="container mx-auto grid max-w-5xl gap-8 px-5 lg:grid-cols-[1fr,0.9fr] lg:items-start"><div><p class="font-semibold text-accent">להמשיך מעבר לרגע אחד</p><h2 class="mt-2 font-display text-4xl font-bold">קבלו את המדריך המלא לשיחה שלא הופכת לחקירה</h2><p class="mt-5 text-lg leading-relaxed text-white/85">במדריך מחכים שלוש החלפות פשוטות, משפט שאפשר לומר כשכבר נכנסתם לחקירה, ותרגיל של שבעה ימים שמוריד מתח סביב השיחות בבית.</p><a href="/specialties/parents" class="mt-6 inline-block font-semibold text-accent underline underline-offset-4">להכיר את הדרכת ההורים של מצפן הלב</a></div><form action="/api/lead" method="POST" class="rounded-2xl bg-white p-6 text-foreground shadow-elegant"><input type="hidden" name="_next" value={nextUrl} /><input type="hidden" name="_subject" value={`בקשה למדריך: ${pageData.title}`} /><label class="mb-4 block font-semibold" for="guide-name">שם מלא</label><input id="guide-name" name="name" required class="mb-5 w-full rounded-xl border bg-background px-4 py-3" autocomplete="name" /><label class="mb-4 block font-semibold" for="guide-email">כתובת מייל</label><input id="guide-email" name="email" type="email" required class="mb-5 w-full rounded-xl border bg-background px-4 py-3" autocomplete="email" /><label class="flex gap-3 text-sm leading-relaxed"><input type="checkbox" name="privacy_ack" required class="mt-1" />אני מאשר/ת קבלת המדריך למייל, וקראתי את <a href="/privacy" target="_blank" rel="noopener" class="underline">מדיניות הפרטיות</a>.</label><label class="mt-4 flex gap-3 text-sm leading-relaxed"><input type="checkbox" name="consent" value="yes" class="mt-1" />{pageData.newsletterConsentText || 'אשמח לקבל גם תכנים, עדכונים והצעות שוטפים ממצפן הלב במייל (לא חובה).'}</label><button type="submit" class="mt-6 w-full rounded-xl bg-accent px-5 py-4 font-bold text-accent-foreground">{pageData.cta || 'שלחו לי את המדריך'}</button>{pageData.trustText && <p class="mt-4 text-center text-sm text-muted-foreground">{pageData.trustText}</p>}</form></div></section>
+
+  {pageData.faqItems?.length > 0 && <section class="py-16"><div class="container mx-auto max-w-4xl px-5"><h2 class="font-display text-center text-3xl font-bold">שאלות נפוצות</h2><div class="mt-8 space-y-3">{pageData.faqItems.map((item) => <details class="rounded-xl border bg-card p-5"><summary class="cursor-pointer font-bold">{item.question}</summary><p class="mt-4 leading-relaxed text-muted-foreground">{item.answer}</p></details>)}</div></div></section>}
+</BaseLayout>
+
+<script define:vars={{ situations, innerSignals, responses, profiles }}>
+  const state = { situation: '', inner: '', response: '' }
+  const responseNotes = {
+    ask: 'כשהשאלות מתרבות, המתבגר עלול לשמוע: „אין לי מרחב עד שאסביר הכול.”',
+    solve: 'כשעוברים מהר לפתרון, המתבגר עלול לשמוע: „מה שאני מרגיש הוא בעיה שצריך לתקן.”',
+    boundary: 'כשמגיעים מיד לביקורת או לגבול, המתבגר עלול לשמוע: „אין מקום למה שעובר עליי.”',
+  }
+  const showStep = (step) => {
+    document.querySelectorAll('[data-map-step]').forEach((element) => { element.hidden = element.dataset.mapStep !== String(step) })
+    document.querySelectorAll('[data-step-indicator]').forEach((element) => { const active = Number(element.dataset.stepIndicator) <= step; element.className = `rounded-full px-3 py-1 ${active ? 'bg-primary text-white' : 'bg-muted'}` })
+  }
+  const find = (items, key) => items.find((item) => item.key === key)
+  document.querySelectorAll('[data-choice]').forEach((button) => button.addEventListener('click', () => {
+    state[button.dataset.choice] = button.dataset.key
+    if (button.dataset.choice === 'situation') return showStep(2)
+    if (button.dataset.choice === 'inner') return showStep(3)
+    const profile = find(profiles, state.inner) || profiles[0]
+    document.querySelector('[data-result-title]').textContent = profile.title
+    document.querySelector('[data-result-summary]').textContent = `${profile.summary} ${responseNotes[state.response] || ''}`
+    document.querySelector('[data-result-blindspot]').textContent = profile.blindSpot
+    document.querySelector('[data-result-move]').textContent = profile.move
+    document.querySelector('[data-result-phrase]').textContent = profile.phrase
+    document.querySelector('[data-result-objection]').textContent = profile.objection
+    document.querySelector('[data-map-result]').hidden = false
+    document.querySelector('[data-map-result]').focus()
+  }))
+  document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', () => showStep(Number(button.dataset.back))))
+  document.querySelector('[data-restart]')?.addEventListener('click', () => { state.situation = ''; state.inner = ''; state.response = ''; document.querySelector('[data-map-result]').hidden = true; showStep(1); document.querySelector('[data-choice="situation"]')?.focus() })
+</script>
+
+<style>
+  .map-option { border: 1px solid hsl(var(--border)); border-radius: .75rem; padding: 1rem 1.1rem; font-weight: 650; transition: border-color .15s, background-color .15s, transform .15s; }
+  .map-option:hover, .map-option:focus-visible { border-color: hsl(var(--accent)); background: hsl(var(--secondary)); outline: none; transform: translateY(-1px); }
+</style>

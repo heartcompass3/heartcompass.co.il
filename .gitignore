@@ -10,3 +10,5 @@ local-article.txt
 
 # local Claude settings
 .claude/settings.local.json
+.vercel
+.env*

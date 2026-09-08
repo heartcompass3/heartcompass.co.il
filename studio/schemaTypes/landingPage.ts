@@ -296,6 +296,25 @@ export default {
         },
       ],
     },
+    {
+      name: 'parentConversationMap',
+      title: 'מפת השיחה עם המתבגר',
+      type: 'object',
+      group: 'tools',
+      description: 'המסלול האינטראקטיבי של המדריך. כל הטקסטים והתוצאות ניתנים לעריכה כאן.',
+      fields: [
+        { name: 'intro', title: 'פתיח למפה', type: 'text', rows: 3 },
+        { name: 'situationQuestion', title: 'שאלת הסיטואציה', type: 'string' },
+        { name: 'situations', title: 'סיטואציות', type: 'array', of: [{ type: 'object', name: 'conversationSituation', fields: [{ name: 'key', title: 'מזהה באנגלית', type: 'string' }, { name: 'label', title: 'תיאור לגולש', type: 'string' }] }] },
+        { name: 'innerQuestion', title: 'שאלת מה שקורה בהורה', type: 'string' },
+        { name: 'innerSignals', title: 'מה קורה בהורה', type: 'array', of: [{ type: 'object', name: 'parentInnerSignal', fields: [{ name: 'key', title: 'מזהה באנגלית', type: 'string' }, { name: 'label', title: 'תיאור לגולש', type: 'string' }] }] },
+        { name: 'responseQuestion', title: 'שאלת התגובה', type: 'string' },
+        { name: 'responses', title: 'תגובות ההורה', type: 'array', of: [{ type: 'object', name: 'parentConversationResponse', fields: [{ name: 'key', title: 'מזהה באנגלית', type: 'string' }, { name: 'label', title: 'תיאור לגולש', type: 'string' }] }] },
+        { name: 'profiles', title: 'תוצאות המפה', type: 'array', of: [{ type: 'object', name: 'parentConversationProfile', fields: [{ name: 'key', title: 'מזהה שמתחבר ל"מה קורה בהורה"', type: 'string' }, { name: 'title', title: 'כותרת', type: 'string' }, { name: 'summary', title: 'מה המפה מראה', type: 'text', rows: 3 }, { name: 'blindSpot', title: 'מה קל לפספס', type: 'text', rows: 3 }, { name: 'move', title: 'הצעד הבא', type: 'text', rows: 3 }, { name: 'phrase', title: 'משפט שאפשר לומר', type: 'string' }, { name: 'objection', title: 'כשיש התנגדות', type: 'text', rows: 3 }] }] },
+        { name: 'safetyTitle', title: 'כותרת הבהרה מקצועית', type: 'string' },
+        { name: 'safetyText', title: 'טקסט הבהרה מקצועית', type: 'text', rows: 3 },
+      ],
+    },
   ],
 
   preview: {
