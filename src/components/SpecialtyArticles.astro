@@ -1,0 +1,57 @@
+---
+const { articles = [] } = Astro.props
+---
+
+{articles.length > 0 && (
+  <section class="border-t border-accent/10 pt-12" aria-labelledby="specialty-articles-title">
+    <div class="mx-auto mb-8 max-w-2xl text-center">
+      <h2 id="specialty-articles-title" class="mb-3 font-display text-3xl font-black text-primary">
+        להעמקה בנושא
+      </h2>
+      <p class="font-body leading-relaxed text-primary/70">
+        ארבעה מדריכים שנבחרו כדי לעזור לך להבין את הדפוס ולבחון את הצעד הבא.
+      </p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      {articles.map((article) => (
+        <a
+          href={`/articles/${article.slug.current}`}
+          class="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/50 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        >
+          <div class="relative h-44 w-full overflow-hidden">
+            <img
+              src={article.mainImage?.asset?.url || '/assets/yossi-hero.jpg'}
+              alt={article.mainImage?.alt || article.title}
+              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+              width="800"
+              height="450"
+            />
+          </div>
+          <div class="flex flex-1 flex-col items-start p-7">
+            <h3 class="mb-3 font-display text-xl font-black leading-tight text-primary transition-colors group-hover:text-gold-dark">
+              {article.title}
+            </h3>
+            {article.excerpt && (
+              <p class="mb-5 line-clamp-2 font-body leading-relaxed text-primary/70">
+                {article.excerpt}
+              </p>
+            )}
+            <span class="mt-auto text-sm font-bold text-accent">לקריאת המדריך ←</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="mt-9 text-center">
+      <a
+        href="/articles"
+        class="inline-flex min-h-11 items-center justify-center rounded-xl border border-primary/15 bg-white px-6 py-3 font-bold text-primary transition hover:border-accent/40 hover:text-accent"
+      >
+        לכל המאמרים והמדריכים
+      </a>
+    </div>
+  </section>
+)}

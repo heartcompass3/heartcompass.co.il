@@ -134,6 +134,7 @@ export const ARTICLES_QUERY = /* groq */ `
   slug,
   excerpt,
   publishedAt,
+  contentRole,
   authorLine,
   mainImage{
     alt,

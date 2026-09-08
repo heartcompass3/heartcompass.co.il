@@ -65,6 +65,7 @@ const imageSrc = page?.heroImage
 const ogImageUrl = page?.seo?.ogImage
   ? urlFor(page.seo.ogImage).width(1200).height(630).fit('crop').url()
   : undefined
+const ogImageAlt = page?.seo?.ogImage?.alt
 
 // ─── Person schema עשיר לדף האודות ("כרטיס הביקור" של יוסי) ───────
 const aboutUrl = `${site.siteUrl}/about`
@@ -122,7 +123,7 @@ const aboutPersonSchema = {
   ],
   worksFor: { '@id': `${site.siteUrl}/#business` },
   mainEntityOfPage: aboutUrl,
-  ...(page?.aiCitation ? { disambiguatingDescription: page.aiCitation } : {}),
+  ...(page?.aiContext ? { disambiguatingDescription: page.aiContext } : {}),
   ...(page?.painTags?.length ? { keywords: page.painTags.join(', ') } : {}),
 }
 ---
@@ -133,6 +134,7 @@ const aboutPersonSchema = {
   canonical={page?.seo?.canonical}
   noindex={page?.seo?.noindex}
   ogImage={ogImageUrl}
+  ogImageAlt={ogImageAlt}
   schema={[aboutPersonSchema]}
 >
   <article class="animate-fade-in py-24 bg-background">

@@ -47,6 +47,7 @@ const canonical =
 const ogImageUrl = page.seo?.ogImage
   ? urlFor(page.seo.ogImage).width(1200).height(630).fit('crop').url()
   : undefined
+const ogImageAlt = page.seo?.ogImage?.alt
 
 const heading = page.title?.trim() || site.brand
 const opening = page.excerpt?.trim() || page.specialty?.intro?.trim() || ''
@@ -85,6 +86,7 @@ const schemaArray = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]
   canonical={canonical}
   noindex={page.seo?.noindex}
   ogImage={ogImageUrl}
+  ogImageAlt={ogImageAlt}
   schema={schemaArray}
 >
   <article class="animate-fade-in py-24 bg-background min-h-screen">
