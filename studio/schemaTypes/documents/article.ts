@@ -1,5 +1,12 @@
 import { defineField, defineType } from 'sanity'
 
+const SOURCE_LINK_POLICY_START = Date.parse('2026-09-17T11:30:00.000Z')
+
+const usesNewSourceLinkPolicy = (document: { _createdAt?: string } | undefined) => {
+  if (!document?._createdAt) return true
+  return Date.parse(document._createdAt) >= SOURCE_LINK_POLICY_START
+}
+
 export default defineType({
   name: 'article',
   title: 'מאמר',
@@ -291,7 +298,7 @@ export default defineType({
       title: 'מקורות',
       type: 'array',
       description:
-        'מחקרים/מקורות שהמאמר מתבסס עליהם. מוצגים לקורא בתחתית המאמר, וממופים ל-citation ב-JSON-LD (AEO/E-E-A-T). את הקישורים הגולמיים יש להוסיף כאן, לא בתוך "הקשר נוסף ל-AI".',
+        'מחקרים/מקורות שהמאמר מתבסס עליהם. מוצגים לקורא בתחתית המאמר וממופים ל-citation ב-JSON-LD. בנוסף, יש לקשר בגוף המאמר את הטענה הרלוונטית למקור המדויק באמצעות Link; הרשימה כאן אינה מחליפה קישור בהקשר.',
       of: [
         {
           type: 'object',
@@ -324,6 +331,13 @@ export default defineType({
               name: 'url',
               title: 'קישור',
               type: 'url',
+              validation: (Rule) =>
+                Rule.custom((url, context) => {
+                  if (!usesNewSourceLinkPolicy(context.document)) return true
+                  const source = context.parent as { sourceType?: string } | undefined
+                  if (source?.sourceType === 'book' || url) return true
+                  return 'למקור אינטרנטי מומלץ להוסיף כתובת ישירה, כדי שהקורא יוכל לאמת את הטענה.'
+                }).warning(),
             }),
             defineField({
               name: 'sourceType',
@@ -358,9 +372,36 @@ export default defineType({
       name: 'body',
       title: 'גוף המאמר',
       type: 'blockContent',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => [
+        Rule.required(),
+        Rule.custom((body, context) => {
+          if (!usesNewSourceLinkPolicy(context.document)) return true
+          const document = context.document as
+            | { _createdAt?: string; sources?: Array<{ url?: string }> }
+            | undefined
+          const sourceUrls = (document?.sources || [])
+            .map((source) => source?.url)
+            .filter((url): url is string => Boolean(url))
+
+          if (sourceUrls.length === 0) return true
+
+          const inlineUrls = new Set(
+            ((body as Array<{ _markDefs?: Array<{ href?: string }> }> | undefined) || [])
+              .flatMap((block) => block?._markDefs || [])
+              .map((mark) => mark?.href)
+              .filter((href): href is string => Boolean(href))
+          )
+          const missingCount = sourceUrls.filter((url) => !inlineUrls.has(url)).length
+
+          if (missingCount === 0) return true
+          if (missingCount === sourceUrls.length) {
+            return 'יש למאמר מקורות, אבל אין אליהם קישורים בתוך גוף המאמר. קשרו כל טענה מחקרית למקור המדויק באמצעות Link.'
+          }
+          return `ל-${missingCount} מקורות עדיין אין קישור ליד הטענה הרלוונטית בגוף המאמר.`
+        }).warning(),
+      ],
       description:
-        'תוכן המאמר. ניתן להוסיף תמונות בתוך הטקסט דרך כפתור "הוסף תמונה".',
+        'תוכן המאמר. בטענה מחקרית או עובדתית מסמנים את הביטוי הרלוונטי ומוסיפים Link למקור המדויק; רשימת המקורות נשארת גם בתחתית. ניתן להוסיף תמונות דרך כפתור "הוסף תמונה".',
     }),
 
     // ─── חדש: בלוק קריאה לפעולה (אופציונלי) ──────────────────────
