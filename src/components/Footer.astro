@@ -1,14 +1,7 @@
 ---
-import { sanity } from '../lib/sanity'
 import site from '../content/pages/site.json'
-import { SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
 
-let settings = null
-try {
-  settings = await sanity.fetch(SITE_SETTINGS_QUERY)
-} catch (e) {
-  settings = null
-}
+const { settings = null } = Astro.props
 
 /* fallback קשיח - משמש רק אם עוד לא מולא בסאניטי, כדי שהאתר לא יישבר */
 const fallbackFooterLinks = [

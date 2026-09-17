@@ -1,9 +1,7 @@
 ---
-import { sanity } from '../lib/sanity'
 import site from '../content/pages/site.json'
-import { SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
 
-const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
+const { settings = null } = Astro.props
 
 // קישור בסיס לוואטסאפ (חי מהסאניטי אם קיים)
 const baseHref =

@@ -121,9 +121,8 @@ const articleSchema = {
         citation: article.sources.map((s: any) => ({
           '@type': 'CreativeWork',
           name: s.title,
-          ...(s.authors ? { author: s.authors } : {}),
+          ...(s.authors ? { creditText: s.authors } : {}),
           ...(s.publisher ? { publisher: { '@type': 'Organization', name: s.publisher } } : {}),
-          ...(s.year ? { datePublished: s.year } : {}),
           ...(s.url ? { url: s.url } : {}),
         })),
       }

@@ -12,7 +12,9 @@ export const sanity = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false, 
+  // Published site content is read-only and cached by Astro ISR. The Sanity CDN
+  // removes the Content Lake round-trip from cold page renders.
+  useCdn: true,
 })
 
 const builder = imageUrlBuilder(sanity)

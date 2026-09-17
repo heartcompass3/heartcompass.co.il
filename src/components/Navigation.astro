@@ -1,18 +1,9 @@
 ---
-import { sanity } from '../lib/sanity'
 import site from '../content/pages/site.json'
-import { SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
 
 const currentPath = Astro.url.pathname
-
-let nav = []
-
-try {
-  const settings = await sanity.fetch(SITE_SETTINGS_QUERY)
-  nav = settings?.nav ?? []
-} catch (e) {
-  nav = []
-}
+const { settings = null } = Astro.props
+let nav = settings?.nav ?? []
 
 /* fallback מלא במקרה ש-Sanity לא זמין */
 const fallbackNav = [

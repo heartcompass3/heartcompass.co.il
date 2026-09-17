@@ -123,8 +123,19 @@ const aboutPersonSchema = {
   ],
   worksFor: { '@id': `${site.siteUrl}/#business` },
   mainEntityOfPage: aboutUrl,
+}
+
+const aboutProfileSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${aboutUrl}#profilepage`,
+  url: aboutUrl,
+  name: metaTitle,
+  description: metaDescription,
+  ...(page?.aiCitation ? { abstract: page.aiCitation } : {}),
   ...(page?.aiContext ? { disambiguatingDescription: page.aiContext } : {}),
   ...(page?.painTags?.length ? { keywords: page.painTags.join(', ') } : {}),
+  mainEntity: { '@id': `${site.siteUrl}/#person` },
 }
 ---
 
@@ -135,7 +146,7 @@ const aboutPersonSchema = {
   noindex={page?.seo?.noindex}
   ogImage={ogImageUrl}
   ogImageAlt={ogImageAlt}
-  schema={[aboutPersonSchema]}
+  schema={[aboutPersonSchema, aboutProfileSchema]}
 >
   <article class="animate-fade-in py-24 bg-background">
     <div class="max-w-6xl mx-auto px-6">

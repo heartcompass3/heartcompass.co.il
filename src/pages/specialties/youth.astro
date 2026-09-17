@@ -8,7 +8,7 @@ import SpecialtyArticles from '../../components/SpecialtyArticles.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
-import { buildServiceSchema } from '../../lib/schema'
+import { buildAeoWebPageSchema, buildServiceSchema } from '../../lib/schema'
 import { ARTICLES_QUERY } from '../../lib/sanityQueries'
 import { buildWhatsAppHref } from '../../lib/whatsapp'
 import { selectFeaturedArticles } from '../../lib/featuredArticles'
@@ -167,13 +167,16 @@ const serviceSchema = buildServiceSchema({
   audience: 'בני נוער ומתבגרים המתמודדים עם הסתגרות, לחץ חברתי, חרדה, כעס או ירידה בביטחון העצמי, והוריהם',
 })
 
-const serviceSchemaAeo = {
-  ...serviceSchema,
-  ...(page?.aiCitation ? { abstract: page.aiCitation } : {}),
-  ...(page?.aiContext ? { disambiguatingDescription: page.aiContext } : {}),
-  ...(page?.painTags?.length ? { keywords: page.painTags.join(', ') } : {}),
-}
-const schemaArray = [serviceSchemaAeo, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]
+const webPageSchema = buildAeoWebPageSchema({
+  url: canonical,
+  name: h1 || title,
+  description,
+  abstract: page?.aiCitation,
+  disambiguatingDescription: page?.aiContext,
+  keywords: page?.painTags,
+  mainEntityId: serviceSchema['@id'],
+})
+const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]
 ---
 
 <BaseLayout

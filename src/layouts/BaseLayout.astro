@@ -2,6 +2,8 @@
 import site from '../content/pages/site.json'
 import '../styles/global.css'
 import { AREA_SERVED } from '../lib/schema'
+import { sanity } from '../lib/sanity'
+import { SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
 
 import SeoHead from '../components/SeoHead.astro'
 
@@ -30,7 +32,19 @@ const {
   // og:type="article" בלבד — article:published_time / modified_time / author
   publishedTime,
   modifiedTime,
+  // Pages that already fetched settings (currently /contact) can pass them in
+  // so the layout does not issue a second request.
+  siteSettings,
 } = Astro.props
+
+let resolvedSiteSettings = siteSettings ?? null
+if (!resolvedSiteSettings) {
+  try {
+    resolvedSiteSettings = await sanity.fetch(SITE_SETTINGS_QUERY)
+  } catch {
+    resolvedSiteSettings = null
+  }
+}
 
 const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
 
@@ -285,12 +299,12 @@ if (isArticlePage) {
     >
       דלג לתוכן הראשי
     </a>
-    <Navigation />
+    <Navigation settings={resolvedSiteSettings} />
     <main id="main-content">
       <slot />
     </main>
-    <Footer />
-    <WhatsAppFloat />
+    <Footer settings={resolvedSiteSettings} />
+    <WhatsAppFloat settings={resolvedSiteSettings} />
     <BackToTop />
     <CookieBanner />
     <AccessibilityWidget />

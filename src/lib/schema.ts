@@ -47,3 +47,39 @@ export function buildServiceSchema(params: {
     },
   }
 }
+
+// AEO copy describes the page, not the service entity. `abstract`,
+// `disambiguatingDescription` and `keywords` are CreativeWork properties, so
+// they belong on WebPage and point back to the service as the main entity.
+export function buildAeoWebPageSchema(params: {
+  url: string
+  name: string
+  description?: string
+  abstract?: string
+  disambiguatingDescription?: string
+  keywords?: string[]
+  mainEntityId?: string
+}) {
+  const {
+    url,
+    name,
+    description,
+    abstract,
+    disambiguatingDescription,
+    keywords,
+    mainEntityId,
+  } = params
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${url}#webpage`,
+    url,
+    name,
+    ...(description ? { description } : {}),
+    ...(abstract ? { abstract } : {}),
+    ...(disambiguatingDescription ? { disambiguatingDescription } : {}),
+    ...(keywords?.length ? { keywords: keywords.join(', ') } : {}),
+    ...(mainEntityId ? { mainEntity: { '@id': mainEntityId } } : {}),
+  }
+}
