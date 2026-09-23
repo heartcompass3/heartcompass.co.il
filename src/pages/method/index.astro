@@ -160,10 +160,18 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
 
       </header>
 
-      <!-- בקצרה (AEO): לחישה ל-AI + נקודות מפתח — לפני פסקת הפתיחה -->
+      {intro && (
+        <div class="mb-10 space-y-5 text-lg text-primary/80 font-body leading-relaxed max-w-3xl mx-auto text-right">
+          {intro.split(/\n\s*\n/).map((paragraph: string) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+      )}
+
+      <!-- Visible method summary -->
       {(aiCitation || keyTakeaways.length > 0) && (
         <aside class="max-w-3xl mx-auto mb-10 bg-accent/10 border-r-4 border-accent rounded-2xl p-6 md:p-8 text-right">
-          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{ktHeading}</p>
+          <h2 class="text-accent font-display font-black text-lg mb-3">{ktHeading}</h2>
           {aiCitation && (
             <p class="text-primary font-body font-semibold text-lg leading-relaxed">{aiCitation}</p>
           )}
@@ -178,12 +186,6 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
             </ul>
           )}
         </aside>
-      )}
-
-      {intro && (
-        <p class="mb-14 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
-          {intro}
-        </p>
       )}
 
       <!-- מ.ס.ע – הליבה -->
@@ -203,9 +205,9 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
           )}
 
           {steps.length > 0 && (
-            <div class="grid md:grid-cols-3 gap-8">
+            <div class="space-y-8 max-w-4xl mx-auto">
               {steps.map((s) => (
-                <div class="bg-white p-10 rounded-[3rem] shadow-elegant border border-white">
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] shadow-elegant border border-white">
                   <div class="flex justify-center mb-6">
                     <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-accent/10 border border-accent/20">
                       <span class="text-2xl font-black text-primary font-display">
@@ -214,9 +216,9 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
                     </div>
                   </div>
 
-                  <h2 class="text-2xl font-black text-primary font-display mb-4 text-center">
+                  <h3 class="text-2xl font-black text-primary font-display mb-6 text-center">
                     {s?.title}
-                  </h2>
+                  </h3>
 
                   {Array.isArray(s?.description) && s.description.length > 0 && (
                     <div class="prose prose-lg max-w-none prose-headings:font-display prose-p:font-body prose-p:text-foreground/80">
@@ -267,13 +269,56 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
       <!-- מאמר רציף -->
       {body.length > 0 && (
         <section class="mt-2 max-w-4xl mx-auto">
-          <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white">
+          <div class="bg-white p-6 md:p-12 rounded-[2rem] shadow-elegant border border-white">
             <div class="prose prose-lg max-w-none prose-headings:font-display prose-p:font-body prose-p:text-foreground/80">
               <PortableText value={body} />
             </div>
           </div>
         </section>
       )}
+
+      <!-- שאלות נפוצות (AEO) -->
+      {faqItems.length > 0 && (
+        <section class="mt-16 max-w-4xl mx-auto">
+          <h2 class="text-3xl font-black text-primary font-display mb-8 text-center">שאלות נפוצות</h2>
+          <div class="space-y-4">
+            {faqItems.map((it: { question: string; answer: string }) => (
+              <details class="group border border-primary/10 rounded-2xl overflow-hidden bg-background">
+                <summary class="px-6 py-5 cursor-pointer font-bold text-primary font-body text-lg list-none flex justify-between items-center hover:bg-primary/5 transition-colors">
+                  {it.question}
+                  <span class="text-accent text-xl transition-transform group-open:rotate-45 mr-4">+</span>
+                </summary>
+                <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed text-base">{it.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- CTA תחתון -->
+      <div class="mt-16 text-center">
+        {(ctaTitle || ctaText) && (
+          <div class="max-w-3xl mx-auto mb-8">
+            {ctaTitle && (
+              <h2 class="text-3xl font-black text-primary font-display mb-3">
+                {ctaTitle}
+              </h2>
+            )}
+            {ctaText && (
+              <p class="text-lg text-primary/70 font-body leading-relaxed">
+                {ctaText}
+              </p>
+            )}
+          </div>
+        )}
+
+        <a
+          href={ctaHref}
+          class="inline-flex items-center gap-3 px-10 py-5 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
+        >
+          {ctaLabel} <span aria-hidden="true">←</span>
+        </a>
+      </div>
 
       <!-- מאמרים על השיטה — מתמלא אוטומטית -->
       {methodArticles.length > 0 && (
@@ -324,48 +369,6 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
         </section>
       )}
 
-      <!-- שאלות נפוצות (AEO) -->
-      {faqItems.length > 0 && (
-        <section class="mt-16 max-w-4xl mx-auto">
-          <h2 class="text-3xl font-black text-primary font-display mb-8 text-center">שאלות נפוצות</h2>
-          <div class="space-y-4">
-            {faqItems.map((it: { question: string; answer: string }) => (
-              <details class="group border border-primary/10 rounded-2xl overflow-hidden bg-background">
-                <summary class="px-6 py-5 cursor-pointer font-bold text-primary font-body text-lg list-none flex justify-between items-center hover:bg-primary/5 transition-colors">
-                  {it.question}
-                  <span class="text-accent text-xl transition-transform group-open:rotate-45 mr-4">+</span>
-                </summary>
-                <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed text-base">{it.answer}</div>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <!-- CTA תחתון -->
-      <div class="mt-16 text-center">
-        {(ctaTitle || ctaText) && (
-          <div class="max-w-3xl mx-auto mb-8">
-            {ctaTitle && (
-              <h2 class="text-3xl font-black text-primary font-display mb-3">
-                {ctaTitle}
-              </h2>
-            )}
-            {ctaText && (
-              <p class="text-lg text-primary/70 font-body leading-relaxed">
-                {ctaText}
-              </p>
-            )}
-          </div>
-        )}
-
-        <a
-          href={ctaHref}
-          class="inline-flex items-center gap-3 px-10 py-5 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
-        >
-          {ctaLabel} <span aria-hidden="true">←</span>
-        </a>
-      </div>
 
     </div>
   </section>
