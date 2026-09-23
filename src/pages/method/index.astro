@@ -81,6 +81,29 @@ const interludeCaption = data?.interludeImage?.caption || ''
 
 const body = Array.isArray(data?.body) ? data.body : []
 
+// Keep the audience copy in Sanity and render its existing subsections as cards.
+// Recognize the four destination links, so headline edits do not break the layout.
+const specialtyPaths = ['/specialties/youth', '/specialties/parents', '/specialties/couples', '/specialties/personal']
+const bodySections: any[][] = []
+for (const block of body) {
+  if (!bodySections.length || block.style === 'h2') bodySections.push([])
+  bodySections[bodySections.length - 1].push(block)
+}
+const bodyLayout = bodySections.map((blocks) => {
+  const cards: any[][] = []
+  const lead: any[] = []
+  for (const block of blocks) {
+    if (block.style === 'h3') cards.push([])
+    if (cards.length) cards[cards.length - 1].push(block)
+    else lead.push(block)
+  }
+  const cardPaths = cards.map((card) => card.flatMap((block) => block.markDefs || [])
+    .find((mark: any) => specialtyPaths.includes(mark.href))?.href)
+  const isSpecialties = cards.length === specialtyPaths.length
+    && specialtyPaths.every((path) => cardPaths.includes(path))
+  return { blocks, lead, cards, isSpecialties }
+})
+
 const msaIntro = data?.msa?.intro || ''
 const steps = Array.isArray(data?.msa?.steps) ? data.msa.steps : []
 
@@ -266,15 +289,34 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
         </section>
       )}
 
-      <!-- מאמר רציף -->
-      {body.length > 0 && (
-        <section class="mt-2 max-w-4xl mx-auto">
-          <div class="bg-white p-6 md:p-12 rounded-[2rem] shadow-elegant border border-white">
-            <div class="prose prose-lg max-w-none prose-headings:font-display prose-p:font-body prose-p:text-foreground/80">
-              <PortableText value={body} />
-            </div>
-          </div>
-        </section>
+      <!-- Page copy, with audience sections displayed as specialty cards -->
+      {bodyLayout.length > 0 && (
+        <div class="space-y-10">
+          {bodyLayout.map((section) => section.isSpecialties ? (
+            <section class="method-specialties">
+              <div class="prose prose-lg max-w-3xl mx-auto text-center prose-headings:font-display prose-headings:text-primary mb-8">
+                <PortableText value={section.lead} />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {section.cards.map((card) => (
+                  <article class="method-specialty-card bg-white p-6 md:p-8 rounded-[2rem] shadow-elegant border border-accent/20">
+                    <div class="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-primary prose-p:font-body prose-p:text-foreground/80">
+                      <PortableText value={card} />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section class="max-w-4xl mx-auto">
+              <div class="bg-white p-6 md:p-12 rounded-[2rem] shadow-elegant border border-white">
+                <div class="prose prose-lg max-w-none prose-headings:font-display prose-p:font-body prose-p:text-foreground/80">
+                  <PortableText value={section.blocks} />
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
       )}
 
       <!-- שאלות נפוצות (AEO) -->
@@ -283,10 +325,13 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
           <h2 class="text-3xl font-black text-primary font-display mb-8 text-center">שאלות נפוצות</h2>
           <div class="space-y-4">
             {faqItems.map((it: { question: string; answer: string }) => (
-              <details class="group border border-primary/10 rounded-2xl overflow-hidden bg-background">
+              <details name="method-faq" class="method-faq-item border border-primary/10 rounded-2xl overflow-hidden bg-white">
                 <summary class="px-6 py-5 cursor-pointer font-bold text-primary font-body text-lg list-none flex justify-between items-center hover:bg-primary/5 transition-colors">
-                  {it.question}
-                  <span class="text-accent text-xl transition-transform group-open:rotate-45 mr-4">+</span>
+                  <span>{it.question}</span>
+                  <span class="method-faq-icon mr-4" aria-hidden="true">
+                    <span class="method-faq-plus">+</span>
+                    <span class="method-faq-minus">−</span>
+                  </span>
                 </summary>
                 <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed text-base">{it.answer}</div>
               </details>
@@ -373,3 +418,42 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
     </div>
   </section>
 </BaseLayout>
+
+
+<style>
+  .method-specialty-card :global(h3:first-child) {
+    margin-top: 0;
+  }
+  .method-faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .method-faq-item summary:focus-visible {
+    outline: 3px solid #b89128;
+    outline-offset: -4px;
+  }
+  .method-faq-item[open] {
+    border-color: #b89128;
+  }
+  .method-faq-item[open] summary {
+    background: rgb(212 175 55 / 8%);
+  }
+  .method-faq-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgb(212 175 55 / 14%);
+    color: #304e55;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  .method-faq-minus,
+  .method-faq-item[open] .method-faq-plus {
+    display: none;
+  }
+  .method-faq-item[open] .method-faq-minus {
+    display: inline;
+  }
+</style>
