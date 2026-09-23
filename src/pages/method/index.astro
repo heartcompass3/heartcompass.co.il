@@ -188,7 +188,10 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
 
       <!-- מ.ס.ע – הליבה -->
       {(msaIntro || steps.length > 0) && (
-        <section class="mb-14">
+        <section class="mb-14" aria-labelledby="msa-process-heading">
+          <h2 id="msa-process-heading" class="text-3xl md:text-4xl font-black text-primary font-display mb-8 text-center">
+            איך עובדת שיטת מ.ס.ע?
+          </h2>
           {msaIntro && (
             <div class="max-w-4xl mx-auto mb-10">
               <div class="bg-white rounded-[3rem] shadow-elegant border border-white px-10 py-8 text-center">
