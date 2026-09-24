@@ -258,13 +258,15 @@ const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema, ...(faqSche
           <div class="grid gap-6 md:grid-cols-3">
             {stages.map((stage: any, index: number) => (
               <div class="bg-white rounded-2xl p-6 shadow-md border border-primary/10">
-                <div class="text-accent font-black text-xl mb-2">{index + 1}. {stage.title}</div>
+                <h3 class="text-accent font-black text-xl mb-2">{index + 1}. {stage.title}</h3>
                 <p class="text-primary/80 leading-relaxed">{stage.text}</p>
               </div>
             ))}
           </div>
         </section>
       )}
+
+      <p class="mb-12 text-center"><a href="/method" class="font-bold text-primary underline underline-offset-4">להסבר המלא על שיטת מ.ס.ע</a></p>
 
       <SpecialtyOutcomeCards label={guidanceLabel} title={guidanceTitle} outcomes={outcomeCards} />
 
@@ -276,10 +278,10 @@ const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema, ...(faqSche
 
           <div class="space-y-4">
             {faqs.map((item) => (
-              <details class="group border border-primary/10 rounded-2xl p-6 bg-background cursor-pointer">
+              <details name="specialty-faq" class="specialty-faq-item border border-primary/10 rounded-2xl p-6 bg-background cursor-pointer">
                 <summary class="flex justify-between items-center list-none font-black text-lg text-primary">
                   {item.question}
-                  <span class="text-2xl text-accent transition-transform group-open:rotate-45">+</span>
+                  <span class="specialty-faq-icon" aria-hidden="true"><span class="specialty-faq-plus">+</span><span class="specialty-faq-minus">−</span></span>
                 </summary>
                 <p class="mt-4 text-primary/80 leading-relaxed">{item.answer}</p>
               </details>
@@ -309,3 +311,13 @@ const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema, ...(faqSche
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .specialty-faq-item summary { gap: 1rem; }
+  .specialty-faq-item summary::-webkit-details-marker { display: none; }
+  .specialty-faq-item summary:focus-visible { outline: 3px solid #b89128; outline-offset: 6px; }
+  .specialty-faq-item[open] { border-color: #b89128; }
+  .specialty-faq-icon { display: grid; place-items: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%; background: rgb(212 175 55 / 14%); color: #304e55; font-size: 1.5rem; line-height: 1; }
+  .specialty-faq-minus, .specialty-faq-item[open] .specialty-faq-plus { display: none; }
+  .specialty-faq-item[open] .specialty-faq-minus { display: inline; }
+</style>
