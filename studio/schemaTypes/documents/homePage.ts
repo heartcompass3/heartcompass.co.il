@@ -13,7 +13,7 @@ export default defineType({
     {name: 'seo', title: 'SEO'},
     {name: 'hero', title: 'Hero'},
     {name: 'content', title: 'תוכן'},
-    {name: 'msa', title: 'מודל מ.ס.ע'},
+    {name: 'msa', title: 'שיטת מ.ס.ע'},
     {name: 'faq', title: 'FAQ'},
     {name: 'bottom', title: 'CTA תחתון'},
     {name: 'legacy', title: 'Legacy (מוסתר)'},
@@ -102,7 +102,7 @@ export default defineType({
     // האתר (Astro) מצפה ל- home.cards.items ולכן cards חייב להיות אובייקט (cardGrid) ולא מערך.
     defineField({
       name: 'cards',
-      title: 'כרטיסים (3 תחומים)',
+      title: 'כרטיסי תחומי האימון',
       type: 'cardGrid',
       group: 'content',
     }),
