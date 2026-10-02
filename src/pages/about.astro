@@ -50,6 +50,7 @@ const metaDescription =
 
 // כותרת
 const heading = page?.title?.trim() || `נעים להכיר, אני ${site.fullName}.`
+const professionalLine = `${site.fullName}, מאמן רגשי ומפתח שיטת מ.ס.ע.`
 
 // פתיחה (הזהוב)
 const opening =
@@ -157,6 +158,9 @@ const aboutProfileSchema = {
         <h1 class="text-5xl font-black text-primary font-display mb-8 leading-tight text-center">
           {heading}
         </h1>
+        <p class="text-lg font-bold text-primary/75 text-center -mt-4 mb-7">
+          {professionalLine}
+        </p>
 
         <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none text-center">
           <p class="mb-0 font-bold text-gold-dark text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl">
@@ -190,6 +194,9 @@ const aboutProfileSchema = {
             <div role="heading" aria-level="1" class="text-6xl md:text-7xl font-black text-primary font-display mb-10 leading-tight">
               {heading}
             </div>
+            <p class="text-xl font-bold text-primary/75 -mt-6 mb-8">
+              {professionalLine}
+            </p>
 
             <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none">
               <p class="mb-8 font-bold text-gold-dark text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl">
