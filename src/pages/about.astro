@@ -12,6 +12,16 @@ type AboutPage = {
   body?: any[]
   aiCitation?: string
   painTags?: string[]
+  specialty?: {
+    practicalGuidance?: {
+      label?: string
+      title?: string
+      intro?: string
+      steps?: Array<{ _key?: string; title?: string; text?: string }>
+    }
+    faqTitle?: string
+    faq?: Array<{ _key?: string; question?: string; answer?: string }>
+  }
   aiContext?: string
   seo?: {
     title?: string
@@ -31,6 +41,16 @@ const QUERY = /* groq */ `
     aiCitation,
     painTags,
     aiContext,
+    specialty{
+      practicalGuidance{
+        label,
+        title,
+        intro,
+        steps[]{_key, title, text}
+      },
+      faqTitle,
+      faq[]{_key, question, answer}
+    },
     seo{
       title,
       description,
@@ -50,12 +70,16 @@ const metaDescription =
 
 // כותרת
 const heading = page?.title?.trim() || `נעים להכיר, אני ${site.fullName}.`
-const professionalLine = `${site.fullName}, מאמן רגשי ומפתח שיטת מ.ס.ע.`
+const professionalLine = 'מאמן רגשי ומפתח שיטת מ.ס.ע.'
 
 // פתיחה (הזהוב)
 const opening =
   page?.excerpt?.trim() ||
   'הייתי שם. אני יודע איך זה מרגיש כשהלב רוצה משהו אחד, והראש אומר משהו אחר.'
+
+const practicalGuidance = page?.specialty?.practicalGuidance
+const guidanceSteps = practicalGuidance?.steps?.filter((step) => step.title && step.text) || []
+const faqItems = page?.specialty?.faq?.filter((item) => item.question && item.answer) || []
 
 // תמונה
 const fallbackImage = '/assets/yossi-about.jpg'
@@ -257,6 +281,43 @@ const aboutProfileSchema = {
         </div>
 
       </div>
+
+      {practicalGuidance ? (
+        <section class="mt-16 bg-primary text-white rounded-[3rem] p-8 md:p-12" aria-labelledby="about-guidance-heading">
+          {practicalGuidance.label && <p class="text-accent font-bold mb-3">{practicalGuidance.label}</p>}
+          {practicalGuidance.title && <h2 id="about-guidance-heading" class="text-3xl md:text-4xl font-black font-display leading-tight">{practicalGuidance.title}</h2>}
+          {practicalGuidance.intro && <p class="mt-6 text-lg leading-8 text-white/85 max-w-3xl">{practicalGuidance.intro}</p>}
+          {guidanceSteps.length > 0 && (
+            <div class="grid gap-5 md:grid-cols-3 mt-10">
+              {guidanceSteps.map((step) => (
+                <div class="rounded-3xl bg-white/10 p-6 border border-white/15">
+                  <h3 class="text-xl font-bold">{step.title}</h3>
+                  <p class="mt-3 leading-7 text-white/85">{step.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : null}
+
+      {faqItems.length > 0 && (
+        <section class="mt-16 max-w-4xl mx-auto" aria-labelledby="about-faq-heading">
+          <h2 id="about-faq-heading" class="text-3xl md:text-4xl font-black text-primary font-display text-center mb-8">
+            {page?.specialty?.faqTitle || 'שאלות ותשובות'}
+          </h2>
+          <div class="space-y-4">
+            {faqItems.map((item) => (
+              <details class="group rounded-3xl bg-white border border-primary/10 px-6 py-5 shadow-sm">
+                <summary class="cursor-pointer list-none text-xl font-bold text-primary flex justify-between gap-4">
+                  <span>{item.question}</span>
+                  <span class="text-accent group-open:rotate-45 transition-transform" aria-hidden="true">+</span>
+                </summary>
+                <p class="mt-5 text-primary/80 leading-8 text-lg">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   </article>
 </BaseLayout>
