@@ -71,6 +71,14 @@ const metaDescription =
 // כותרת
 const heading = page?.title?.trim() || `נעים להכיר, אני ${site.fullName}.`
 const professionalLine = 'מאמן רגשי ומפתח שיטת מ.ס.ע.'
+const audienceLine = 'מלווה בני ובנות נוער בגילאי 11–18, הורים, זוגות ומבוגרים בתהליכים אישיים.'
+const audienceLinks = [
+  { label: 'נוער 11–18', href: '/specialties/youth' },
+  { label: 'הורים', href: '/specialties/parents' },
+  { label: 'זוגות', href: '/specialties/couples' },
+  { label: 'תהליך אישי', href: '/specialties/personal' },
+]
+const moreDetailsHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent('היי יוסי, קראתי את דף האודות ואשמח לפרטים נוספים על הליווי.')}`
 
 // פתיחה (הזהוב)
 const opening =
@@ -79,7 +87,13 @@ const opening =
 
 const practicalGuidance = page?.specialty?.practicalGuidance
 const guidanceSteps = practicalGuidance?.steps?.filter((step) => step.title && step.text) || []
-const faqItems = page?.specialty?.faq?.filter((item) => item.question && item.answer) || []
+const faqItems = (page?.specialty?.faq || [])
+  .map((item) => ({
+    _key: item._key,
+    question: item.question?.trim() || '',
+    answer: item.answer?.trim() || '',
+  }))
+  .filter((item) => item.question && item.answer)
 
 // תמונה
 const fallbackImage = '/assets/yossi-about.jpg'
@@ -99,9 +113,7 @@ const toAbsolute = (v: string) =>
   v.startsWith('http') ? v : `${site.siteUrl}${v.startsWith('/') ? '' : '/'}${v}`
 
 const personDescription =
-  page?.excerpt?.trim() ||
-  metaDescription ||
-  'יוסי מדלסי — מאמן רגשי מוסמך ומייסד "מצפן הלב" ושיטת מ.ס.ע. מלווה בני נוער, הורים וזוגות בתהליכי עומק לשחרור דפוסים רגשיים.'
+  'יוסי מדלסי הוא מאמן רגשי, מייסד מצפן הלב ומפתח שיטת מ.ס.ע. מלווה בני ובנות נוער בגילאי 11–18, הורים, זוגות ומבוגרים בתהליכים אישיים אונליין.'
 
 const aboutPersonSchema = {
   '@context': 'https://schema.org',
@@ -109,7 +121,7 @@ const aboutPersonSchema = {
   '@id': `${site.siteUrl}/#person`,
   name: site.fullName,
   url: aboutUrl,
-  jobTitle: 'מאמן רגשי מוסמך',
+  jobTitle: 'מאמן רגשי',
   description: personDescription,
   email: site.email,
   image: toAbsolute(imageSrc),
@@ -123,12 +135,14 @@ const aboutPersonSchema = {
     {
       '@type': 'EducationalOccupationalCredential',
       credentialCategory: 'Professional Certification',
-      name: 'מאמן רגשי מוסמך',
+      name: 'הכשרה באימון בשיטת פארותרפיה, קמפוס מגדלור (2026)',
+      url: `${site.siteUrl}/assets/certificate-yossi.jpg`,
     },
     {
       '@type': 'EducationalOccupationalCredential',
       credentialCategory: 'Specialized Training',
-      name: 'השתלמות מקצועית – אימון רגשי לבני נוער ומתבגרים',
+      name: 'התמחות באימון רגשי לבני נוער, קמפוס מגדלור (2026)',
+      url: `${site.siteUrl}/assets/certificate-yossi-youth.jpg`,
     },
   ],
   knowsAbout: [
@@ -162,6 +176,17 @@ const aboutProfileSchema = {
   ...(page?.painTags?.length ? { keywords: page.painTags.join(', ') } : {}),
   mainEntity: { '@id': `${site.siteUrl}/#person` },
 }
+
+const faqSchema = faqItems.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${aboutUrl}#faq`,
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+} : null
 ---
 
 <BaseLayout
@@ -171,33 +196,35 @@ const aboutProfileSchema = {
   noindex={page?.seo?.noindex}
   ogImage={ogImageUrl}
   ogImageAlt={ogImageAlt}
-  schema={[aboutPersonSchema, aboutProfileSchema]}
+  schema={[aboutPersonSchema, aboutProfileSchema, ...(faqSchema ? [faqSchema] : [])]}
 >
   <article class="animate-fade-in py-24 bg-background">
     <div class="max-w-6xl mx-auto px-6">
 
-      <!-- מובייל: כותרת + ציטוט זהב לפני התמונה -->
       <Breadcrumbs items={[{ name: 'אודות' }]} />
-      <div class="md:hidden bg-white/60 backdrop-blur-xl rounded-[3rem] p-8 shadow-2xl border border-white/50 mb-10">
-        <h1 class="text-5xl font-black text-primary font-display mb-8 leading-tight text-center">
-          {heading}
-        </h1>
-        <p class="text-lg font-bold text-primary/75 text-center -mt-4 mb-7">
-          {professionalLine}
-        </p>
+      <div class="bg-white/60 backdrop-blur-xl rounded-[3rem] p-8 md:p-12 shadow-2xl border border-white/50 relative grid gap-12 md:grid-cols-2 md:gap-y-4 items-start">
 
-        <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none text-center">
-          <p class="mb-0 font-bold text-gold-dark text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl">
+        <!-- כותרת אחת לכל גודל מסך, עם תשובה מיידית על תחומי הליווי -->
+        <header class="relative z-10 text-center md:text-right md:col-start-1 md:row-start-1">
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-black text-primary font-display mb-7 leading-tight">
+            {heading}
+          </h1>
+          <p class="text-lg md:text-xl font-bold text-primary/75 mb-5">{professionalLine}</p>
+          <p class="text-base md:text-lg font-body text-primary/75 mb-5 leading-8">{audienceLine}</p>
+          <nav class="flex flex-wrap justify-center md:justify-start gap-2 mb-8" aria-label="מסלולי הליווי">
+            {audienceLinks.map((link) => (
+              <a href={link.href} class="rounded-full border border-primary/15 bg-white/70 px-4 py-2 text-sm font-bold text-primary hover:border-accent hover:bg-white transition-colors">
+                {link.label}
+              </a>
+            ))}
+          </nav>
+          <p class="font-bold text-gold-dark text-xl md:text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl leading-9">
             "{opening}"
           </p>
-        </div>
-      </div>
-
-      <!-- הקארד הראשי: בדסקטופ נשאר אותו לייאאוט, במובייל התמונה תבוא לפני הגוף -->
-      <div class="bg-white/60 backdrop-blur-xl rounded-[3rem] p-8 md:p-12 shadow-2xl border border-white/50 relative overflow-hidden flex flex-col md:flex-row gap-12 items-center">
+        </header>
 
         <!-- תמונה -->
-        <div class="w-full md:w-6/12 relative z-10 md:-translate-y-2">
+        <div class="w-full relative z-10 md:col-start-2 md:row-start-1 md:row-span-2 md:-translate-y-2">
           <div class="aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-all duration-700 border-[8px] border-white ring-1 ring-accent/20">
             <img
               src={imageSrc}
@@ -209,28 +236,9 @@ const aboutProfileSchema = {
           </div>
         </div>
 
-        <!-- טקסט -->
-        <div class="w-full md:w-6/12 relative z-10 text-center md:text-right">
-
-          <!-- בדסקטופ: כותרת + ציטוט זהב בתוך הטקסט (כמו שהיה).
-             זו אינה h1 כדי שלא יהיו שני h1 בעמוד (ה-h1 היחיד הוא גרסת המובייל). -->
-          <div class="hidden md:block">
-            <div role="heading" aria-level="1" class="text-6xl md:text-7xl font-black text-primary font-display mb-10 leading-tight">
-              {heading}
-            </div>
-            <p class="text-xl font-bold text-primary/75 -mt-6 mb-8">
-              {professionalLine}
-            </p>
-
-            <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none">
-              <p class="mb-8 font-bold text-gold-dark text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl">
-                "{opening}"
-              </p>
-            </div>
-          </div>
-
-          <!-- הגוף: גם מובייל וגם דסקטופ -->
-          <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none mt-10 md:mt-0">
+        <!-- הסיפור וההכשרות -->
+        <div class="w-full relative z-10 text-center md:text-right md:col-start-1 md:row-start-2">
+          <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none">
             {page?.body?.length ? (
               <PortableText value={page.body} />
             ) : (
@@ -245,7 +253,7 @@ const aboutProfileSchema = {
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-3 bg-white/80 border border-accent/30 rounded-2xl px-5 py-3 shadow hover:shadow-md transition-shadow no-underline"
-              aria-label="צפייה בתעודת ההסמכה של יוסי מדלסי כמאמן רגשי מוסמך"
+              aria-label="צפייה בתעודת ההכשרה של יוסי מדלסי באימון בשיטת פארותרפיה"
             >
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <circle cx="18" cy="18" r="18" fill="#00539B"/>
@@ -255,8 +263,8 @@ const aboutProfileSchema = {
               </svg>
               <div class="text-right">
                 <div class="text-xs text-primary/50 font-body leading-none mb-0.5">הסמכה מקצועית</div>
-                <div class="text-sm font-bold text-primary font-display leading-none">מאמן רגשי מוסמך</div>
-                <div class="text-xs text-primary/60 font-body leading-none mt-0.5">לצפייה בתעודה</div>
+                <div class="text-sm font-bold text-primary font-display leading-tight">אימון בשיטת פארותרפיה</div>
+                <div class="text-xs text-primary/60 font-body leading-tight mt-0.5">קמפוס מגדלור · 180 שעות אקדמיות ו־40 שעות פרקטיקום</div>
               </div>
             </a>
             <a
@@ -272,8 +280,8 @@ const aboutProfileSchema = {
               </svg>
               <div class="text-right">
                 <div class="text-xs text-primary/50 font-body leading-none mb-0.5">הכשרה ייעודית</div>
-                <div class="text-sm font-bold text-primary font-display leading-none">ליווי בני נוער</div>
-                <div class="text-xs text-primary/60 font-body leading-none mt-0.5">לצפייה בתעודה</div>
+                <div class="text-sm font-bold text-primary font-display leading-tight">אימון רגשי לבני נוער</div>
+                <div class="text-xs text-primary/60 font-body leading-tight mt-0.5">קמפוס מגדלור · 30 שעות אקדמיות</div>
               </div>
             </a>
           </div>
@@ -305,19 +313,23 @@ const aboutProfileSchema = {
           <h2 id="about-faq-heading" class="text-3xl md:text-4xl font-black text-primary font-display text-center mb-8">
             {page?.specialty?.faqTitle || 'שאלות ותשובות'}
           </h2>
-          <div class="space-y-4">
+          <div class="grid gap-4 md:grid-cols-2">
             {faqItems.map((item) => (
-              <details class="group rounded-3xl bg-white border border-primary/10 px-6 py-5 shadow-sm">
-                <summary class="cursor-pointer list-none text-xl font-bold text-primary flex justify-between gap-4">
-                  <span>{item.question}</span>
-                  <span class="text-accent group-open:rotate-45 transition-transform" aria-hidden="true">+</span>
-                </summary>
-                <p class="mt-5 text-primary/80 leading-8 text-lg">{item.answer}</p>
-              </details>
+              <div class="rounded-3xl bg-white border border-primary/10 px-6 py-6 shadow-sm">
+                <h3 class="text-xl font-bold text-primary leading-8">{item.question}</h3>
+                <p class="mt-3 text-primary/80 leading-8 text-lg">{item.answer}</p>
+              </div>
             ))}
           </div>
         </section>
       )}
+
+      <div class="mt-12 text-center">
+        <p class="text-lg text-primary/80 mb-5">רוצים לדעת יותר על אחד ממסלולי הליווי? כתבו לי מה מעניין אתכם ואשלח פרטים בהתאם.</p>
+        <a href={moreDetailsHref} class="inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-white font-bold shadow-lg hover:bg-primary/90 transition-colors">
+          לפרטים נוספים בוואטסאפ
+        </a>
+      </div>
     </div>
   </article>
 </BaseLayout>
