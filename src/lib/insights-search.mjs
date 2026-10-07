@@ -4,6 +4,7 @@ export const normalizeSearch = value => String(value || '').normalize('NFKC').to
 const stopWords = new Set(['איך','למה','מה','את','של','עם','על','אני','לי','הוא','היא','זה','אתה','אתם','שלי','יש','כל','לא','רוצה','מאמר','מאמרים','אבל','שלא','לעזור','עזרה','ללכת','אפשר','כדי','האם']);
 // Explicit, modest vocabulary bridges. No diagnosis or generated advice.
 const concepts = [
+  ['קבוצת השווים','קבוצת שווים','חבורת השווים','חבורת חברים','חבורת','חבורה','החבורה'],
   ['חשיבת יתר','מחשבות יתר','מחשבות טורדניות','לא מפסיק לחשוב','לא מפסיקה לחשוב','הראש לא מפסיק לעבוד','אוברתינקינג','overthinking','רומינציה'],
   ['ריצוי','קשה לי להגיד לא','קשה לי לומר לא','לרצות אחרים'],
   ['חרדה','חרדות','פחד','פחדים','חרדתי','מפחד','מפחדת','פוחד','פוחדת'],
@@ -41,4 +42,3 @@ export function searchArticles(articles, taxonomy, query, domain = '', limit = 6
     return {article,placement,score,i};
   }).filter(Boolean).sort((a,b)=>b.score-a.score || a.i-b.i).slice(0,limit);
 }
-
