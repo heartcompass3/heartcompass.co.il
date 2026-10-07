@@ -8,6 +8,17 @@ const articles = [
   {slug:'teen',title:'אין לי חברים בכיתה',excerpt:'בדידות ושייכות',searchPhrases:['קשה לי בכיתה']},
 ];
 const taxonomy = {adult:{domain:'personal',category:'שחרור דפוסים',secondary:[{domain:'relationships',category:'דפוסים בקשר'}]},parent:{domain:'parents',category:'חרדות',secondary:[]},teen:{domain:'youth',category:'שייכות',secondary:[]}};
+test('peer-group variants retrieve grounded related articles without equating all alcohol content to peer influence',()=>{
+  const samples=[
+    {slug:'peer',title:'קבוצת השווים'},
+    {slug:'pressure',title:'לחץ חברתי',searchPhrases:['איך קבוצת השווים משפיעה על לחץ חברתי']},
+    {slug:'alcohol',title:'אלכוהול בגיל ההתבגרות',searchPhrases:['שתיית אלכוהול כדי להשתלב בחבורה']},
+    {slug:'other',title:'השפעת אלכוהול על הגוף'},
+  ];
+  for(const query of ['קבוצת השווים','חבורת','חבורה']) {
+    assert.deepEqual(searchArticles(samples,{},query).map(r=>r.article.slug).sort(),['peer','pressure','alcohol'].sort());
+  }
+});
 test('search understands explicit difficulty phrases and Hebrew vowel marks',()=>{
   assert.equal(normalizeSearch(' חֲרָדָה! '),'חרדה');
   assert.equal(searchArticles(articles,taxonomy,'הראש לא מפסיק לעבוד')[0]?.article.slug,'adult');
@@ -39,4 +50,3 @@ test('valid CMS placement supersedes snapshot; invalid assignments fail closed; 
     assert.equal(effectiveTaxonomy([{slug:'one',insightPlacement:{...p,secondary:[p]}}],fallback).one,undefined);
   });
 });
-
