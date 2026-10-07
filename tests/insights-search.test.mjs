@@ -31,6 +31,17 @@ test('audience filtering respects reviewed secondary placement, deduplicates URL
   assert.equal(searchArticles(articles,taxonomy,'לא מוכר בכלל').length,0);
   assert.equal(searchArticles(articles,taxonomy,'').length,0);
 });
+test('natural wording variants work across contexts and exact curated questions rank first',()=>{
+  const samples=[
+    {slug:'knowledge',title:'הבנה לא משנה תגובה',searchPhrases:['למה ידע לא מספיק כדי לשנות דפוס?']},
+    {slug:'parenting',title:'גבולות בהורות',searchPhrases:['איך להפסיק להתבייש בהצבת גבולות?']},
+    {slug:'relationship',title:'גבולות בקשר',searchPhrases:['איך להציב גבול בזוגיות?']},
+  ];
+  assert.equal(searchArticles(samples,{},'למה אני יודע מה לעשות אבל לא משתנה')[0]?.article.slug,'knowledge');
+  assert.equal(searchArticles(samples,{},'למה יש לי בושה כשאני רוצה להציב גבולות')[0]?.article.slug,'parenting');
+  assert.equal(searchArticles(samples,{},'איך להציב גבול בזוגיות?')[0]?.article.slug,'relationship');
+  assert.deepEqual(searchArticles(samples,{},'גבול').map(r=>r.article.slug).sort(),['parenting','relationship']);
+});
 test('natural questions keep their meaningful topic without requiring every connecting word',()=>{
   const samples=[{slug:'school',title:'מתבגר לא רוצה ללכת לבית הספר',excerpt:'מה עושים כשהמתבגר מסרב?'},{slug:'love',title:'פחד מזוגיות',excerpt:'זוגיות וקשרים'}];
   const placements={school:{domain:'parents',category:'לימודים',secondary:[]},love:{domain:'relationships',category:'זוגיות',secondary:[]}};
