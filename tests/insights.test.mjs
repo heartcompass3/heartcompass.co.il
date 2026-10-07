@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {collectionGroups, audienceGroups, relatedArticles} from '../src/lib/insights.mjs';
+const topics = JSON.parse(readFileSync(new URL('../src/content/insights-topics.json',import.meta.url)));
 const taxonomy = JSON.parse(readFileSync(new URL('../src/content/insights-taxonomy.json',import.meta.url)));
 const domains = JSON.parse(readFileSync(new URL('../src/content/insights-domains.json',import.meta.url)));
 const articles = Object.keys(taxonomy).map(slug=>({slug:{current:slug},title:slug}));
@@ -54,4 +55,17 @@ test('topic anchors survive changes in article ordering',()=>{
   const before=collectionGroups(articles,taxonomy,'youth');
   const after=collectionGroups([...articles].reverse(),taxonomy,'youth');
   for(const g of before) assert.equal(after.find(a=>a.name===g.name).id,g.id);
+});
+test('all reviewed topics have unique readable anchors and substantive introductions',()=>{
+  for(const d of domains) {
+    const groups=collectionGroups(articles,taxonomy,d.id,topics[d.id]);
+    assert.equal(new Set(groups.map(g=>g.id)).size,groups.length);
+    for(const g of groups) {
+      assert.match(g.id,/^[a-z]+(?:-[a-z]+)*$/);
+      assert.ok(g.description.length>=100);
+      assert.ok(g.legacyId.startsWith('topic-5'));
+      assert.notEqual(g.id,g.legacyId);
+    }
+  }
+  assert.equal(topics.parents['הדפוסים והתגובות שלי כהורה'].anchor,'parent-patterns');
 });

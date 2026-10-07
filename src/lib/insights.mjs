@@ -1,6 +1,8 @@
 export const articleSlug = article => typeof article.slug === 'string' ? article.slug : article.slug?.current;
-export const topicAnchor = name => 'topic-' + Array.from(name).map(c => c.codePointAt(0).toString(16)).join('-');
-export function collectionGroups(articles, taxonomy, domain) {
+// Retained only as a hidden alias for links already shared before readable anchors.
+export const legacyTopicAnchor = name => 'topic-' + Array.from(name).map(c => c.codePointAt(0).toString(16)).join('-');
+export const topicAnchor = name => 'topic-' + name.normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');
+export function collectionGroups(articles, taxonomy, domain, topicDefinitions = {}) {
   const groups = new Map();
   const seen = new Set();
   for (const article of articles) {
@@ -14,7 +16,7 @@ export function collectionGroups(articles, taxonomy, domain) {
       groups.get(category).push(article);
     }
   }
-  return [...groups].map(([name, articles]) => ({name, articles, id: topicAnchor(name)}));
+  return [...groups].map(([name, articles]) => ({name, articles, id: topicDefinitions[name]?.anchor || topicAnchor(name), legacyId: legacyTopicAnchor(name), description: topicDefinitions[name]?.description || ''}));
 }
 export function audienceGroups(articles, taxonomy, domains) {
   const groups = domains.map(d => ({...d, articles: articles.filter(a => taxonomy[articleSlug(a)]?.domain === d.id)}));
