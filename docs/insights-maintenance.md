@@ -11,3 +11,6 @@ Collections are crawlable sections with anchor navigation, not separate thin ind
 Research uses a fixed protocol, seven distinct observation days per question, and records missing observations as missing. The initial two-query sample is one day only; no stable-answer or ranking claim follows from it. Research dates and evidence live in the workspace research register, not private data in this repository.
 
 Before production: review all four libraries and topic grouping, confirm current CMS coverage, inspect rendered canonicals/sitemap/301 and mobile navigation, and deploy through the normal PR review flow. Monitor Search Console after release; do not change article URLs or blanket-redirect detailed topic pages.
+
+
+Method-copy correction (2026-10-07): name mapping, root/protective work, release and embedding before describing choice or practice as outcomes. Goals can develop alongside release. Do not replace release with understanding or behavior rehearsal; distinguish parent guidance from deeper personal release, according to the live charter. Topic introductions describe actual collection coverage, not measured search-volume claims. Readable fragment links are in insights-topics.json; fragments are in-page navigation, not separately indexed category pages. Keep hidden legacy IDs for already-shared fragment links.
