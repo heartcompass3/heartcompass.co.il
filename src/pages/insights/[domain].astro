@@ -1,17 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import InsightsSearch from '../../components/InsightsSearch.astro'
 import InsightArticleCard from '../../components/InsightArticleCard.astro'
 import domains from '../../content/insights-domains.json'
-import taxonomy from '../../content/insights-taxonomy.json'
+import fallbackTaxonomy from '../../content/insights-taxonomy.json'
 import topics from '../../content/insights-topics.json'
 import site from '../../content/pages/site.json'
 import {sanity} from '../../lib/sanity'
 import {ARTICLES_QUERY} from '../../lib/sanityQueries'
-import {collectionGroups, articleSlug} from '../../lib/insights.mjs'
+import {collectionGroups, articleSlug, effectiveTaxonomy} from '../../lib/insights.mjs'
 const domain = domains.find(d => d.id === Astro.params.domain)
 if (!domain) return new Response('העמוד לא נמצא', {status:404, headers:{'Content-Type':'text/plain; charset=utf-8'}})
 const articles = await sanity.fetch(ARTICLES_QUERY)
+const taxonomy = effectiveTaxonomy(articles,fallbackTaxonomy)
 const groups = collectionGroups(articles,taxonomy,domain.id,topics[domain.id])
 const unique = [...new Map(groups.flatMap(g=>g.articles).map(a=>[articleSlug(a),a])).values()]
 const canonical = new URL(`/insights/${domain.id}`,site.siteUrl).toString()
@@ -26,6 +28,7 @@ const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:do
       <p class="text-primary/75 leading-relaxed mt-4">{domain.methodIntro} <a href="/method" class="underline font-bold">להכיר את שיטת מ.ס.ע</a></p>
       <a href="#collections" class="inline-block mt-6 font-bold underline">ישר למאגר המאמרים לפי נושאים ↓</a>
     </header>
+    <InsightsSearch domain={domain.id} />
     <section aria-labelledby="faq-heading" class="max-w-3xl mb-12">
       <h2 id="faq-heading" class="text-2xl font-display font-bold text-primary mb-5">לפני שמתחילים לקרוא</h2>
       <div class="space-y-3">{domain.faq.map(f=><details class="bg-white border border-primary/10 rounded-2xl p-5"><summary class="cursor-pointer text-lg font-bold text-primary">{f.question}</summary><p class="mt-4 leading-relaxed text-primary/80">{f.answer}</p></details>)}</div>

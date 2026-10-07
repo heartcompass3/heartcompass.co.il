@@ -1,4 +1,22 @@
+import topicDefinitions from '../content/insights-topics.json' with {type:'json'};
 export const articleSlug = article => typeof article.slug === 'string' ? article.slug : article.slug?.current;
+const validPlacement = p => p && (p.domain === 'legacy' ? ['בחירת ליווי לעסק','תוכן, שיווק ובניית עסק','חרדה וחוסר ודאות בעסק'].includes(p.category) : !!topicDefinitions[p.domain]?.[p.category]);
+// Reviewed CMS assignments take precedence. Existing published articles retain
+// their reviewed snapshot until backfilled; an invalid explicit assignment fails closed.
+export function effectiveTaxonomy(articles, fallback = {}) {
+  const result = {};
+  for (const article of articles) {
+    const slug = articleSlug(article), p = article.insightPlacement;
+    if (!slug) continue;
+    if (!p) { if (fallback[slug]) result[slug] = fallback[slug]; continue; }
+    const secondary = p.secondary || [];
+    if (!validPlacement(p) || !Array.isArray(secondary) || secondary.length > 2 || secondary.some(s=>!validPlacement(s) || s.domain==='legacy')) continue;
+    const keys = [p,...secondary].map(s=>s.domain+'|'+s.category);
+    if (new Set(keys).size !== keys.length) continue;
+    result[slug] = {domain:p.domain,category:p.category,secondary:secondary.map(s=>({domain:s.domain,category:s.category}))};
+  }
+  return result;
+}
 // Retained only as a hidden alias for links already shared before readable anchors.
 export const legacyTopicAnchor = name => 'topic-' + Array.from(name).map(c => c.codePointAt(0).toString(16)).join('-');
 export const topicAnchor = name => 'topic-' + name.normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');

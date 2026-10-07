@@ -1,4 +1,4 @@
-import { defineField, defineType } from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 const SOURCE_LINK_POLICY_START = Date.parse('2026-09-17T11:30:00.000Z')
 
@@ -124,7 +124,7 @@ export default defineType({
         },
       ],
 
-      validation: (Rule) => Rule.required().min(1).error('קהל יעד חובה — משפיע על באילו דפים המאמר יופיע אוטומטית'),
+      validation: (Rule) => Rule.required().min(1).error('בחרו לפחות תגית כללית אחת.'),
 
       options: {
         list: [
@@ -139,7 +139,33 @@ export default defineType({
       },
 
       description:
-        'בחירת תחומים תציג את המאמר אוטומטית בדפים המתאימים באתר.',
+        'תגיות הקהל הקיימות משמשות את המערכות הוותיקות באתר. הן אינן קובעות את השיוך לספריות /insights; לשם כך יש להשתמש בשדה "שיוך לספריית המאמרים".',
+    }),
+
+    defineField({
+      name: 'insightPlacement',
+      title: 'שיוך לספריית המאמרים',
+      type: 'insightPlacement',
+      validation: (Rule) => Rule.required(),
+      description:
+        'השדה הקובע את התחום והקטגוריה בספריות /insights. השיוך הראשי נדרש; אפשר להוסיף עד שני שיוכים משניים רק כשהמאמר עוסק בהם באופן מהותי. תגיות הקהל ועמודי הכאב נשארים שדות נפרדים.',
+    }),
+
+    defineField({
+      name: 'searchPhrases',
+      title: 'שאילתות חיפוש טבעיות',
+      type: 'array',
+      of: [{type: 'string'}],
+      description:
+        'עד 12 ניסוחים טבעיים שאדם עשוי לחפש ושיש להם מענה ממשי בגוף המאמר. כתבו שאלות ומילים יומיומיות מתוך התוכן; בלי להוסיף נושאים שהמאמר אינו מכסה ובלי לדחוס מילות מפתח.',
+      validation: (Rule) =>
+        Rule.max(12).custom((value) => {
+          const phrases = (value || []) as string[]
+          const normalized = phrases.map((phrase) => phrase.trim().toLocaleLowerCase())
+          return new Set(normalized).size === normalized.length
+            ? true
+            : 'כל שאילתת חיפוש צריכה להיות ייחודית.'
+        }),
     }),
 
     // ─── חדש: SEO (כותרת/תיאור נפרדים מהתצוגה הגלויה) ─────────────
@@ -200,11 +226,11 @@ export default defineType({
     // ─── חדש: מוקדי כאב (Pain Hubs) — חוצי-תחום ──────────────────
     defineField({
       name: 'pains',
-      title: 'מוקדי כאב (Pain Hubs)',
+      title: 'עמודי כאב קיימים (Pain Pages)',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'pain' }] }],
       description:
-        'הכאבים החוצי-תחום שהמאמר עוסק בהם (קשר רעיל, ערך עצמי, חרדה חברתית...). המאמר יופיע אוטומטית בעמוד הכאב /pain/[slug]. מאמר יכול להשתייך לכמה כאבים.',
+        'הקישורים לעמודי הכאב המפורטים הקיימים נשמרים כאן ללא שינוי, והעמודים עצמם נשארים חלק מהאתר. שדה זה אינו קובע שיוך לספריית /insights: בחרו תחום וקטגוריה בשדה "שיוך לספריית המאמרים". מאמר יכול להיקשר לכמה עמודי כאב קיימים.',
     }),
 
     // ─── חדש: קשור לשיטת מ.ס.ע ────────────────────────────────────

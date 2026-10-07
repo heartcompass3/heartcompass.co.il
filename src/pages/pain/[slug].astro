@@ -7,9 +7,9 @@ import { sanity } from '../../lib/sanity'
 import { PAIN_BY_SLUG_QUERY } from '../../lib/sanityQueries'
 import { optImg } from '../../lib/img'
 import InsightArticleCard from '../../components/InsightArticleCard.astro'
-import taxonomy from '../../content/insights-taxonomy.json'
+import fallbackTaxonomy from '../../content/insights-taxonomy.json'
 import insightDomains from '../../content/insights-domains.json'
-import { audienceGroups } from '../../lib/insights.mjs'
+import { audienceGroups, effectiveTaxonomy } from '../../lib/insights.mjs'
 
 const { slug } = Astro.params
 
@@ -20,6 +20,7 @@ if (!pain) {
 }
 
 const articles = pain.articles ?? []
+const taxonomy = effectiveTaxonomy(articles,fallbackTaxonomy)
 const groups = audienceGroups(articles, taxonomy, insightDomains)
 
 const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()

@@ -14,3 +14,18 @@ Before production: review all four libraries and topic grouping, confirm current
 
 
 Method-copy correction (2026-10-07): name mapping, root/protective work, release and embedding before describing choice or practice as outcomes. Goals can develop alongside release. Do not replace release with understanding or behavior rehearsal; distinguish parent guidance from deeper personal release, according to the live charter. Topic introductions describe actual collection coverage, not measured search-volume claims. Readable fragment links are in insights-topics.json; fragments are in-page navigation, not separately indexed category pages. Keep hidden legacy IDs for already-shared fragment links.
+
+
+## שיוך במערכת העריכה וחיפוש רוחבי
+
+לאחר קריאת גוף מלא, מלאו `insightPlacement`: ספרייה ראשית וקטגוריה ראשית אחת; עד שני שיוכים משניים רק כשהנושא מוסבר באופן מהותי. הקטגוריות חייבות להתאים לספרייה. בני נוער הם קהל, ולא כל מאמר שמזכיר מתבגר פונה אליו. משאירים URL אחד למאמר. חמישה מאמרי עסקים היסטוריים נשארים בארכיון.
+
+השדות החדשים במערכת העריכה הם המקור התפעולי לשיוך. `insights-taxonomy.json` הוא תמונת המיון שנבדק למאמרים הקיימים ומשמש fallback בלבד למאמר ללא שדה חדש. מאמר חדש אינו מסווג אוטומטית לפי כותרתו. שיוך מפורש שאינו תקין אינו מוחל באתר; מתקנים אותו ב-Studio. הגדרות הקטגוריות המשותפות נמצאות ב-`insights-topics.json` ונקראות גם ב-Studio כדי למנוע פערים.
+
+`pains` ממשיך לקשר למוקדי הכאב ולעמודי `/pain/[slug]` הקיימים. הוא אינו קובע קהל/ספרייה; אין למחוק או להחליף הפניות קיימות לצורך המיון. `tags` הוא תיוג כללי ואינו מחליף את השיוך החדש.
+
+`searchPhrases` מיועד לביטויי קושי בשפת הקורא שהמאמר אכן עונה להם, עד 12 ניסוחים רלוונטיים. אין להוסיף מילות מפתח שאינן נתמכות בתוכן. החיפוש משתמש בכותרת, תקציר, משפט הזהב, קטגוריות, מוקדי כאב וביטויי החיפוש; גופי המאמרים אינם נשלחים לדפדפן כאינדקס חיפוש. הרחבת מילים מוגבלת למילון מפורש, ללא תשובות או אבחנות שנוצרות אוטומטית.
+
+החיפוש זמין בראש מרכז המידע ובארבע הספריות. ברירת המחדל בספרייה היא הקהל הנבחר, עם אפשרות לעבור לכל הספריות. תוצאות מוצגות פעם אחת עם תווית ספרייה ראשית וקישור לכתובת המקורית. `/insights/search` מוחרג מקאש ISR כי הוא תלוי בשאילתה, מוגדר `noindex, follow` ואינו נוסף למפת האתר. הספריות, המאמרים וקישורי HTML ממשיכים לשרת גילוי אורגני.
+
+לפני פרסום מאמר מאושר: בדקו שיוך ראשי/משני, הופעה בקטגוריה, חיפוש של ניסוח הקורא, תווית קהל וקישור תקין. שינוי שיוך או ביטוי חיפוש אינו מצדיק שינוי מלאכותי בתאריך עדכון התוכן. שינוי גוף/כותרת/FAQ/CTA קיים דורש היקף מפורש מיוסי.

@@ -8,6 +8,7 @@ import navItem from './navItem'
 import msaSection from './msaSection'
 import msaGrid from './msaGrid'
 import blockContent from './blockContent'
+import {insightPlacement, insightSecondaryPlacement} from './insightPlacement'
 
 export const objects = [
   seo,
@@ -19,4 +20,6 @@ export const objects = [
   msaSection,
   msaGrid,
   blockContent,
+  insightPlacement,
+  insightSecondaryPlacement,
 ]
