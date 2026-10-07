@@ -2,7 +2,7 @@
 
 163 published articles were classified from their bodies on 2026-10-07. Source of truth: Yossi's live HeartCompass Drive charter. The taxonomy stores only public slugs and reviewed placements; article bodies, titles, existing FAQs and CTAs remain in Sanity unchanged.
 
-Read the full main body before adding a slug to src/content/insights-taxonomy.json. Give it one primary domain/category and at most two substantive secondary placements. A relationship example can teach patterns too. Do not infer audience from title, related links or footer text. Parent-facing guidance does not become youth content just because it mentions teens.
+Read the full main body before setting insightPlacement in Sanity Studio. Give it one primary domain/category and at most two substantive secondary placements. The JSON taxonomy is a reviewed snapshot fallback for existing articles, not the editor workflow. A relationship example can teach patterns too. Do not infer audience from title, related links or footer text. Parent-facing guidance does not become youth content just because it mentions teens.
 
 Unknown new articles remain available in /articles; they require classification before inclusion in audience libraries. Five legacy business articles remain in the complete archive, outside the four new libraries. Run `node --test tests/insights.test.mjs` after taxonomy changes, and compare taxonomy keys with published CMS slugs.
 
@@ -29,3 +29,4 @@ Method-copy correction (2026-10-07): name mapping, root/protective work, release
 החיפוש זמין בראש מרכז המידע ובארבע הספריות. ברירת המחדל בספרייה היא הקהל הנבחר, עם אפשרות לעבור לכל הספריות. תוצאות מוצגות פעם אחת עם תווית ספרייה ראשית וקישור לכתובת המקורית. `/insights/search` מוחרג מקאש ISR כי הוא תלוי בשאילתה, מוגדר `noindex, follow` ואינו נוסף למפת האתר. הספריות, המאמרים וקישורי HTML ממשיכים לשרת גילוי אורגני.
 
 לפני פרסום מאמר מאושר: בדקו שיוך ראשי/משני, הופעה בקטגוריה, חיפוש של ניסוח הקורא, תווית קהל וקישור תקין. שינוי שיוך או ביטוי חיפוש אינו מצדיק שינוי מלאכותי בתאריך עדכון התוכן. שינוי גוף/כותרת/FAQ/CTA קיים דורש היקף מפורש מיוסי.
+

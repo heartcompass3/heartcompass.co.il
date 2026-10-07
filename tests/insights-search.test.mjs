@@ -20,6 +20,12 @@ test('audience filtering respects reviewed secondary placement, deduplicates URL
   assert.equal(searchArticles(articles,taxonomy,'לא מוכר בכלל').length,0);
   assert.equal(searchArticles(articles,taxonomy,'').length,0);
 });
+test('natural questions keep their meaningful topic without requiring every connecting word',()=>{
+  const samples=[{slug:'school',title:'מתבגר לא רוצה ללכת לבית הספר',excerpt:'מה עושים כשהמתבגר מסרב?'},{slug:'love',title:'פחד מזוגיות',excerpt:'זוגיות וקשרים'}];
+  const placements={school:{domain:'parents',category:'לימודים',secondary:[]},love:{domain:'relationships',category:'זוגיות',secondary:[]}};
+  assert.equal(searchArticles(samples,placements,'איך לעזור למתבגר שלא רוצה ללכת לבית ספר','parents')[0]?.article.slug,'school');
+  assert.equal(searchArticles(samples,placements,'אני רוצה זוגיות אבל מפחד','relationships')[0]?.article.slug,'love');
+});
 test('valid CMS placement supersedes snapshot; invalid assignments fail closed; reviewed snapshot stays available',()=>{
   const fallback={one:{domain:'parents',category:'ישן',secondary:[]}};
   const p={domain:'youth',category:'זהות ושייכות',secondary:[]};
@@ -33,3 +39,4 @@ test('valid CMS placement supersedes snapshot; invalid assignments fail closed; 
     assert.equal(effectiveTaxonomy([{slug:'one',insightPlacement:{...p,secondary:[p]}}],fallback).one,undefined);
   });
 });
+
