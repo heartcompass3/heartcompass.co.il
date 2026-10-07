@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import InsightArticleCard from '../../components/InsightArticleCard.astro'
+import domains from '../../content/insights-domains.json'
+import taxonomy from '../../content/insights-taxonomy.json'
+import site from '../../content/pages/site.json'
+import {sanity} from '../../lib/sanity'
+import {ARTICLES_QUERY} from '../../lib/sanityQueries'
+import {collectionGroups, articleSlug} from '../../lib/insights.mjs'
+const domain = domains.find(d => d.id === Astro.params.domain)
+if (!domain) return new Response('העמוד לא נמצא', {status:404, headers:{'Content-Type':'text/plain; charset=utf-8'}})
+const articles = await sanity.fetch(ARTICLES_QUERY)
+const groups = collectionGroups(articles,taxonomy,domain.id)
+const unique = [...new Map(groups.flatMap(g=>g.articles).map(a=>[articleSlug(a),a])).values()]
+const canonical = new URL(`/insights/${domain.id}`,site.siteUrl).toString()
+const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:domain.name,url:canonical,description:domain.description,inLanguage:'he',isPartOf:{'@type':'CollectionPage',url:new URL('/insights',site.siteUrl).toString()},mainEntity:{'@type':'ItemList',numberOfItems:unique.length,itemListElement:unique.map((a,i)=>({'@type':'ListItem',position:i+1,name:a.title,url:new URL(`/articles/${articleSlug(a)}`,site.siteUrl).toString()}))}}
+---
+<BaseLayout title={`${domain.name}: מאמרים וכלים | ${site.brand}`} description={domain.description} canonical={canonical} schema={[schema]}>
+  <section class="py-16 md:py-24 bg-background"><div class="max-w-6xl mx-auto px-6">
+    <Breadcrumbs items={[{name:'מרכז המידע',href:'/insights'},{name:domain.name}]} />
+    <header class="max-w-3xl mb-8">
+      <h1 class="font-display font-black text-primary text-4xl md:text-5xl mb-6">{domain.name}</h1>
+      <p class="text-xl text-primary/80 leading-relaxed">{domain.description}</p>
+      <p class="text-primary/75 leading-relaxed mt-4">המאמרים של יוסי מדלסי מציגים את הזווית של האימון הרגשי במצפן הלב: מה מפעיל אותנו, איך הדפוס פועל ואיך מתרגלים דרך חדשה. <a href="/method" class="underline font-bold">להכיר את שיטת מ.ס.ע</a></p>
+      <a href="#collections" class="inline-block mt-6 font-bold underline">ישר למאגר המאמרים לפי נושאים ↓</a>
+    </header>
+    <section aria-labelledby="faq-heading" class="max-w-3xl mb-12">
+      <h2 id="faq-heading" class="text-2xl font-display font-bold text-primary mb-5">לפני שמתחילים לקרוא</h2>
+      <div class="space-y-3">{domain.faq.map(f=><details class="bg-white border border-primary/10 rounded-2xl p-5"><summary class="cursor-pointer text-lg font-bold text-primary">{f.question}</summary><p class="mt-4 leading-relaxed text-primary/80">{f.answer}</p></details>)}</div>
+      {domain.id==='parents' && <p class="mt-4"><a class="underline font-bold" href="/insights/youth">למאמרים שפונים ישירות לבני הנוער</a></p>}
+    </section>
+    <section id="collections" class="scroll-mt-24">
+      <h2 class="text-3xl font-display font-bold text-primary mb-3">מאמרים לפי נושאים</h2>
+      <p class="text-primary/75 mb-6">{unique.length} מאמרים בספרייה. בחרו נושא כדי להגיע למאמרים שמתאימים לכם.</p>
+      <nav aria-label="נושאים בספרייה" class="flex flex-wrap gap-3 mb-10">{groups.map(g=><a class="rounded-full px-5 py-3 border border-primary/20 bg-white text-primary font-bold hover:bg-primary/5" href={`#${g.id}`}>{g.name}</a>)}</nav>
+      <div class="space-y-14">{groups.map(g=><section id={g.id} class="scroll-mt-24"><h2 class="font-display text-2xl font-bold text-primary mb-6">{g.name}</h2><div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{g.articles.map(a=><InsightArticleCard article={a} audience={taxonomy[articleSlug(a)]?.domain !== domain.id ? domains.find(d=>d.id===taxonomy[articleSlug(a)]?.domain)?.name : undefined} />)}</div><a href="#collections" class="inline-block mt-5 underline text-primary/75">חזרה לנושאים ↑</a></section>)}</div>
+    </section>
+    <nav aria-label="ספריות נוספות" class="mt-16 border-t border-primary/15 pt-8 flex flex-wrap gap-6">{domains.filter(d=>d.id!==domain.id).map(d=><a class="font-bold underline text-primary" href={`/insights/${d.id}`}>{d.name}</a>)}</nav>
+  </div></section>
+</BaseLayout>

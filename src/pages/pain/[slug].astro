@@ -6,6 +6,10 @@ import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { PAIN_BY_SLUG_QUERY } from '../../lib/sanityQueries'
 import { optImg } from '../../lib/img'
+import InsightArticleCard from '../../components/InsightArticleCard.astro'
+import taxonomy from '../../content/insights-taxonomy.json'
+import insightDomains from '../../content/insights-domains.json'
+import { audienceGroups } from '../../lib/insights.mjs'
 
 const { slug } = Astro.params
 
@@ -16,6 +20,7 @@ if (!pain) {
 }
 
 const articles = pain.articles ?? []
+const groups = audienceGroups(articles, taxonomy, insightDomains)
 
 const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
 
@@ -97,7 +102,7 @@ const fmtDate = (d?: string) =>
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-5xl mx-auto px-6">
 
-      <Breadcrumbs items={[{ name: 'מרכז המידע', href: '/pain' }, { name: pain.title }]} />
+      <Breadcrumbs items={[{ name: 'מרכז המידע', href: '/insights' }, { name: pain.title }]} />
 
       <!-- Hero -->
       <header class="mb-12 text-center">
@@ -144,55 +149,12 @@ const fmtDate = (d?: string) =>
         </div>
       )}
 
-      <!-- מאמרים בנושא — מתמלא אוטומטית -->
+      <!-- Existing topic URL retained; article lists are now separated by audience. -->
       <section class="mb-16">
-        <h2 class="text-3xl md:text-4xl font-black text-primary font-display mb-3 text-center">
-          מאמרים בנושא
-        </h2>
-        <p class="text-center text-primary/55 font-body mb-10">
-          {articles.length > 0 ? `${articles.length} מאמרים` : ''}
-        </p>
-
-        {articles.length === 0 ? (
-          <p class="text-center text-primary/60 font-body text-lg">בקרוב יתווספו מאמרים בנושא הזה.</p>
-        ) : (
-          <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-            {articles.map((a: any) => (
-              <a
-                href={`/articles/${a.slug}`}
-                class="bg-white rounded-[2rem] shadow-xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border border-white/50 flex flex-col h-full overflow-hidden hover:-translate-y-2 cursor-pointer group ring-1 ring-black/5"
-              >
-                <div class="h-48 overflow-hidden relative w-full">
-                  <img
-                    src={optImg(a.mainImage?.asset?.url, 600, 80, a.slug) || '/assets/yossi-hero.jpg'}
-                    alt={a.mainImage?.alt || a.title || `מאמר | ${site.brand}`}
-                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
-                    loading="lazy"
-                  />
-                  {a.publishedAt && (
-                    <div class="absolute top-5 right-5 bg-white/95 px-3 py-1 text-xs font-bold text-primary rounded-full shadow-lg">
-                      {fmtDate(a.publishedAt)}
-                    </div>
-                  )}
-                </div>
-                <div class="p-8 flex-1 flex flex-col text-center items-center w-full">
-                  <h3 class="text-xl font-black text-primary mb-2 font-display leading-tight group-hover:text-gold-dark transition-colors">
-                    {a.title}
-                  </h3>
-                  {a.goldLine && (
-                    <p class="text-accent font-bold tracking-wide mb-3 font-display text-xs">{a.goldLine}</p>
-                  )}
-                  {a.excerpt && (
-                    <p class="text-primary/70 font-body leading-relaxed mb-6 line-clamp-3">{a.excerpt}</p>
-                  )}
-                  <div class="mt-auto flex items-center text-accent font-bold tracking-wide group-hover:gap-2 transition-all">
-                    קרא עוד <span class="mr-2">←</span>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
+        <h2 class="text-3xl font-display font-bold text-primary mb-4">מאמרים בנושא לפי קהל</h2>
+        <nav aria-label="קהל למאמרים בנושא" class="flex flex-wrap gap-3 mb-8">{groups.map(g=><a href={`#audience-${g.id}`} class="rounded-full bg-white border border-primary/20 px-5 py-3 font-bold">{g.name}</a>)}</nav>
+        {articles.length === 0 && <p>בקרוב יתווספו מאמרים בנושא הזה.</p>}
+        <div class="space-y-12">{groups.map(g=><section id={`audience-${g.id}`} class="scroll-mt-24"><h3 class="text-2xl font-display font-bold text-primary mb-4">{g.name}</h3>{insightDomains.some(d=>d.id===g.id) && <a href={`/insights/${g.id}`} class="inline-block underline mb-5">לספרייה המלאה: {g.name}</a>}<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{g.articles.map(a=><InsightArticleCard article={a} />)}</div></section>)}</div>
       </section>
 
       <!-- FAQ -->

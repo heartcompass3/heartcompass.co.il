@@ -2,11 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
-import { ARTICLE_BY_SLUG_QUERY, RELATED_ARTICLES_QUERY } from '../../lib/sanityQueries'
+import { ARTICLE_BY_SLUG_QUERY, ARTICLES_QUERY } from '../../lib/sanityQueries'
 import PortableText from '../../components/PortableText.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import { optImg } from '../../lib/img'
 import { slugify } from '../../lib/slug'
+import taxonomy from '../../content/insights-taxonomy.json'
+import insightDomains from '../../content/insights-domains.json'
+import { relatedArticles } from '../../lib/insights.mjs'
 
 const rawSlug = Astro.params.slug
 const joinedSlug = Array.isArray(rawSlug) ? rawSlug.join('/') : (rawSlug || '')
@@ -38,11 +41,10 @@ if (!article) {
   return Astro.redirect('/articles', 302)
 }
 
-// מאמרים נוספים — קודם לפי מוקדי כאב משותפים (טקסונומיה מדויקת), נופל ל-tags כגיבוי
-const painSlugs = (article.pains ?? []).map((p: any) => p.slug).filter(Boolean)
-const related = painSlugs.length || article.tags?.length
-  ? await sanity.fetch(RELATED_ARTICLES_QUERY, { slug, painSlugs, tags: article.tags ?? [] })
-  : []
+// Related reading stays within the body-reviewed primary audience and shared topics.
+const placement = taxonomy[slug]
+const library = insightDomains.find(d => d.id === placement?.domain)
+const related = library ? relatedArticles(await sanity.fetch(ARTICLES_QUERY), taxonomy, slug) : []
 
 // זמן קריאה + ספירת מילים מגוף ה-PortableText
 const bodyText = (Array.isArray(article.body) ? article.body : [])
@@ -197,6 +199,7 @@ const schemas = faqSchema
       </a>
 
       <Breadcrumbs items={[{ name: 'מאמרים', href: '/articles' }, { name: article.title }]} withSchema={false} />
+      {library && <p class="mb-6 text-primary/75"><a href={`/insights/${library.id}`} class="underline font-bold">למאמרים נוספים: {library.name}</a></p>}
 
       <div class={showToc ? 'lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start' : ''}>
         {/* ─── תוכן עניינים: סיידבר דביק בצד (דסקטופ בלבד) ─────── */}

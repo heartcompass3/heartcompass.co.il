@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import domains from '../../content/insights-domains.json'
+import site from '../../content/pages/site.json'
+const title = `מרכז המידע: התפתחות אישית, הורות, בני נוער וזוגיות | ${site.brand}`
+const description = 'בחרו את העולם שמעסיק אתכם: מאמרים וכלים של מצפן הלב להתפתחות אישית ושחרור דפוסים, להורות למתבגרים, לבני נוער ולזוגיות וקשרים.'
+const canonical = new URL('/insights',site.siteUrl).toString()
+const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:'מרכז המידע של מצפן הלב',url:canonical,description,inLanguage:'he',mainEntity:{'@type':'ItemList',numberOfItems:domains.length,itemListElement:domains.map((d,i)=>({'@type':'ListItem',position:i+1,name:d.name,url:new URL(`/insights/${d.id}`,site.siteUrl).toString()}))}}
+---
+<BaseLayout title={title} description={description} canonical={canonical} schema={[schema]}>
+  <section class="bg-background py-16 md:py-24"><div class="max-w-6xl mx-auto px-6">
+    <Breadcrumbs items={[{name:'מרכז המידע'}]} />
+    <header class="max-w-3xl mb-12">
+      <p class="text-accent font-bold mb-3">הידע והדרך של מצפן הלב</p>
+      <h1 class="font-display font-black text-primary text-4xl md:text-6xl mb-6">מרכז המידע של מצפן הלב</h1>
+      <p class="text-2xl font-display font-bold text-primary mb-4">להבין מה קורה. למצוא דרך להתקדם.</p>
+      <p class="text-xl text-primary/80 leading-relaxed">בחרו את העולם שמעסיק אתכם. בכל ספרייה תמצאו מאמרים לפי נושאים, הסברים על הדפוסים הרגשיים וכלים לעבודה עם מה שאתם חווים.</p>
+    </header>
+    <nav aria-label="ספריות מרכז המידע" class="grid md:grid-cols-2 gap-6">
+      {domains.map(d=><a href={`/insights/${d.id}`} class="bg-white rounded-3xl p-8 border border-primary/10 shadow-sm hover:shadow-lg transition-shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><h2 class="font-display text-2xl md:text-3xl font-bold text-primary mb-4">{d.name}</h2><p class="text-primary/80 leading-relaxed mb-6">{d.description}</p><span class="font-bold text-primary">למאמרים ולנושאים בספרייה ←</span></a>)}
+    </nav>
+    <section class="mt-14 rounded-3xl bg-white border border-primary/10 p-8 max-w-3xl">
+      <h2 class="font-display font-bold text-primary text-2xl mb-4">הזווית של מצפן הלב</h2>
+      <p class="text-primary/80 leading-relaxed">המאמרים של יוסי מדלסי מציגים את העבודה של מצפן הלב ושיטת מ.ס.ע: הבנת מה שמפעיל אותנו, עבודה עם דפוסים רגשיים ותרגול בחירות חדשות בחיים. דרך הסברים ודוגמאות מהעבודה תוכלו להבין איך הגישה פועלת ומה אפשר לעשות עם הקושי שמעסיק אתכם.</p>
+      <div class="flex flex-wrap gap-6 mt-6"><a class="font-bold underline" href="/method">להכיר את שיטת מ.ס.ע</a><a class="font-bold underline" href="/about">להכיר את יוסי מדלסי</a><a class="font-bold underline" href="/articles">לכל המאמרים וחיפוש במאגר</a></div>
+    </section>
+  </div></section>
+</BaseLayout>
