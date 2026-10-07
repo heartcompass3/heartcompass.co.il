@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import InsightsSearch from '../../components/InsightsSearch.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import domains from '../../content/insights-domains.json'
 import site from '../../content/pages/site.json'
@@ -17,6 +18,7 @@ const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:'�
       <p class="text-2xl font-display font-bold text-primary mb-4">להבין מה קורה. למצוא דרך להתקדם.</p>
       <p class="text-xl text-primary/80 leading-relaxed">בחרו את העולם שמעסיק אתכם. בכל ספרייה תמצאו מאמרים לפי נושאים, הסברים על הדפוסים הרגשיים ועל העבודה לשחרורם, והתייחסות למצבים שאתם פוגשים בחיים.</p>
     </header>
+    <InsightsSearch />
     <nav aria-label="ספריות מרכז המידע" class="grid md:grid-cols-2 gap-6">
       {domains.map(d=><a href={`/insights/${d.id}`} class="bg-white rounded-3xl p-8 border border-primary/10 shadow-sm hover:shadow-lg transition-shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><h2 class="font-display text-2xl md:text-3xl font-bold text-primary mb-4">{d.name}</h2><p class="text-primary/80 leading-relaxed mb-6">{d.description}</p><span class="font-bold text-primary">למאמרים ולנושאים בספרייה ←</span></a>)}
     </nav>

@@ -1,0 +1,17 @@
+---
+import domains from '../content/insights-domains.json'
+const {domain='',query=''} = Astro.props
+---
+<form action="/insights/search" method="get" role="search" aria-label="חיפוש במאמרי מצפן הלב" class="bg-white border border-primary/15 rounded-2xl p-5 md:p-6 mb-10">
+  <label for="insights-query" class="block text-xl font-display font-bold text-primary mb-2">מה מעסיק אותך?</label>
+  <p id="search-help" class="text-primary/75 mb-4">חפשו נושא, קושי או שאלה — למשל חרדה, שחרור דפוסים או קשה לי להגיד לא.</p>
+  <div class="flex flex-col md:flex-row gap-3">
+    <input id="insights-query" name="q" type="search" value={query} maxlength="180" required aria-describedby="search-help" placeholder="נושא, קושי או שאלה" class="border border-primary/30 rounded-xl px-4 py-3 min-w-0 flex-1 text-primary bg-white" />
+    <label class="sr-only" for="insights-audience">באיזו ספרייה לחפש?</label>
+    <select id="insights-audience" name="domain" class="border border-primary/30 rounded-xl px-3 py-3 text-primary bg-white max-w-full">
+      <option value="" selected={!domain}>בכל הספריות</option>
+      {domains.map(d=><option value={d.id} selected={domain===d.id}>{d.name}</option>)}
+    </select>
+    <button type="submit" class="rounded-xl px-7 py-3 bg-primary text-white font-bold">חיפוש</button>
+  </div>
+</form>

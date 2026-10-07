@@ -135,6 +135,8 @@ export const ARTICLES_QUERY = /* groq */ `
   excerpt,
   publishedAt,
   contentRole,
+  insightPlacement,
+  searchPhrases,
   authorLine,
   mainImage{
     alt,
@@ -145,7 +147,9 @@ export const ARTICLES_QUERY = /* groq */ `
   author->{
     name
   },
-  tags
+  tags,
+  painTags,
+  pains[]->{ title, "slug": slug.current }
 }
 `
 
@@ -162,6 +166,8 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
   authorLine,
   seo{ title, description },
   contentRole,
+  insightPlacement,
+  searchPhrases,
   mainImage{
     alt,
     asset->{
@@ -261,6 +267,7 @@ export const PAIN_BY_SLUG_QUERY = /* groq */ `
       "slug": slug.current,
       excerpt,
       publishedAt,
+      insightPlacement,
       mainImage{ alt, asset->{ url } }
     }
 }
