@@ -1,0 +1,16 @@
+---
+import { optImg } from '../lib/img'
+import { articleSlug } from '../lib/insights.mjs'
+const { article, audience } = Astro.props
+const slug = articleSlug(article)
+---
+<a href={`/articles/${slug}`} class="group flex flex-col overflow-hidden rounded-2xl bg-white border border-primary/10 shadow-sm hover:shadow-lg transition-shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+  {article.mainImage?.asset?.url && <img src={optImg(article.mainImage.asset.url,600,80,slug)} alt={article.mainImage.alt || article.title} width="600" height="340" loading="lazy" class="w-full h-44 object-cover" />}
+  <div class="p-6 flex flex-col gap-3 flex-1">
+    {audience && <p class="text-sm text-primary/65">{audience}</p>}
+    <h3 class="font-display font-bold text-xl text-primary leading-snug">{article.title}</h3>
+    {article.goldLine && <p class="text-accent font-bold text-sm">{article.goldLine}</p>}
+    {article.excerpt && <p class="font-body text-primary/75 leading-relaxed line-clamp-3">{article.excerpt}</p>}
+    <span class="mt-auto pt-3 text-primary font-bold">לקריאת המאמר ←</span>
+  </div>
+</a>

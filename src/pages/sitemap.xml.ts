@@ -92,6 +92,7 @@ export const GET: APIRoute = async () => {
     { url: '/about', lastmod: aboutUpdatedAt || buildDate },
     { url: '/method', lastmod: methodUpdatedAt || buildDate },
     { url: '/articles', lastmod: buildDate },
+    ...['/insights', '/insights/personal', '/insights/parents', '/insights/youth', '/insights/relationships'].map(url => ({url, lastmod: ''})),
     { url: '/specialties', lastmod: buildDate },
     // מרכז הכלים — עכשיו יעד של עשרות קישורים פנימיים ("אבחון קצר"), חייב להיות באינדקס
     { url: '/tools', lastmod: buildDate },
@@ -142,7 +143,7 @@ export const GET: APIRoute = async () => {
   const urls = [...byLoc.values()].map(({ loc, lastmod, images }) => `
       <url>
         <loc>${loc}</loc>
-        <lastmod>${lastmod}</lastmod>
+        ${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}
         ${images.map(image => `<image:image>
           <image:loc>${escapeXml(image.url)}</image:loc>
           ${image.alt ? `<image:caption>${escapeXml(image.alt)}</image:caption>` : ''}

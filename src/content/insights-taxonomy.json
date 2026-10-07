@@ -1,0 +1,1516 @@
+{
+  "drank-too-much-afraid-to-tell-parents": {
+    "domain": "youth",
+    "category": "פגיעה, מצבי סיכון ובקשת עזרה",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      },
+      {
+        "domain": "youth",
+        "category": "מסכים, התמכרויות והרגלים שקשה לעצור"
+      }
+    ]
+  },
+  "why-i-dont-want-to-stop-using-my-phone": {
+    "domain": "youth",
+    "category": "מסכים, התמכרויות והרגלים שקשה לעצור",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "לימודים, דחיינות וקושי להגיע"
+      },
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      }
+    ]
+  },
+  "personal-change-after-50-learning-new-possibilities": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": []
+  },
+  "teen-swears-at-parents-how-to-set-boundary": {
+    "domain": "parents",
+    "category": "גבולות, מריבות ושגרה בבית",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-thinks-everyone-is-against-him-parent-guide": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-refuses-school-trip-parent-guide": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-vaping-what-parents-should-do": {
+    "domain": "parents",
+    "category": "אלכוהול, עישון והתנהגויות סיכון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-wont-open-up-answers-i-dont-know": {
+    "domain": "parents",
+    "category": "קשר, אמון והתרחקות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "sibling-jealousy-teenagers-parent-guide": {
+    "domain": "parents",
+    "category": "גבולות, מריבות ושגרה בבית",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-embarrassed-by-parents-around-friends": {
+    "domain": "parents",
+    "category": "עצמאות, זהות וקשרים ראשונים",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "קשר, אמון והתרחקות"
+      },
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-perfectionism-when-95-feels-like-failure": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "לימודים, קשב ואבחון"
+      }
+    ]
+  },
+  "teen-always-on-phone-how-to-set-boundaries": {
+    "domain": "parents",
+    "category": "גבולות, מריבות ושגרה בבית",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-refuses-therapy-how-parents-can-help": {
+    "domain": "parents",
+    "category": "על הליווי להורים ולנוער",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "how-to-help-teen-after-breakup": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "not-sure-who-i-am-attracted-to": {
+    "domain": "youth",
+    "category": "גוף, התבגרות ומיניות",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      }
+    ]
+  },
+  "how-to-talk-to-teens-about-sexuality": {
+    "domain": "parents",
+    "category": "גוף, מיניות ובריאות בגיל ההתבגרות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "עצמאות, זהות וקשרים ראשונים"
+      }
+    ]
+  },
+  "intimate-images-teens-what-to-do": {
+    "domain": "youth",
+    "category": "פגיעה, מצבי סיכון ובקשת עזרה",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "גוף, התבגרות ומיניות"
+      }
+    ]
+  },
+  "first-time-sex-how-to-know-if-ready": {
+    "domain": "youth",
+    "category": "גוף, התבגרות ומיניות",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      }
+    ]
+  },
+  "teen-rejection-fear-how-to-approach": {
+    "domain": "youth",
+    "category": "גוף, התבגרות ומיניות",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      }
+    ]
+  },
+  "first-boyfriend-adolescence-what-parents-ask": {
+    "domain": "parents",
+    "category": "עצמאות, זהות וקשרים ראשונים",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "קשר, אמון והתרחקות"
+      }
+    ]
+  },
+  "no-friends-in-class-what-can-i-do": {
+    "domain": "youth",
+    "category": "זהות, ערך עצמי ושייכות",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "חרדה, רגשות ודפוסים חוזרים"
+      }
+    ]
+  },
+  "teen-refuses-school-how-parents-respond": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "i-do-not-want-to-go-to-school": {
+    "domain": "youth",
+    "category": "לימודים, דחיינות וקושי להגיע",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "חרדה, רגשות ודפוסים חוזרים"
+      }
+    ]
+  },
+  "violence-at-home-what-teens-can-do": {
+    "domain": "youth",
+    "category": "פגיעה, מצבי סיכון ובקשת עזרה",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "חרדה, רגשות ודפוסים חוזרים"
+      }
+    ]
+  },
+  "child-bullied-at-school-what-parents-do": {
+    "domain": "parents",
+    "category": "אלימות, חרם ובטיחות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "what-to-do-when-you-see-bullying": {
+    "domain": "youth",
+    "category": "זהות, ערך עצמי ושייכות",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "פגיעה, מצבי סיכון ובקשת עזרה"
+      }
+    ]
+  },
+  "violent-teen-at-home-how-parents-respond-safely": {
+    "domain": "parents",
+    "category": "אלימות, חרם ובטיחות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "גבולות, מריבות ושגרה בבית"
+      }
+    ]
+  },
+  "why-i-explode-and-hurt-people-even-when-i-did-not-want-to": {
+    "domain": "youth",
+    "category": "חרדה, רגשות ודפוסים חוזרים",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "פגיעה, מצבי סיכון ובקשת עזרה"
+      }
+    ]
+  },
+  "youth-violence-when-it-is-not-just-a-fight": {
+    "domain": "parents",
+    "category": "אלימות, חרם ובטיחות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "how-to-ask-for-needs-in-relationship": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "back-to-school-routine-with-teenagers": {
+    "domain": "parents",
+    "category": "גבולות, מריבות ושגרה בבית",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "לימודים, קשב ואבחון"
+      }
+    ]
+  },
+  "procrastination-in-teenagers-last-minute": {
+    "domain": "youth",
+    "category": "לימודים, דחיינות וקושי להגיע",
+    "secondary": []
+  },
+  "social-anxiety-in-teenagers-afraid-to-speak": {
+    "domain": "youth",
+    "category": "חרדה, רגשות ודפוסים חוזרים",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      }
+    ]
+  },
+  "sleep-problems-in-teenagers": {
+    "domain": "youth",
+    "category": "שינה ושגרת היום",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "חרדה, רגשות ודפוסים חוזרים"
+      }
+    ]
+  },
+  "why-trying-harder-can-block-the-solution": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "adhd-diagnosis-for-teens-does-it-mean-something-is-wrong-with-me": {
+    "domain": "youth",
+    "category": "זהות, ערך עצמי ושייכות",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "לימודים, דחיינות וקושי להגיע"
+      }
+    ]
+  },
+  "what-happens-before-parent-outburst": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": []
+  },
+  "peer-group-why-i-change-around-friends": {
+    "domain": "youth",
+    "category": "זהות, ערך עצמי ושייכות",
+    "secondary": []
+  },
+  "family-accommodation-anxiety-parents": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "reassurance-fuels-ocd-checking-loop": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-ocd-symptoms-guide": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "parent-triggered-child-ocd": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "teen-ocd-checking-loop": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "knowledge-doesnt-change-automatic-reaction": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "קשר, אמון והתרחקות"
+      }
+    ]
+  },
+  "why-social-exclusion-hurts-brain": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "why-my-childs-exclusion-triggers-me": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "אלימות, חרם ובטיחות"
+      }
+    ]
+  },
+  "what-to-do-when-child-ostracized": {
+    "domain": "parents",
+    "category": "אלימות, חרם ובטיחות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "child-ostracized-why-it-hurts": {
+    "domain": "parents",
+    "category": "אלימות, חרם ובטיחות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "emotional-coaching-teen-through-adolescence": {
+    "domain": "youth",
+    "category": "על האימון הרגשי לנוער",
+    "secondary": []
+  },
+  "adhd-overdiagnosis-debate-parents": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "what-to-tell-child-before-adhd-assessment": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "should-i-get-my-child-diagnosed-parent-uncertainty": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-says-didnt-notice-dissociation-not-lying": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "adhd-teen-summer-break-everything-falls-apart": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "why-my-child-looks-like-he-isnt-trying": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "homework-fights-end-in-explosion-what-to-do": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      },
+      {
+        "domain": "parents",
+        "category": "גבולות, מריבות ושגרה בבית"
+      }
+    ]
+  },
+  "teen-attention-difficulties-why-nothing-works": {
+    "domain": "parents",
+    "category": "לימודים, קשב ואבחון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "why-my-teen-confides-in-ai-chatbot-not-me": {
+    "domain": "parents",
+    "category": "קשר, אמון והתרחקות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-sleep-reversal-summer-day-night": {
+    "domain": "parents",
+    "category": "גבולות, מריבות ושגרה בבית",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "my-daughter-is-growing-up-and-i-fight-her-on-everything": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "גבולות, מריבות ושגרה בבית"
+      }
+    ]
+  },
+  "why-my-teen-lies-to-me-protecting-the-bond": {
+    "domain": "parents",
+    "category": "קשר, אמון והתרחקות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "how-to-deal-with-odd-children": {
+    "domain": "parents",
+    "category": "גבולות, מריבות ושגרה בבית",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "emotional-intelligence-teens-peer-pressure-eq": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "עצמאות, זהות וקשרים ראשונים"
+      }
+    ]
+  },
+  "partner-stonewalling-recognize-respond": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": []
+  },
+  "illusion-of-control-letting-go-as-a-parent": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "עצמאות, זהות וקשרים ראשונים"
+      }
+    ]
+  },
+  "how-to-stop-scrolling-phone-when-kids-are-with-you": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "קשר, אמון והתרחקות"
+      }
+    ]
+  },
+  "how-broken-childhood-promise-affects-relationships": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "the-need-for-words-and-validation": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      },
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-peer-pressure-brain-and-resilience": {
+    "domain": "youth",
+    "category": "זהות, ערך עצמי ושייכות",
+    "secondary": []
+  },
+  "how-to-identify-depressed-person": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "empathy-vs-sympathy-how-it-affects-relationships": {
+    "domain": "personal",
+    "category": "רגשות, גוף ותגובות בקשרים",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "פרידה, פגיעה וקשרים שמכאיבים"
+      },
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "how-to-break-recurring-relationship-crisis": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "emotional-coaching-for-teens-complete-guide": {
+    "domain": "parents",
+    "category": "על הליווי להורים ולנוער",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "teens-summer-vacation-parents-guide": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "גבולות, מריבות ושגרה בבית"
+      }
+    ]
+  },
+  "emotional-regulation-tools-for-teens": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "parental-emotional-coaching": {
+    "domain": "parents",
+    "category": "על הליווי להורים ולנוער",
+    "secondary": []
+  },
+  "teen-identity-confusion-parents-guide": {
+    "domain": "parents",
+    "category": "עצמאות, זהות וקשרים ראשונים",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "why-is-my-teen-never-satisfied": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "the-phallic-narcissistic-unavailable-man": {
+    "domain": "relationships",
+    "category": "מחפשים קשר — משיכה ובחירת קשר",
+    "secondary": []
+  },
+  "ransactional-love-child-teenager-partner-masochistic-character": {
+    "domain": "personal",
+    "category": "ריצוי, גבולות ואישור מהסביבה",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      },
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "dependent-teen-oral-character-always-needs-approval": {
+    "domain": "parents",
+    "category": "עצמאות, זהות וקשרים ראשונים",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "eating-disorder-signs-teen-girl-parents": {
+    "domain": "parents",
+    "category": "גוף, מיניות ובריאות בגיל ההתבגרות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "controlling-teen-girl-psychopathic-character": {
+    "domain": "parents",
+    "category": "גבולות, מריבות ושגרה בבית",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "parentified-child-to-parentified-man": {
+    "domain": "personal",
+    "category": "ריצוי, גבולות ואישור מהסביבה",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "why-i-give-up-before-trying": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      }
+    ]
+  },
+  "why-we-repeat-the-same-relationships": {
+    "domain": "relationships",
+    "category": "מחפשים קשר — משיכה ובחירת קשר",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "teen-emotional-flooding-from-inside": {
+    "domain": "youth",
+    "category": "חרדה, רגשות ודפוסים חוזרים",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "זהות, ערך עצמי ושייכות"
+      }
+    ]
+  },
+  "inner-conflict-family-burnout": {
+    "domain": "parents",
+    "category": "הדפוסים והתגובות שלי כהורה",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "קשר, אמון והתרחקות"
+      }
+    ]
+  },
+  "how-subconscious-patterns-are-coded": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      },
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "teen-isolating-hidden-survival-mechanism": {
+    "domain": "parents",
+    "category": "קשר, אמון והתרחקות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "מצוקה רגשית וחברתית של הילד"
+      }
+    ]
+  },
+  "how-to-build-self-worth": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": []
+  },
+  "teen-identity-crisis-fear-of-being-seen": {
+    "domain": "youth",
+    "category": "זהות, ערך עצמי ושייכות",
+    "secondary": [
+      {
+        "domain": "youth",
+        "category": "חרדה, רגשות ודפוסים חוזרים"
+      }
+    ]
+  },
+  "social-anxiety-teens-overcoming-fear": {
+    "domain": "parents",
+    "category": "מצוקה רגשית וחברתית של הילד",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "קשר, אמון והתרחקות"
+      }
+    ]
+  },
+  "breaking-the-emotional-debt-trap": {
+    "domain": "personal",
+    "category": "ריצוי, גבולות ואישור מהסביבה",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "how-to-stop-attracting-energy-takers": {
+    "domain": "personal",
+    "category": "ריצוי, גבולות ואישור מהסביבה",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "פרידה, פגיעה וקשרים שמכאיבים"
+      }
+    ]
+  },
+  "breaking-the-free-content-curse": {
+    "domain": "legacy",
+    "category": "תוכן, שיווק ובניית עסק",
+    "secondary": []
+  },
+  "science-of-hope-and-patterns": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "release-competitiveness-find-inner-peace": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": []
+  },
+  "imposter-syndrome-vulnerability": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "why-uncertainty-paralyzes-us-science": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "how-to-stop-overthinking-guide": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "why-do-i-feel-not-good-enough": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריצוי, גבולות ואישור מהסביבה"
+      }
+    ]
+  },
+  "release-automatic-patterns-skepticism-procrastination": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": []
+  },
+  "economic-anxiety-business-paralysis": {
+    "domain": "legacy",
+    "category": "חרדה וחוסר ודאות בעסק",
+    "secondary": []
+  },
+  "why-we-fail-to-change-secondary-gain": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": []
+  },
+  "arguing-same-things-relationship-patterns": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "how-to-stop-expecting-from-others-without-getting-disappointed": {
+    "domain": "personal",
+    "category": "ריצוי, גבולות ואישור מהסביבה",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "how-words-shape-reality-and-body": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "רגשות, גוף ותגובות בקשרים"
+      }
+    ]
+  },
+  "breaking-the-rumination-loop": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "פרידה, פגיעה וקשרים שמכאיבים"
+      }
+    ]
+  },
+  "true-independence-releasing-patterns": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ערך עצמי וביקורת עצמית"
+      }
+    ]
+  },
+  "releasing-automatic-patterns-breakup-shadow": {
+    "domain": "relationships",
+    "category": "פרידה, פגיעה וקשרים שמכאיבים",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      },
+      {
+        "domain": "personal",
+        "category": "ערך עצמי וביקורת עצמית"
+      }
+    ]
+  },
+  "what-are-automatic-patterns": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": []
+  },
+  "life-lessons-and-repeating-patterns": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "survival-loop-torah-hearts-compass": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "חרדה, חשיבת יתר וחוסר ודאות"
+      }
+    ]
+  },
+  "overcoming-fear-of-disappointment-in-relationships": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": []
+  },
+  "psychological-conditioning-and-freedom": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": []
+  },
+  "biology-of-male-stress-and-testosterone": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "רגשות, גוף ותגובות בקשרים"
+      }
+    ]
+  },
+  "attraction-vs-love-brain-science-patterns": {
+    "domain": "relationships",
+    "category": "מחפשים קשר — משיכה ובחירת קשר",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "physiology-of-gratitude-nervous-system": {
+    "domain": "personal",
+    "category": "רגשות, גוף ותגובות בקשרים",
+    "secondary": []
+  },
+  "biology-of-self-criticism-internal-war": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": []
+  },
+  "prefrontal-cortex-subconscious-consent-science": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "the-gut-brain-vagus-nerve-science": {
+    "domain": "personal",
+    "category": "רגשות, גוף ותגובות בקשרים",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "חרדה, חשיבת יתר וחוסר ודאות"
+      }
+    ]
+  },
+  "the-anatomy-of-falling-in-love-and-survival": {
+    "domain": "relationships",
+    "category": "מחפשים קשר — משיכה ובחירת קשר",
+    "secondary": []
+  },
+  "head-vs-heart-conflict-science": {
+    "domain": "relationships",
+    "category": "פרידה, פגיעה וקשרים שמכאיבים",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "the-three-brains-head-heart-gut": {
+    "domain": "personal",
+    "category": "רגשות, גוף ותגובות בקשרים",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "business-uncertainty-and-survival-mode": {
+    "domain": "legacy",
+    "category": "חרדה וחוסר ודאות בעסק",
+    "secondary": []
+  },
+  "seneca-freedom-from-proving-yourself": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריצוי, גבולות ואישור מהסביבה"
+      }
+    ]
+  },
+  "giving-up-on-relationships-survival-mechanism": {
+    "domain": "relationships",
+    "category": "מחפשים קשר — משיכה ובחירת קשר",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "child-isolation-family-dynamics-control": {
+    "domain": "parents",
+    "category": "קשר, אמון והתרחקות",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  },
+  "depression-and-locked-energy": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "psychology-biology-anxiety-relief-crisis": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "god-complex-dark-triad-narcissism": {
+    "domain": "relationships",
+    "category": "פרידה, פגיעה וקשרים שמכאיבים",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריצוי, גבולות ואישור מהסביבה"
+      }
+    ]
+  },
+  "why-we-fight-ourselves": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ערך עצמי וביקורת עצמית"
+      }
+    ]
+  },
+  "transference-countertransference-research-emotional-coaching": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "coping-with-anxiety-during-wa": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": []
+  },
+  "social-habit-to-survival-pattern": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריקנות, מצב רוח, שחיקה ומשמעות"
+      }
+    ]
+  },
+  "science-of-releasing-anxiety-trauma": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "midlife-crisis-external-escapes-psychology": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "releasing-the-potential-trap": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "expectation-disappointment-loop": {
+    "domain": "personal",
+    "category": "ריצוי, גבולות ואישור מהסביבה",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "reclaiming-passion-after-crisis": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "פרידה, פגיעה וקשרים שמכאיבים"
+      }
+    ]
+  },
+  "automating-the-soul-future-of": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": []
+  },
+  "business-consulting-vs-emotional-coaching": {
+    "domain": "legacy",
+    "category": "בחירת ליווי לעסק",
+    "secondary": []
+  },
+  "couple-therapy-counseling-coaching-difference": {
+    "domain": "relationships",
+    "category": "על הליווי הזוגי",
+    "secondary": []
+  },
+  "heinz-kohut-self-psychology-healing": {
+    "domain": "personal",
+    "category": "ערך עצמי וביקורת עצמית",
+    "secondary": []
+  },
+  "dancing-with-shadows-inner-child-healing": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ערך עצמי וביקורת עצמית"
+      }
+    ]
+  },
+  "attraction-to-mystery-psychology": {
+    "domain": "relationships",
+    "category": "מחפשים קשר — משיכה ובחירת קשר",
+    "secondary": []
+  },
+  "stoicism-marcus-aurelius-memento-mori-emotional-freedom": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריצוי, גבולות ואישור מהסביבה"
+      }
+    ]
+  },
+  "why-we-are-addicted-to-noise": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "emptiness-vs-overload-meaning": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "how-observation-shapes-reality": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": []
+  },
+  "uncertainty-addiction-overthinking": {
+    "domain": "personal",
+    "category": "חרדה, חשיבת יתר וחוסר ודאות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "resilience-fraud-hidden-costs": {
+    "domain": "personal",
+    "category": "ריצוי, גבולות ואישור מהסביבה",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריקנות, מצב רוח, שחיקה ומשמעות"
+      }
+    ]
+  },
+  "the-paradox-of-helping-narcissism-and-boundaries": {
+    "domain": "relationships",
+    "category": "פרידה, פגיעה וקשרים שמכאיבים",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריצוי, גבולות ואישור מהסביבה"
+      }
+    ]
+  },
+  "relationship-ledger-to-partnership": {
+    "domain": "relationships",
+    "category": "נמצאים בקשר — קרבה, גבולות ותקשורת",
+    "secondary": []
+  },
+  "addiction-root-cause-healing": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריקנות, מצב רוח, שחיקה ומשמעות"
+      }
+    ]
+  },
+  "why-your-business-is-stuck-despite-marketing-efforts": {
+    "domain": "legacy",
+    "category": "תוכן, שיווק ובניית עסק",
+    "secondary": []
+  },
+  "pity-vs-compassion-emotional-growth": {
+    "domain": "personal",
+    "category": "רגשות, גוף ותגובות בקשרים",
+    "secondary": []
+  },
+  "anatomy-of-correction-believing-in-repair": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "פרידה, פגיעה וקשרים שמכאיבים"
+      }
+    ]
+  },
+  "ulcer-emotional-healing-mind-body": {
+    "domain": "personal",
+    "category": "רגשות, גוף ותגובות בקשרים",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "ריצוי, גבולות ואישור מהסביבה"
+      }
+    ]
+  },
+  "hidden-cost-of-hypervigilance": {
+    "domain": "personal",
+    "category": "ריקנות, מצב רוח, שחיקה ומשמעות",
+    "secondary": [
+      {
+        "domain": "personal",
+        "category": "חרדה, חשיבת יתר וחוסר ודאות"
+      },
+      {
+        "domain": "personal",
+        "category": "דפוסים חוזרים, דחיינות ושינוי אישי"
+      }
+    ]
+  },
+  "stop-repeating-the-script": {
+    "domain": "personal",
+    "category": "דפוסים חוזרים, דחיינות ושינוי אישי",
+    "secondary": [
+      {
+        "domain": "relationships",
+        "category": "נמצאים בקשר — קרבה, גבולות ותקשורת"
+      }
+    ]
+  },
+  "teen-does-not-want-to-stop-drinking-parent-guide": {
+    "domain": "parents",
+    "category": "אלכוהול, עישון והתנהגויות סיכון",
+    "secondary": [
+      {
+        "domain": "parents",
+        "category": "גבולות, מריבות ושגרה בבית"
+      },
+      {
+        "domain": "parents",
+        "category": "הדפוסים והתגובות שלי כהורה"
+      }
+    ]
+  }
+}

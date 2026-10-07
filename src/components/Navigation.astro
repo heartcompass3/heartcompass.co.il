@@ -1,5 +1,6 @@
 ---
 import site from '../content/pages/site.json'
+import insightDomains from '../content/insights-domains.json'
 
 const currentPath = Astro.url.pathname
 const { settings = null } = Astro.props
@@ -31,6 +32,8 @@ if (videoIndex >= 0 && contactIndex >= 0 && videoIndex > contactIndex) {
 if (!nav.length) {
   nav = fallbackNav
 }
+
+nav = nav.map(item => ['/pain', '/pain/', '/insights'].includes(item.href) ? {...item, href: '/insights', children: [{label: 'כל הספריות', href: '/insights'}, ...insightDomains.map(d => ({label: d.name, href: `/insights/${d.id}`}))]} : item)
 
 const specialtiesChildrenFallback = [
   { label: 'אימון זוגי', href: '/specialties/couples' },

@@ -31,7 +31,7 @@ const footerLinks =
     ? settings.footerLinks
     : fallbackFooterLinks
 
-const resolvedFooterLinks = [...footerLinks]
+const resolvedFooterLinks = footerLinks.map(item => ['/pain', '/pain/'].includes(item.href) ? {...item, href: '/insights'} : item)
 if (!resolvedFooterLinks.some((item) => item?.href === '/videos')) {
   resolvedFooterLinks.push({ label: 'וידאו', href: '/videos' })
 }
