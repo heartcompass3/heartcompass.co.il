@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {collectionGroups, audienceGroups, relatedArticles} from '../src/lib/insights.mjs';
+import {collectionGroups, audienceGroups, relatedArticles, effectiveTaxonomy} from '../src/lib/insights.mjs';
 const topics = JSON.parse(readFileSync(new URL('../src/content/insights-topics.json',import.meta.url)));
 const taxonomy = JSON.parse(readFileSync(new URL('../src/content/insights-taxonomy.json',import.meta.url)));
 const domains = JSON.parse(readFileSync(new URL('../src/content/insights-domains.json',import.meta.url)));
@@ -68,4 +68,27 @@ test('all reviewed topics have unique readable anchors and substantive introduct
     }
   }
   assert.equal(topics.parents['הדפוסים והתגובות שלי כהורה'].anchor,'parent-patterns');
+});
+
+test('opened separation categories appear before articles and accept future CMS placement',()=>{
+  const categories = {
+    parents: 'הורות בזמן פרידה וגירושין',
+    youth: 'כשההורים נפרדים',
+    relationships: 'פרידה וגירושין',
+  };
+  for (const [domain, category] of Object.entries(categories)) {
+    const empty = collectionGroups([], {}, domain, topics[domain]);
+    assert.deepEqual(empty.map(g => g.name), [category]);
+    assert.equal(empty[0].articles.length, 0);
+    const article = {slug: `future-${domain}`, insightPlacement: {domain, category, secondary: []}};
+    const placement = effectiveTaxonomy([article]);
+    const populated = collectionGroups([article, article], placement, domain, topics[domain]);
+    assert.equal(populated.length, 1);
+    assert.equal(populated[0].id, empty[0].id);
+    assert.deepEqual(populated[0].articles, [article]);
+    for (const otherDomain of Object.keys(categories).filter(d => d !== domain)) {
+      assert.equal(collectionGroups([article], placement, otherDomain, topics[otherDomain])
+        .flatMap(g => g.articles).length, 0);
+    }
+  }
 });

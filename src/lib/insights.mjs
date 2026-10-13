@@ -22,6 +22,10 @@ export const legacyTopicAnchor = name => 'topic-' + Array.from(name).map(c => c.
 export const topicAnchor = name => 'topic-' + name.normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');
 export function collectionGroups(articles, taxonomy, domain, topicDefinitions = {}) {
   const groups = new Map();
+  // Explicitly opened topics remain discoverable while their first articles are prepared.
+  for (const [name, definition] of Object.entries(topicDefinitions)) {
+    if (definition.showWhenEmpty) groups.set(name, []);
+  }
   const seen = new Set();
   for (const article of articles) {
     const slug = articleSlug(article);
