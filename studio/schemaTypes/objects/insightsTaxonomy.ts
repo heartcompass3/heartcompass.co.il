@@ -17,6 +17,8 @@ const legacyCategories = Array.from(
   ),
 )
 
+// Include newly opened topics even before their first article is published.
+// The same definitions control public navigation and the editor's category choices.
 export const insightCategoriesByDomain: Record<InsightDomainId, string[]> = {
   personal: Object.keys(topicsData.personal),
   parents: Object.keys(topicsData.parents),
