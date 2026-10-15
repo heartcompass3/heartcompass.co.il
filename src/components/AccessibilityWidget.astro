@@ -183,7 +183,10 @@
     if (typeof state.fontStep !== 'number') state.fontStep = 0
     apply(state)
 
-    const openPanel = () => { panel.classList.remove('hidden'); toggle.setAttribute('aria-expanded', 'true') }
+    const openPanel = () => {
+      panel.classList.remove('hidden'); toggle.setAttribute('aria-expanded', 'true')
+      document.dispatchEvent(new Event('hc:a11y-open'))
+    }
     const closePanel = () => { panel.classList.add('hidden'); toggle.setAttribute('aria-expanded', 'false') }
 
     toggle.addEventListener('click', () => {
