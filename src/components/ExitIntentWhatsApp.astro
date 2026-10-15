@@ -14,7 +14,11 @@ const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(wa
   aria-labelledby="hc-exit-title"
   aria-describedby="hc-exit-body"
 >
-  <button type="button" class="hc-exit-close" aria-label="סגירה" data-exit-close>&times;</button>
+  <div class="hc-exit-toolbar">
+    <button type="button" class="hc-exit-close" aria-label="סגירת חלונית יצירת קשר" data-exit-close>
+      <span aria-hidden="true">&times;</span> סגירה
+    </button>
+  </div>
 
   <div class="hc-exit-head">
     <img data-src="/assets/yossi-profile.jpg" alt="יוסי מדלסי" class="hc-exit-avatar" width="48" height="48" />
@@ -52,14 +56,23 @@ const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(wa
     box-shadow: 0 16px 40px rgba(0,0,0,.18); padding: 18px 18px 20px;
     font-family: 'Assistant', sans-serif; direction: rtl; text-align: right;
     opacity: 0; transition: opacity .28s ease, transform .28s ease;
+    max-height: calc(100vh - 6rem); max-height: calc(100dvh - 6rem); overflow-y: auto;
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
   }
   .hc-exit.hc-show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hc-exit.hidden { display: none; }
 
-  .hc-exit-close {
-    position: absolute; top: 8px; left: 10px; background: none; border: none;
-    font-size: 1.4rem; line-height: 1; color: #7a8a8f; cursor: pointer;
+  .hc-exit-toolbar {
+    display: flex; justify-content: flex-start; position: sticky; top: 0; z-index: 1;
+    background: #fff; margin-bottom: 8px;
   }
+  .hc-exit-close {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-width: 80px; min-height: 44px; padding: 8px 12px;
+    background: #f4f6f6; border: 1px solid rgba(15,44,54,.15); border-radius: 8px;
+    font: inherit; font-size: 1rem; line-height: 1.2; color: #0f2c36; cursor: pointer;
+  }
+  .hc-exit-close span { font-size: 1.4em; line-height: 1; }
   .hc-exit-close:hover { color: #0f2c36; }
   .hc-exit-close:focus-visible { outline: 2px solid #D4AF37; outline-offset: 2px; border-radius: 4px; }
 
@@ -107,7 +120,7 @@ const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(wa
         const c = localStorage.getItem(CONSENT_KEY);
         if (c !== 'accepted' && c !== 'declined') return false;
       } catch (e) {}
-      return !shown;
+      return !shown && document.querySelector('[data-a11y-toggle]')?.getAttribute('aria-expanded') !== 'true';
     };
 
     const show = () => {
@@ -129,6 +142,8 @@ const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(wa
 
     root.querySelector('[data-exit-close]')?.addEventListener('click', hide);
     root.querySelector('[data-exit-cta]')?.addEventListener('click', hide);
+    // Accessibility controls take priority over the contact invitation.
+    document.addEventListener('hc:a11y-open', hide);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !root.classList.contains('hidden')) hide();
     });
