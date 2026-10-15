@@ -1,0 +1,30 @@
+---
+const { video } = Astro.props
+---
+<article class="overflow-hidden rounded-[2rem] bg-white border border-primary/10 shadow-lg hover:-translate-y-1 transition-transform">
+  <div class="aspect-video bg-primary/5" data-video-shell>
+    <button
+      type="button"
+      class="relative w-full h-full group"
+      data-video-id={video.id}
+      aria-label={`הפעלת הסרטון: ${video.title}`}
+    >
+      <img
+        src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
+        alt=""
+        width="480"
+        height="360"
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <span class="absolute inset-0 bg-gradient-to-b from-primary/20 to-primary/45 flex items-center justify-center">
+        <span class="flex items-center justify-center w-16 h-16 rounded-full bg-accent text-primary text-2xl shadow-xl transition-transform group-hover:scale-110" aria-hidden="true">▶</span>
+      </span>
+    </button>
+  </div>
+  <div class="p-6 text-right">
+    {video.published && <p class="text-xs text-primary/45 font-body mb-2">{new Date(video.published).toLocaleDateString('he-IL')}</p>}
+    <h2 class="text-xl font-black text-primary font-display leading-snug">{video.title}</h2>
+  </div>
+</article>

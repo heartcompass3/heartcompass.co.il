@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+import VideoCard from '../components/VideoCard.astro'
+import videoLibrary from '../data/videos.json'
 import Breadcrumbs from '../components/Breadcrumbs.astro'
 import PortableText from '../components/PortableText.astro'
 import { buildWhatsAppHref } from '../lib/whatsapp'
@@ -8,7 +10,6 @@ import { sanity } from '../lib/sanity'
 import { VIDEO_PAGE_QUERY } from '../lib/sanityQueries'
 import site from '../content/pages/site.json'
 
-const channelId = 'UCo3tMRDrFY_zUlgeJXyvxjQ'
 const videoWhatsAppHref = buildWhatsAppHref(
   site.whatsAppPhone,
   'היי יוסי, הגעתי דרך עמוד הווידאו. צפיתי בסרטון ורוצה לשאול על משהו שנגע בי או קרה אצלנו בבית.',
@@ -21,42 +22,10 @@ try {
   // Keep the video hub available if Sanity is temporarily unavailable.
 }
 
-const fallbackVideos = [
-  { id: 'C3tFtybKkR0', title: 'איך "שכחת שוב" הופך בסוף ל"ככה אתה"?', published: '2026-08-31' },
-  { id: '3-ttg8m03fk', title: 'למה מתבגרים משקרים להורים, גם כשהם יודעים שהשקר עלול לפגוע באמון?', published: '2026-08-20' },
-  { id: '-IlZA5hdYjA', title: 'הילד אומר: אני לא רוצה לחזור מחר לבית הספר. מה עושים?', published: '' },
-  { id: 'jL2caQQXTbo', title: 'למה הילד שלי "מתפוצץ" עליי?', published: '' },
-  { id: '2hXYNFL4BCE', title: 'למה לא לנסות מרגיש בטוח יותר', published: '' },
-]
-
-const decodeXml = (value = '') => value
-  .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-  .replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;|&apos;/g, "'")
-  .replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim()
-
-const readTag = (entry, name) => {
-  const match = entry.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`))
-  return match ? decodeXml(match[1]) : ''
-}
-
-let videos = fallbackVideos
-try {
-  const response = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`)
-  if (response.ok) {
-    const xml = await response.text()
-    const fetched = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
-      .slice(0, 6)
-      .map((match) => ({
-        id: readTag(match[1], 'yt:videoId'),
-        title: readTag(match[1], 'title'),
-        published: readTag(match[1], 'published'),
-      }))
-      .filter((video) => video.id && video.title)
-    if (fetched.length) videos = fetched
-  }
-} catch {
-  // Keep the page useful when the build server cannot reach YouTube.
-}
+// Saved by the background sync. Page renders never wait for YouTube.
+const videos = videoLibrary.videos
+const initialVideos = videos.slice(0, 6)
+const remainingVideos = videos.slice(6)
 
 const h1 = page?.title || 'וידאו'
 const intro = page?.excerpt || 'רגעים קצרים למחשבה על הורות, מתבגרים, פחדים ודפוסים — ומה אפשר לבחור אחרת בתוך החיים עצמם.'
@@ -153,29 +122,25 @@ const videoSchemas = videos.map((video) => ({
         </aside>
       )}
 
-      <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-        {videos.map((video) => (
-          <article class="overflow-hidden rounded-[2rem] bg-white border border-primary/10 shadow-lg hover:-translate-y-1 transition-transform">
-            <div class="aspect-video bg-primary/5" data-video-shell>
-              <button
-                type="button"
-                class="relative w-full h-full bg-cover bg-center group"
-                style={`background-image: linear-gradient(rgba(15,44,54,.2), rgba(15,44,54,.45)), url(https://i.ytimg.com/vi/${video.id}/hqdefault.jpg)`}
-                data-video-id={video.id}
-                aria-label={`הפעלת הסרטון: ${video.title}`}
-              >
-                <span class="absolute inset-0 flex items-center justify-center">
-                  <span class="flex items-center justify-center w-16 h-16 rounded-full bg-accent text-primary text-2xl shadow-xl transition-transform group-hover:scale-110" aria-hidden="true">▶</span>
-                </span>
-              </button>
-            </div>
-            <div class="p-6 text-right">
-              <p class="text-xs text-primary/45 font-body mb-2">{video.published ? new Date(video.published).toLocaleDateString('he-IL') : ''}</p>
-              <h2 class="text-xl font-black text-primary font-display leading-snug">{video.title}</h2>
-            </div>
-          </article>
-        ))}
+      <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3" id="video-grid">
+        {initialVideos.map((video) => <VideoCard video={video} />)}
       </div>
+      {remainingVideos.length > 0 && (
+        <>
+          <template id="more-video-cards">
+            {remainingVideos.map((video) => <VideoCard video={video} />)}
+          </template>
+          <div class="text-center mt-10">
+            <button id="load-more-videos" type="button" hidden aria-controls="video-grid" class="rounded-full bg-primary px-6 py-3 text-white font-body font-bold hover:bg-accent transition">הצגת סרטונים נוספים</button>
+            <p id="video-count" aria-live="polite" class="text-sm text-primary/65 mt-3"></p>
+          </div>
+          <noscript>
+            <ul class="mt-8 space-y-3">
+              {remainingVideos.map((video) => <li><a href={`https://www.youtube.com/watch?v=${video.id}`} class="underline">{video.title}</a></li>)}
+            </ul>
+          </noscript>
+        </>
+      )}
 
       {page?.body?.length > 0 && (
         <section class="max-w-4xl mx-auto mt-16 rounded-[2rem] border border-primary/10 bg-white p-7 md:p-10 shadow-sm">
@@ -214,13 +179,36 @@ const videoSchemas = videos.map((video) => ({
 </BaseLayout>
 
 <script is:inline>
-  document.querySelectorAll('[data-video-shell] button[data-video-id]').forEach((button) => {
-    button.addEventListener('click', () => {
+  (() => {
+    const grid = document.getElementById('video-grid');
+    const template = document.getElementById('more-video-cards');
+    const moreButton = document.getElementById('load-more-videos');
+    const count = document.getElementById('video-count');
+    if (!grid) return;
+    const total = grid.children.length + (template?.content.children.length || 0);
+    const updateCount = () => {
+      if (count) count.textContent = `${grid.children.length} מתוך ${total} סרטונים`;
+    };
+    if (moreButton && template) {
+      moreButton.hidden = false;
+      updateCount();
+      moreButton.addEventListener('click', () => {
+        const cards = [...template.content.children].slice(0, 6);
+        const firstButton = cards[0]?.querySelector('button');
+        cards.forEach((card) => grid.appendChild(card));
+        const finished = !template.content.children.length;
+        moreButton.hidden = finished;
+        updateCount();
+        if (finished) firstButton?.focus({ preventScroll: true });
+      });
+    }
+    grid.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-video-id]');
+      if (!button || !grid.contains(button)) return;
       const videoId = button.dataset.videoId;
-      if (!videoId) return;
-
+      if (!/^[\w-]{11}$/.test(videoId || '')) return;
       const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1`;
+      iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1`;
       iframe.title = button.getAttribute('aria-label') || 'סרטון YouTube';
       iframe.loading = 'eager';
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
@@ -228,5 +216,5 @@ const videoSchemas = videos.map((video) => ({
       iframe.className = 'w-full h-full border-0';
       button.replaceWith(iframe);
     });
-  });
+  })();
 </script>
