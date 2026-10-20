@@ -43,7 +43,7 @@ const FIELD_LABELS: Record<string, string> = {
   email: 'כתובת מייל',
   group_interest: 'מעוניין/ת בקבוצת הורים / סדנה',
   tool_category: 'סוג כלי',
-  consent: 'אישור תכנים במייל',
+  consent: 'אישור תכנים ועדכונים במייל ובוואטסאפ',
   privacy_ack: 'אישור מדיניות פרטיות',
 }
 

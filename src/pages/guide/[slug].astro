@@ -14,6 +14,8 @@ const pageData = await sanity.fetch(`
     bullets,
     cta,
     trustText,
+    newsletterConsent,
+    newsletterConsentText,
     externalUrl,
     toolCategory,
     "pdfUrl": leadMagnet.asset->url,
@@ -152,9 +154,9 @@ const faqSchema = pageData.faqItems?.length > 0
             </div>
 
             <div class="flex items-start gap-3 px-1 pt-1">
-              <input type="checkbox" id="group_interest" name="group_interest" value="yes" class="w-5 h-5 mt-0.5 accent-slate-900 cursor-pointer shrink-0">
-              <label for="group_interest" class="text-slate-700 text-sm cursor-pointer select-none leading-snug font-medium">
-                אשמח לקבל עדכון שקט בוואטסאפ כשנפתחת סדנה או קבוצת הורים (ללא ספאם).
+              <input type="checkbox" id="lead-consent" name="consent" value="yes" class="w-5 h-5 mt-0.5 accent-slate-900 cursor-pointer shrink-0">
+              <label for="lead-consent" class="text-slate-700 text-sm cursor-pointer select-none leading-snug font-medium">
+                {pageData.newsletterConsentText || 'אשמח לקבל תכנים, עדכונים שקטים והזמנות לסדנאות במייל ובוואטסאפ (ללא ספאם, אפשר להסיר בכל עת).'}
               </label>
             </div>
 
