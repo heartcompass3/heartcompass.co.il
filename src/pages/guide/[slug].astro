@@ -156,7 +156,7 @@ const faqSchema = pageData.faqItems?.length > 0
             <div class="flex items-start gap-3 px-1 pt-1">
               <input type="checkbox" id="lead-consent" name="consent" value="yes" class="w-5 h-5 mt-0.5 accent-slate-900 cursor-pointer shrink-0">
               <label for="lead-consent" class="text-slate-700 text-sm cursor-pointer select-none leading-snug font-medium">
-                {pageData.newsletterConsentText || 'אשמח לקבל תכנים, עדכונים שקטים והזמנות לסדנאות במייל ובוואטסאפ (ללא ספאם, אפשר להסיר בכל עת).'}
+                {(pageData.newsletterConsentText && pageData.newsletterConsentText.includes('בוואטסאפ')) ? pageData.newsletterConsentText : 'אשמח לקבל תכנים, עדכונים שקטים והזמנות לסדנאות במייל ובוואטסאפ (ללא ספאם, אפשר להסיר בכל עת).'}
               </label>
             </div>
 
