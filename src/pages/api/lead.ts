@@ -37,17 +37,31 @@ function errorPage(message: string) {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+const FIELD_LABELS: Record<string, string> = {
+  name: 'שם מלא',
+  phone: 'טלפון / וואטסאפ',
+  email: 'כתובת מייל',
+  group_interest: 'מעוניין/ת בקבוצת הורים / סדנה',
+  tool_category: 'סוג כלי',
+  consent: 'אישור תכנים במייל',
+  privacy_ack: 'אישור מדיניות פרטיות',
+}
+
 async function sendNotification(fields: Record<string, string>) {
   const rows = Object.entries(fields)
     .filter(([k]) => !['_next', '_subject', 'debug'].includes(k))
-    .map(([k, v]) => `<tr><td style="padding:4px 10px;color:#667;font-weight:700">${escapeHtml(k)}</td><td style="padding:4px 10px">${escapeHtml(v)}</td></tr>`)
+    .map(([k, v]) => {
+      const label = FIELD_LABELS[k] || k
+      const displayVal = v === 'yes' ? 'כן ✓' : v
+      return `<tr><td style="padding:8px 12px;color:#0f2c36;font-weight:700;border-bottom:1px solid #eef2f5;width:200px">${escapeHtml(label)}</td><td style="padding:8px 12px;color:#334155;border-bottom:1px solid #eef2f5">${escapeHtml(displayVal)}</td></tr>`
+    })
     .join('')
 
   const payload = JSON.stringify({
     from: RESEND_FROM,
     to: [NOTIFY_EMAIL],
     subject: fields._subject || 'ליד חדש מהאתר מצפן הלב',
-    html: `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"></head><body><div dir="rtl" style="font-family:sans-serif"><h2>ליד חדש</h2><table>${rows}</table></div></body></html>`,
+    html: `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"></head><body style="margin:0;padding:24px;background:#f8fafc;font-family:system-ui,-apple-system,sans-serif"><div dir="rtl" style="max-width:540px;margin:0 auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 20px rgba(0,0,0,0.06);border:1px solid #e2e8f0"><h2 style="margin-top:0;color:#0f2c36;border-bottom:2px solid #0f2c36;padding-bottom:12px">ליד חדש התקבל במצפן הלב</h2><table style="width:100%;border-collapse:collapse;font-size:15px">${rows}</table></div></body></html>`,
     reply_to: fields.email || undefined,
   })
 
