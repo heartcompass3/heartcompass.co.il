@@ -78,10 +78,7 @@ const components = {
     highlight: ({ children }) => `<mark class="hc-highlight">${children}</mark>`,
     link: ({ children, value }) => {
       const href = value?.href || '#'
-      const blank = value?.blank !== false
-      const target = blank ? ' target="_blank"' : ''
-      const rel = blank ? ' rel="noopener noreferrer"' : ''
-      return `<a href="${href}"${target}${rel}>${children}</a>`
+      return `<a href="${href}" target="_blank" rel="noopener">${children}</a>`
     },
   },
 }
