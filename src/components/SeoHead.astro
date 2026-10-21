@@ -57,7 +57,13 @@ const resolvedOgImageAlt = clean(ogImageAlt) || resolvedTitle
 <meta name="description" content={resolvedDescription} />
 {resolvedAuthor && <meta name="author" content={resolvedAuthor} />}
 <link rel="canonical" href={resolvedCanonical} />
-{noIndex && <meta name="robots" content="noindex,follow" />}
+{resolvedAuthor && <meta name="creator" content={resolvedAuthor} />}
+{siteName && <meta name="publisher" content={siteName} />}
+{noIndex ? (
+  <meta name="robots" content="noindex, follow" />
+) : (
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+)}
 
 <meta property="og:site_name" content={siteName} />
 <meta property="og:locale" content="he_IL" />

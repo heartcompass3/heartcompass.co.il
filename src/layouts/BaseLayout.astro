@@ -129,7 +129,7 @@ const businessAddress = {
 // @id יציב (לא תלוי-עמוד) כדי שכל האתר יצביע לאותה ישות עסקית אחת.
 const defaultServiceSchema = {
   '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
+  '@type': ['Organization', 'LocalBusiness'],
   '@id': `${site.siteUrl}/#business`,
   name: site.brand,
   url: site.siteUrl,
@@ -219,7 +219,7 @@ const personSchema = {
 // Do not inject ProfessionalService on article pages.
 // Also: if page already provides its own service schema, do not duplicate.
 const alreadyHasService = schemaArray.some(
-  (s) => s && s['@type'] === 'ProfessionalService'
+  (s) => s && (s['@type'] === 'ProfessionalService' || s['@type'] === 'Organization' || s['@type'] === 'LocalBusiness' || (Array.isArray(s['@type']) && s['@type'].includes('Organization')))
 )
 
 // אם העמוד מספק Person משלו (למשל דף "אודות" עם ביוגרפיה) — לא מזריקים את הגנרי.
