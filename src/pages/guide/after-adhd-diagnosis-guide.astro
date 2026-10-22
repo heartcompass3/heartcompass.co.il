@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import PortableText from '../../components/PortableText.astro'
+import { sanity, urlFor } from '../../lib/sanity'
+import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
+import site from '../../content/pages/site.json'
+
+const slug = 'after-adhd-diagnosis-guide'
+const pageData = await sanity.fetch(`*[_type == "landingPage" && slug.current == $slug][0]{
+  title, subtitle, seoDescription, mainImage, content, bullets, cta, trustText,
+  newsletterConsent, newsletterConsentText, faqItems[]{question,answer},
+  "pdfUrl":leadMagnet.asset->url
+}`, { slug })
+if (!pageData?.pdfUrl) return new Response('Not found', { status: 404 })
+
+const canonical = `${site.siteUrl}/guide/${slug}`
+const nextUrl = `${site.siteUrl}/guide/thanks/${slug}`
+const image = pageData.mainImage?.asset ? urlFor(pageData.mainImage).width(1200).url() : null
+const bullets = (pageData.bullets || []).filter(Boolean)
+const faqs = pageData.faqItems || []
+const schema = [buildBreadcrumbListSchema({siteUrl:site.siteUrl,brandName:site.brand,crumbs:[
+  {name:'כלים ומדריכים',item:`${site.siteUrl}/tools`}, {name:pageData.title,item:canonical}
+]}), ...(faqs.length ? [{'@context':'https://schema.org','@type':'FAQPage',mainEntity:faqs.map((q)=>({
+  '@type':'Question',name:q.question,acceptedAnswer:{'@type':'Answer',text:q.answer}
+}))}] : [])]
+---
+
+<BaseLayout title={pageData.title} description={pageData.seoDescription || pageData.subtitle} canonical={canonical} ogImage={image} ogImageAlt="שיחה קשובה בין אם לבנה בבית" schema={schema}>
+  <div class="adhd-guide">
+    <div class="guide-wrap crumbs"><Breadcrumbs withSchema={false} items={[{name:'כלים ומדריכים',href:'/tools'},{name:'אחרי אבחון קשב וריכוז'}]} /></div>
+    <section class="guide-wrap guide-hero" aria-labelledby="guide-title">
+      <div class="hero-story">
+        <p class="eyebrow">מדריך חינמי להורים לילדים ולמתבגרים</p>
+        <h1 id="guide-title">{pageData.title}</h1>
+        <p class="subtitle">{pageData.subtitle}</p>
+        <p class="byline">מאת יוסי מדלסי | מצפן הלב | שיטת מ.ס.ע</p>
+        {image && <figure><img src={image} alt="אם ובנה בשיחה קשובה ליד שולחן בבית" width="1200" height="800" fetchpriority="high" /><figcaption>תמונת המחשה שנוצרה באמצעות AI.</figcaption></figure>}
+      </div>
+      <aside class="guide-form" aria-labelledby="form-title">
+        <span class="pdf-label">PDF להורדה | 9 עמודים + דף עבודה כלול</span>
+        <h2 id="form-title">קבלו את המדריך<br />ועשו סדר בצעד הבא</h2>
+        <p>מלאו פרטים, ובסיום ייפתח דף ההורדה. המדריך ללא עלות.</p>
+        <form action="/api/lead" method="POST">
+          <input type="hidden" name="_next" value={nextUrl} />
+          <input type="hidden" name="_subject" value={`בקשה למדריך: ${pageData.title}`} />
+          <input type="hidden" name="tool_category" value="guide" />
+          <label for="lead-name">שם מלא</label>
+          <input id="lead-name" name="name" type="text" required autocomplete="name" placeholder="לדוגמה: יעל כהן" />
+          <label for="lead-phone">טלפון נייד (לוואטסאפ)</label>
+          <input id="lead-phone" name="phone" type="tel" required autocomplete="tel" dir="ltr" placeholder="050-0000000" />
+          <label for="lead-email">כתובת מייל</label>
+          <input id="lead-email" name="email" type="email" required autocomplete="email" dir="ltr" placeholder="your@email.com" />
+          {pageData.newsletterConsent !== false && <div class="check-row"><input id="lead-consent" name="consent" type="checkbox" value="yes" /><label for="lead-consent">{pageData.newsletterConsentText || 'אשמח לקבל תכנים ועדכונים ממצפן הלב במייל ובוואטסאפ. אפשר להסיר הרשמה בכל עת.'}</label></div>}
+          <div class="check-row privacy"><input id="privacy" name="privacy_ack" type="checkbox" required /><label for="privacy">קראתי ואישרתי את <a href="/privacy" target="_blank" rel="noopener">מדיניות הפרטיות</a>.</label></div>
+          <button type="submit">{pageData.cta || 'לקבלת המדריך ודף העבודה'} <span aria-hidden="true">←</span></button>
+        </form>
+        <p class="trust">{pageData.trustText}</p>
+      </aside>
+    </section>
+
+    <section class="inside-section" aria-labelledby="inside-title"><div class="guide-wrap">
+      <p class="eyebrow">מה מחכה לכם במדריך?</p><h2 id="inside-title">מהתשובה שקיבלתם<br />למשהו שאפשר לעשות בבית</h2>
+      <ul class="inside-grid">{bullets.map((bullet,index)=><li><span aria-hidden="true" class="step-number">{String(index+1).padStart(2,'0')}</span><span>{bullet}</span></li>)}</ul>
+    </div></section>
+
+    <section class="guide-wrap body-section"><div class="body-copy"><PortableText value={pageData.content} /></div><aside class="worksheet-note"><span class="eyebrow">לשמור. להדפיס. לחזור אליו.</span><h2>דף עבודה<br />לשבוע הראשון</h2><p>מה עדיין לא ברור? מה הילד רוצה שיהיה קל יותר? מה ננסה בבית ואיך נבדוק אם זה עוזר?</p><a href="#form-title">לקבלת המדריך ודף העבודה ←</a></aside></section>
+
+    {faqs.length > 0 && <section class="guide-wrap faq-section" aria-labelledby="faq-title"><h2 id="faq-title">שאלות לפני שמורידים</h2><div>{faqs.map((item)=><details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></section>}
+  </div>
+</BaseLayout>
+
+<style>
+  .adhd-guide{background:#fcfaf6;color:#294e53;padding-bottom:80px;font-family:Assistant,Arial,sans-serif}
+  .guide-wrap{max-width:1160px;margin:0 auto;padding:0 28px}.crumbs{padding-top:24px;padding-bottom:24px}
+  .guide-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.85fr);gap:56px;align-items:start;padding-top:20px;padding-bottom:64px}
+  .eyebrow{font-size:15px;font-weight:750;color:#8b6743;margin:0 0 14px}h1{font-size:clamp(34px,3.4vw,49px);line-height:1.13;font-weight:800;letter-spacing:-.6px;margin:0 0 22px}
+  .subtitle{font-size:22px;line-height:1.5;color:#4b696a;margin:0 0 17px}.byline{font-size:14px;color:#66817c;margin:0 0 22px}
+  figure{margin:0}figure img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:20px}figcaption{font-size:11px;color:#6b7e76;margin-top:5px}
+  .guide-form{background:#fff;border:1px solid #e4e9e0;box-shadow:0 14px 45px #294e5310;padding:30px;border-radius:22px;scroll-margin-top:110px}
+  .pdf-label{display:inline-block;padding:7px 11px;background:#edf2ec;border-radius:6px;color:#476862;font-size:13px;font-weight:700}
+  .guide-form h2{font-size:30px;font-weight:800;line-height:1.2;margin:18px 0 12px}.guide-form>p{font-size:17px;line-height:1.5;color:#61756e;margin-bottom:22px}
+  form>label{font-size:15px;font-weight:700;display:block;margin:14px 0 6px}form>input:not([type=hidden]){width:100%;border:1px solid #d5dfd6;border-radius:9px;background:#fff;padding:12px 14px;font-size:17px;min-height:48px;color:#294e53}
+  input:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #c8a54e;outline-offset:4px}
+  .check-row{display:flex;align-items:flex-start;gap:10px;margin-top:18px}.check-row input{width:18px;height:18px;flex:0 0 18px;margin-top:3px;accent-color:#295157}.check-row label{font-size:14px;line-height:1.45;cursor:pointer;color:#536d66}
+  .privacy label{font-size:13px}.check-row a,.body-copy :global(a){text-decoration:underline;text-underline-offset:3px}
+  form button{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:15px 12px;margin-top:23px;border:0;border-radius:10px;background:#295157;color:white;font-size:19px;font-weight:750;cursor:pointer}form button:hover{background:#1e4045}
+  .guide-form .trust{font-size:12px;line-height:1.5;text-align:center;margin:14px 0 0;color:#6a8075}
+  .inside-section{padding:50px 0;background:#edf1e9;border-block:1px solid #e2e8de}h2{font-size:34px;font-weight:800;line-height:1.2;margin:0 0 25px}.inside-grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .inside-grid li{background:#fcfaf6;border-radius:12px;padding:21px;display:flex;gap:14px;align-items:flex-start;font-size:18px;line-height:1.4}.step-number{color:#9a7649;font-weight:800;font-size:22px}
+  .body-section{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr);gap:65px;padding-top:60px;padding-bottom:60px;align-items:start}.body-copy{font-size:18px}.body-copy :global(h2){font-size:30px;font-weight:800;margin:0 0 20px}.body-copy :global(p){line-height:1.75}
+  .worksheet-note{padding:28px;border:1px solid #dce4d8;border-radius:14px;background:#fff}.worksheet-note h2{font-size:29px}.worksheet-note p{font-size:18px;line-height:1.65;margin-bottom:24px}.worksheet-note a{font-weight:750;text-decoration:underline;text-underline-offset:4px}
+  .faq-section{max-width:840px}.faq-section h2{text-align:center}.faq-section details{border-bottom:1px solid #d8e0d4;padding:19px 0}.faq-section summary{font-size:20px;font-weight:700;cursor:pointer}.faq-section details p{font-size:18px;line-height:1.65;margin:14px 0 0;color:#556e67}
+  #form-title{scroll-margin-top:120px}
+  @media(max-width:900px){.guide-hero{gap:28px;grid-template-columns:minmax(0,1fr) minmax(310px,.85fr)}.guide-form{padding:24px}.inside-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.body-section{gap:30px}}
+  @media(max-width:700px){.guide-wrap{padding-inline:20px}.crumbs{padding-block:18px}.guide-hero{grid-template-columns:1fr;gap:26px;padding-top:10px;padding-bottom:35px}h1{font-size:36px}.subtitle{font-size:20px}.guide-form{padding:25px}.inside-section{padding-block:36px}.inside-grid{grid-template-columns:1fr;gap:10px}.inside-grid li{padding:17px}.body-section{grid-template-columns:1fr;padding-block:38px}.faq-section h2{font-size:29px}h2{font-size:30px}}
+</style>
