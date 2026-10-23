@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מפענח רגעי הפיצוץ (Parenting Pause) | מצפן הלב</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #295157;
+      --primary-dark: #1b363a;
+      --primary-light: #e8f0f1;
+      --accent: #b8860b;
+      --accent-soft: #fbf5e6;
+      --bg: #fbf8f2;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --danger-soft: #fef2f2;
+      --danger-border: #fecaca;
+      --danger-text: #991b1b;
+      --success-soft: #f0fdf4;
+      --success-border: #bbf7d0;
+      --success-text: #166534;
+      --radius: 1.5rem;
+      --shadow: 0 10px 30px rgba(41, 81, 87, 0.08), 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Assistant', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(41, 81, 87, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .header-bar {
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafcfc;
+    }
+
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .logo-badge span {
+      background: var(--primary);
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .badge-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(184, 134, 11, 0.2);
+    }
+
+    .screen {
+      display: none;
+      padding: 2.25rem 2rem;
+      flex-direction: column;
+    }
+
+    .screen.active {
+      display: flex;
+      animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1.main-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    p.subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    /* Pacer circle */
+    .pacer-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .breathe-circle {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #eaf2f3 0%, #c4d9dc 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 8px rgba(41, 81, 87, 0.06);
+      animation: breatheAnim 8s infinite ease-in-out;
+      transition: all 0.3s ease;
+    }
+
+    @keyframes breatheAnim {
+      0%, 100% { transform: scale(0.92); box-shadow: 0 0 0 6px rgba(41, 81, 87, 0.06); }
+      50% { transform: scale(1.1); box-shadow: 0 0 0 18px rgba(41, 81, 87, 0.12); }
+    }
+
+    .breathe-text {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .breathe-sec {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    /* Progress bar */
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background-color: #f1f5f9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--accent);
+      width: 33%;
+      transition: width 0.4s ease;
+    }
+
+    .step-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .opt-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 1.1rem;
+      padding: 1.1rem 1.35rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      text-align: right;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .opt-card:hover {
+      border-color: var(--primary);
+      background: #fafdfd;
+      transform: translateX(-4px);
+      box-shadow: 0 4px 12px rgba(41, 81, 87, 0.06);
+    }
+
+    .opt-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .opt-icon {
+      font-size: 1.35rem;
+      opacity: 0.9;
+      margin-left: 0.75rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1.1rem 1.5rem;
+      border-radius: 1rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(41, 81, 87, 0.18);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+      margin-top: 0.75rem;
+    }
+
+    .btn-outline:hover {
+      background-color: var(--primary-light);
+    }
+
+    .btn-whatsapp {
+      background-color: #25d366;
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: #20ba5a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.25);
+    }
+
+    /* Result boxes */
+    .result-section {
+      margin-bottom: 1.25rem;
+      border-radius: 1.1rem;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid transparent;
+    }
+
+    .section-mapping {
+      background-color: #f8fafc;
+      border-color: #e2e8f0;
+    }
+
+    .section-clearing {
+      background-color: var(--accent-soft);
+      border-color: #fae8b6;
+    }
+
+    .section-independence {
+      background-color: #f0fdf9;
+      border-color: #a7f3d0;
+    }
+
+    .result-section h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-mapping h3 { color: var(--primary); }
+    .section-clearing h3 { color: #855b00; }
+    .section-independence h3 { color: #065f46; }
+
+    .result-section p {
+      font-size: 1.05rem;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .gold-phrase-box {
+      background: #ffffff;
+      border: 2px solid #059669;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      margin-top: 0.75rem;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.08);
+      position: relative;
+    }
+
+    .gold-phrase-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #059669;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.35rem;
+    }
+
+    .gold-phrase-text {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #064e3b;
+      line-height: 1.4;
+    }
+
+    .copy-btn {
+      margin-top: 0.65rem;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      border-radius: 0.6rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .copy-btn:hover {
+      background: #d1fae5;
+    }
+
+    .avoid-phrase-box {
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      border-radius: 0.9rem;
+      padding: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .avoid-phrase-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--danger-text);
+      margin-bottom: 0.25rem;
+    }
+
+    .avoid-phrase-text {
+      font-size: 1.05rem;
+      color: #7f1d1d;
+      font-weight: 600;
+    }
+
+    .action-step-box {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.9rem;
+      padding: 1rem;
+      margin-top: 0.75rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .safety-notice {
+      background: #fafaf9;
+      border: 1px solid #e7e5e4;
+      border-radius: 0.9rem;
+      padding: 0.85rem 1.15rem;
+      font-size: 0.9rem;
+      color: #78716c;
+      margin-top: 1rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .safety-notice strong {
+      color: #44403c;
+    }
+
+    .restart-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-bar">
+      <a href="https://www.heartcompass.co.il" class="logo-badge" target="_blank">
+        <span>🧭</span>
+        מצפן הלב
+      </a>
+      <div class="badge-tag">עצירה של 60 שניות</div>
+    </div>
+
+    <!-- Screen 0: Intro & Breathing -->
+    <div id="screen-intro" class="screen active">
+      <h1 class="main-title">מפענח רגעי הפיצוץ</h1>
+      <p class="subtitle">
+        לפני שמגיבים מתוך כעס, עלבון או פחד.<br/>
+        קחו נשימה עמוקה אחת: 60 שניות שיחזירו לכם את השקט והשליטה.
+      </p>
+
+      <div class="pacer-wrap">
+        <div class="breathe-circle" id="breatheCircle">
+          <div class="breathe-text" id="breatheStageText">שאיפה</div>
+          <div class="breathe-sec" id="breatheCounter">4 שניות</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="startDecoder()">
+        התחל פענוח (30 שניות)
+      </button>
+    </div>
+
+    <!-- Screen 1: Situation (Trigger) -->
+    <div id="screen-situation" class="screen">
+      <div class="progress-bar-container">
+        <div class="progress-bar" style="width: 50%;"></div>
+      </div>
+      <div class="step-label">שלב 1 מתוך 2 • מה קרה ברגע הזה?</div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">
+        מה הדליק את הניצוץ מול המתבגר?
+      </h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.25rem;">
+        בחרו את הסיטואציה המדויקת ביותר שהתרחשה כרגע:
+      </p>
+
+      <div class="options-grid">
+        <div class="opt-card" onclick="chooseSituation('door_slam', this)">
+          <span>טריקת דלת והסתגרות מוחלטת בחדר</span>
+          <span class="opt-icon">🚪</span>
+        </div>
+        <div class="opt-card" onclick="chooseSituation('hurtful_words', this)">
+          <span>זריקת מילה פוגעת ("אתה לא מבין כלום / עזוב אותי בשקט")</span>
+          <span class="opt-icon">💥</span>
+        </div>
+        <div class="opt-card" onclick="chooseSituation('screens_ignore', this)">
+          <span>מסך, אוזניות והתעלמות מוחלטת כאילו אינך קיים</span>
+          <span class="opt-icon">📱</span>
+        </div>
+        <div class="opt-card" onclick="chooseSituation('escalating_argument', this)">
+          <span>הסלמה מהירה בוויכוח על עניין יומיומי שולי (שעות שינה, סדר, חובות)</span>
+          <span class="opt-icon">⚡</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Inner Feeling (Parent Body) -->
+    <div id="screen-feeling" class="screen">
+      <div class="progress-bar-container">
+        <div class="progress-bar" style="width: 100%;"></div>
+      </div>
+      <div class="step-label">שלב 2 מתוך 2 • מה הגוף שלך מרגיש?</div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">
+        איפה זה פוגש אותך בגוף עכשיו?
+      </h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.25rem;">
+        מתחת לכעס הראשוני, מה התחושה הגופנית המדויקת?
+      </p>
+
+      <div class="options-grid">
+        <div class="opt-card" onclick="chooseFeeling('insult_unappreciated', this)">
+          <span>עלבון צורב וחוסר הערכה ("אחרי כל מה שאני עושה בשבילו")</span>
+          <span class="opt-icon">💔</span>
+        </div>
+        <div class="opt-card" onclick="chooseFeeling('fear_anxiety', this)">
+          <span>בהלה וחרדה עמוקה ("הוא הולך לאיבוד, משהו כאן מתפרק")</span>
+          <span class="opt-icon">🌊</span>
+        </div>
+        <div class="opt-card" onclick="chooseFeeling('rage_overwhelm', this)">
+          <span>זעם והצפה של חוסר שליטה ("לא אסכים שיתייחסו אליי ככה בבית שלי")</span>
+          <span class="opt-icon">🔥</span>
+        </div>
+        <div class="opt-card" onclick="chooseFeeling('helplessness_freeze', this)">
+          <span>חוסר אונים ושיתוק ("שום דבר שאני אומר לא עובד, נמאס לי להילחם")</span>
+          <span class="opt-icon">🧊</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Results according to M.S.E -->
+    <div id="screen-results" class="screen">
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <span class="badge-tag" style="font-size: 0.9rem; padding: 0.35rem 1rem;">פענוח מיידי בשיטת מ.ס.ע</span>
+        <h2 id="resultTitle" style="font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-top: 0.5rem;">
+          התמונה המלאה של רגע הפיצוץ
+        </h2>
+      </div>
+
+      <!-- Mapping (M) -->
+      <div class="result-section section-mapping">
+        <h3>
+          <span>🧠</span>
+          <span>1. מיפוי (מ') — מה קורה כרגע אצל המתבגר:</span>
+        </h3>
+        <p id="resultMappingText"></p>
+      </div>
+
+      <!-- Clearing (S) -->
+      <div class="result-section section-clearing">
+        <h3>
+          <span>🧭</span>
+          <span>2. סילוק (ס') — איזה דפוס ישן קפץ בתוכך:</span>
+        </h3>
+        <p id="resultClearingText"></p>
+      </div>
+
+      <!-- Independence (E) -->
+      <div class="result-section section-independence">
+        <h3>
+          <span>🌱</span>
+          <span>3. עצמאות (ע') — המהלך המדויק שלך לרגע הזה:</span>
+        </h3>
+        
+        <div class="gold-phrase-box">
+          <div class="gold-phrase-title">משפט זהב לומר עכשיו (בקול שקט ורגוע):</div>
+          <div class="gold-phrase-text" id="resultGoldPhrase"></div>
+          <button class="copy-btn" onclick="copyGoldPhrase()">
+            <span id="copyIcon">📋</span>
+            <span id="copyText">העתק משפט</span>
+          </button>
+        </div>
+
+        <div class="avoid-phrase-box">
+          <div class="avoid-phrase-title">⚠️ משפט מלכודת שאסור להגיד כרגע:</div>
+          <div class="avoid-phrase-text" id="resultAvoidPhrase"></div>
+        </div>
+
+        <div class="action-step-box">
+          <div style="font-weight: 800; color: #1e293b; margin-bottom: 0.25rem;">צעד מעשי ל-10 הדקות הקרובות:</div>
+          <div id="resultActionStep" style="font-weight: 500; color: #334155;"></div>
+        </div>
+      </div>
+
+      <!-- Professional Safety -->
+      <div class="safety-notice">
+        <strong>רגע של דיוק:</strong> הכלי נועד לתת מרווח נשימה והכוונה ראשונית ברגעי לחץ. הוא אינו תחליף לליווי מקצועי במצבי סיכון או משבר מתמשך.
+      </div>
+
+      <!-- CTA WhatsApp -->
+      <a id="whatsappBtn" href="https://wa.me/972544580285" target="_blank" class="btn btn-whatsapp">
+        <span>💬</span>
+        <span>רוצים לפענח יחד את הלופ שחוזר בבית? דברו עם יוסי בוואטסאפ</span>
+      </a>
+
+      <div class="restart-bar">
+        <button class="btn btn-outline" onclick="restartDecoder()" style="flex: 1;">
+          🔄 התחל מחדש
+        </button>
+        <button class="btn btn-outline" onclick="shareTool()" style="flex: 1;">
+          📲 שתף כלי
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSituation = '';
+    let currentFeeling = '';
+
+    // Breathing loop
+    const stages = [
+      { text: 'שאיפה', sec: 4 },
+      { text: 'החזקה', sec: 4 },
+      { text: 'נשיפה איטית', sec: 6 },
+      { text: 'מרחב שקט', sec: 2 }
+    ];
+    let stageIdx = 0;
+    let secLeft = stages[0].sec;
+
+    setInterval(() => {
+      const stageEl = document.getElementById('breatheStageText');
+      const counterEl = document.getElementById('breatheCounter');
+      if (!stageEl || !counterEl) return;
+
+      secLeft--;
+      if (secLeft <= 0) {
+        stageIdx = (stageIdx + 1) % stages.length;
+        secLeft = stages[stageIdx].sec;
+        stageEl.innerText = stages[stageIdx].text;
+      }
+      counterEl.innerText = secLeft + ' שניות';
+    }, 1000);
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add('active');
+    }
+
+    function startDecoder() {
+      showScreen('screen-situation');
+    }
+
+    function chooseSituation(key, cardEl) {
+      currentSituation = key;
+      cardEl.classList.add('selected');
+      setTimeout(() => {
+        showScreen('screen-feeling');
+      }, 220);
+    }
+
+    function chooseFeeling(key, cardEl) {
+      currentFeeling = key;
+      cardEl.classList.add('selected');
+      setTimeout(() => {
+        calculateResult();
+        showScreen('screen-results');
+      }, 240);
+    }
+
+    const situationLabels = {
+      door_slam: 'טריקת דלת והסתגרות בחדר',
+      hurtful_words: 'זריקת מילה פוגעת',
+      screens_ignore: 'מסך והתעלמות מוחלטת',
+      escalating_argument: 'הסלמה בוויכוח יומיומי'
+    };
+
+    const feelingLabels = {
+      insult_unappreciated: 'עלבון צורב וחוסר הערכה',
+      fear_anxiety: 'בהלה וחרדה עמוקה',
+      rage_overwhelm: 'זעם והצפה',
+      helplessness_freeze: 'חוסר אונים ושיתוק'
+    };
+
+    const dataMatrix = {
+      insult_unappreciated: {
+        title: 'כשהעלבון פוגש את הצורך בהכרה',
+        mapping: 'המתבגר אינו פועל ממקום של רוע מחושב. קליפת המוח הקדם-מצחית שלו עדיין בבנייה, וכשהוא מוצף רגשית, המערכת ההישרדותית שלו מגיבה בהתקפה או בניתוק כדי להגן על גבולותיו. היחס שלו ברגע זה אינו עדות לכפיות טובה, אלא ביטוי לחוסר יכולת נוירולוגית לווסת תסכול במילים בוגרות.',
+        clearing: 'העלבון שצורב בך כרגע פוגש אמונה עמוקה מהעבר שאומרת: "אם לא מעריכים אותי או מדברים אליי ככה, כנראה שאני לא שווה מספיק או שאני הורה שנכשל". כשההורה מתעקש על כבוד ברגע שבו הילד מוצף, שני ילדים פגועים נפגשים בחדר. שחרור הדפוס מתחיל בהבנה שהערך ההורי שלך אינו תלוי בהתנהגות הרגעית של המתבגר.',
+        goldPhrase: '"אני רואה ששנינו מוצפים כרגע. אני אוהב אותך מכדי להמשיך להתווכח ככה. נדבר בעוד חצי שעה כשנירגע."',
+        avoidPhrase: '"אחרי כל מה שאני עושה בשבילך ככה אתה מדבר אליי? כפוי טובה!"',
+        actionStep: 'צא מטווח הראייה שלו. שתה כוס מים קרים באיטיות. תן למערכת העצבים שלך לחזור לדופק מנוחה לפני כל ניסיון לחדש את השיחה.'
+      },
+      fear_anxiety: {
+        title: 'כשהחרדה ההורית מפעילה שליטה',
+        mapping: 'ההסתגרות או ההתרחקות של המתבגר היא חלק טבעי ממהלך ההיפרדות ובניית הזהות. המוח המתבגר זקוק למרחב פרטי כדי לבדוק מי הוא מחוץ למבט ההורי. ככל שהוא מזהה שההורה נבהל, הוא נסגר יותר כדי לא לשאת את החרדה ההורית על גבו.',
+        clearing: 'הבהלה הפנימית שמתעוררת ("הוא הולך לאיבוד, הוא מתדרדר") נובעת מהצורך ההורי בוודאות מוחלטת ובשליטה. ייתכן שבבית שבו גדלת, שקט או התרחקות סימנו סכנה או עונש. ההבנה שמרחק הוא לא נטישה, ושהילד שלך זקוק למבוגר יציב שאינו מתפרק מהשקט שלו, היא המפתח לשינוי.',
+        goldPhrase: '"אני רואה שאתה צריך עכשיו את השקט שלך. אני כאן בסלון, הדלת שלי פתוחה מתי שתרצה."',
+        avoidPhrase: '"תפתח מיד את הדלת! אתה לא יכול להסתגר ככה, משהו לא בסדר איתך!"',
+        actionStep: 'שב במקום נוח בסלון עם ספר או משימה שקטה משלך. שדר נוכחות רגועה ויציבה בבית בלי לעקוב אחריו או לדפוק על הדלת.'
+      },
+      rage_overwhelm: {
+        title: 'כשזעם פוגש מאבק כוחות',
+        mapping: 'זעם הוא כמעט תמיד מסווה משני לפחד עמוק מאובדן שליטה או מחוסר אונים. אצל המתבגר, ההתפרצות היא איתות חירום של האמיגדלה שמרגישה לכודה. אם תגיב בכוח על כוח, תיווצר הסלמה ביולוגית שבה שני הצדדים נלחמים על הישרדות.',
+        clearing: 'הצורך לנצח בוויכוח עכשיו ("בבית שלי זה לא יקרה") יושב על זיכרון שבו לא הקשיבו לך כילד, או על התפיסה שסמכות נמדדת בציות עיוור. סמכות הורית אמיתית של הבוגר המוביל אינה נובעת מצעקות ומניצחון בקרב, אלא מהיכולת להישאר יציב גם כשהילד בסערה.',
+        goldPhrase: '"אני שומע את הכעס שלך ולא מתכוון לריב איתך. נעצור עכשיו ונדבר כשהרוחות יירגעו."',
+        avoidPhrase: '"אתה תעשה מה שאני אומר עכשיו ואל תעז להרים עליי את הקול!"',
+        actionStep: 'התרחק פיזית מהחלל. עשה 10 נשימות עמוקות וספור לאחור מ-20 עד 1. הזכר לעצמך: תפקידך להוביל, לא לנצח.'
+      },
+      helplessness_freeze: {
+        title: 'כשחוסר אונים הופך לוויתור',
+        mapping: 'ההתעלמות של המתבגר (אוזניות, מסכים) היא לעיתים קרובות מנגנון ויסות להפחתת עומס חושי ורגשי. הוא אינו מנותק כדי לפגוע, אלא משום שאין לו את המשאבים הרגשיים לעמוד בעוד דרישה או שיחה כבדה כרגע.',
+        clearing: 'תחושת השיתוק ("שום דבר לא עוזר, נמאס לי") היא דפוס נסיגה שמגן עליך מפני אכזבה נוספת. כשאתה מרים ידיים, המתבגר מרגיש שוויתרו עליו, מה שמעמיק את תחושת הבדידות שלו. עצמאות רגשית פירושה להחזיק את הקשר גם כשאין שיתוף פעולה מיידי.',
+        goldPhrase: '"אני יודע שקשה עכשיו ושאין לך כוח לשמוע אותי. אני לא מוותר עלינו, נדבר כשמתאים לך."',
+        avoidPhrase: '"תעשה מה שאתה רוצה, נמאס לי ממך, בעיה שלך."',
+        actionStep: 'הכן לו שתייה חמה או משהו קטן לאכול והנח על השולחן בלי לדבר ובלי לבקש תודה. מעשה קטן של נוכחות שובר את חומת הניכור.'
+      }
+    };
+
+    function calculateResult() {
+      const data = dataMatrix[currentFeeling] || dataMatrix.insult_unappreciated;
+      const sitText = situationLabels[currentSituation] || '';
+      const feelText = feelingLabels[currentFeeling] || '';
+
+      document.getElementById('resultTitle').innerText = data.title;
+      document.getElementById('resultMappingText').innerText = 
+        (sitText ? 'כשמתרחש מצב של ' + sitText + ': ' : '') + data.mapping;
+      document.getElementById('resultClearingText').innerText = 
+        (feelText ? 'התחושה של ' + feelText + ' מעידה על כך ש: ' : '') + data.clearing;
+      document.getElementById('resultGoldPhrase').innerText = data.goldPhrase;
+      document.getElementById('resultAvoidPhrase').innerText = data.avoidPhrase;
+      document.getElementById('resultActionStep').innerText = data.actionStep;
+
+      // Update WhatsApp link with dynamic text
+      const waMsg = encodeURIComponent(
+        'היי יוסי, השתמשתי במפענח רגעי הפיצוץ לגבי מצב של ' + sitText + ' מול המתבגר שלי (הרגשתי ' + feelText + ') ואשמח להתייעץ איתך.'
+      );
+      document.getElementById('whatsappBtn').href = 'https://wa.me/972544580285?text=' + waMsg;
+    }
+
+    function copyGoldPhrase() {
+      const text = document.getElementById('resultGoldPhrase').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById('copyIcon').innerText = '✅';
+        document.getElementById('copyText').innerText = 'הועתק!';
+        setTimeout(() => {
+          document.getElementById('copyIcon').innerText = '📋';
+          document.getElementById('copyText').innerText = 'העתק משפט';
+        }, 2500);
+      });
+    }
+
+    function restartDecoder() {
+      currentSituation = '';
+      currentFeeling = '';
+      document.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+      showScreen('screen-intro');
+    }
+
+    function shareTool() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'מפענח רגעי הפיצוץ | מצפן הלב',
+          text: 'כלי מעשי של 60 שניות להורים למתבגרים ברגעי סערה',
+          url: window.location.href
+        });
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('קישור לכלי הועתק לקליפבורד!');
+      }
+    }
+  </script>
+</body>
+</html>

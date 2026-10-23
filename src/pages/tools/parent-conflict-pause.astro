@@ -1,0 +1,381 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import site from '../../content/pages/site.json'
+import { sanity } from '../../lib/sanity'
+import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
+import { buildWhatsAppHref } from '../../lib/whatsapp'
+
+const page = await sanity.fetch(`
+  *[_type == "landingPage" && (slug.current == "parent-conflict-pause" || _id in ["parent-conflict-pause", "drafts.parent-conflict-pause"])][0]{
+    title,
+    subtitle,
+    seoDescription,
+    interactiveTool{
+      eyebrow,
+      firstQuestion,
+      firstOptions[]{_key, key, label},
+      secondQuestion,
+      secondOptions[]{_key, key, label},
+      results[]{_key, key, title, text, nextStep, phrase},
+      safetyTitle,
+      safetyText
+    }
+  }
+`)
+
+const fallback = {
+  eyebrow: 'מרחב נשימה להורים: 60 שניות לעצירת הסלמה',
+  firstQuestion: 'מה קרה ברגע הזה מול המתבגר?',
+  firstOptions: [
+    { key: 'door_slam', label: 'טריקת דלת והסתגרות מוחלטת בחדר' },
+    { key: 'hurtful_words', label: 'זריקת מילה פוגעת ("אתה לא מבין כלום / עזוב אותי בשקט")' },
+    { key: 'screens_ignore', label: 'מסך, אוזניות והתעלמות מוחלטת כאילו אינך קיים' },
+    { key: 'escalating_argument', label: 'הסלמה מהירה בוויכוח על עניין יומיומי שולי (שינה, סדר, מטלות)' },
+  ],
+  secondQuestion: 'איפה זה פוגש אותך בגוף עכשיו?',
+  secondOptions: [
+    { key: 'insult_unappreciated', label: 'עלבון צורב וחוסר הערכה ("אחרי כל מה שאני עושה בשבילו")' },
+    { key: 'fear_anxiety', label: 'בהלה וחרדה עמוקה ("הוא הולך לאיבוד, משהו כאן מתפרק")' },
+    { key: 'rage_overwhelm', label: 'זעם והצפה של חוסר שליטה ("לא אסכים שיתייחסו אליי ככה בבית שלי")' },
+    { key: 'helplessness_freeze', label: 'חוסר אונים ושיתוק ("שום דבר שאני אומר לא עובד, נמאס לי להילחם")' },
+  ],
+  results: [
+    {
+      key: 'insult_unappreciated',
+      title: 'כשהעלבון פוגש את הצורך בהכרה',
+      text: 'המתבגר אינו פועל ממקום של רוע מחושב. קליפת המוח הקדם-מצחית שלו עדיין בבנייה, וכשהוא מוצף, המערכת ההישרדותית שלו מגיבה בהתקפה או בניתוק כדי להגן על גבולותיו. העלבון שצורב בך פוגש אמונה עמוקה מהעבר שאומרת: אם לא מעריכים אותי, כנראה שנכשלתי. הערך ההורי שלך אינו תלוי בהתנהגות הרגעית של המתבגר.',
+      nextStep: 'צאו מטווח הראייה שלו. שתו כוס מים קרים באיטיות. תנו למערכת העצבים שלכם לחזור לדופק מנוחה לפני כל ניסיון לחדש את השיחה.',
+      phrase: '„אני רואה ששנינו מוצפים כרגע. אני אוהב אותך מכדי להמשיך להתווכח ככה. נדבר בעוד חצי שעה כשנירגע.”',
+    },
+    {
+      key: 'fear_anxiety',
+      title: 'כשהחרדה ההורית מפעילה שליטה',
+      text: 'ההסתגרות של המתבגר היא מהלך טבעי של בניית זהות ונפרדות. ככל שהוא מזהה שההורה נבהל, הוא נסגר יותר כדי לא לשאת את החרדה ההורית. הבהלה הפנימית נובעת מהצורך בשליטה ובוודאות. מרחק אינו נטישה, והילד זקוק למבוגר יציב שאינו מתפרק מהשקט שלו.',
+      nextStep: 'שבו במקום נוח בסלון עם ספר או משימה שקטה משלכם. שדרו נוכחות רגועה ויציבה בבית בלי לעקוב אחריו ובלי לדפוק על הדלת.',
+      phrase: '„אני רואה שאתה צריך עכשיו את השקט שלך. אני כאן בסלון, הדלת שלי פתוחה מתי שתרצה.”',
+    },
+    {
+      key: 'rage_overwhelm',
+      title: 'כשזעם פוגש מאבק כוחות',
+      text: 'זעם הוא לרוב מסווה לפחד עמוק מאובדן שליטה או מחוסר אונים. אצל המתבגר, ההתפרצות היא איתות חירום של האמיגדלה. תגובה בכוח על כוח יוצרת הסלמה ביולוגית. סמכות הורית אמיתית של הבוגר המוביל נמדדת ביכולת להישאר יציב גם כשהילד בסערה.',
+      nextStep: 'התרחקו פיזית מהחלל. עשו 10 נשימות עמוקות וספרו לאחור מ-20 עד 1. הזכירו לעצמכם: תפקידכם להוביל, לא לנצח.',
+      phrase: '„אני שומע את הכעס שלך ולא מתכוון לריב איתך. נעצור עכשיו ונדבר כשהרוחות יירגעו.”',
+    },
+    {
+      key: 'helplessness_freeze',
+      title: 'כשחוסר אונים הופך לוויתור',
+      text: 'ההתעלמות של המתבגר היא מנגנון ויסות להפחתת עומס חושי ורגשי. תחושת השיתוק בתוכך היא דפוס נסיגה שמגן עליך מאכזבה. כשההורה מרים ידיים, המתבגר מרגיש שוויתרו עליו. עצמאות רגשית פירושה להחזיק את הקשר גם כשאין שיתוף פעולה מיידי.',
+      nextStep: 'הכינו לו שתייה חמה או משהו קטן לאכול והניחו על השולחן בלי לדבר ובלי לבקש תודה. מעשה קטן של נוכחות שובר את חומת הניכור.',
+      phrase: '„אני יודע שקשה עכשיו ושאין לך כוח לשמוע אותי. אני לא מוותר עלינו, נדבר כשמתאים לך.”',
+    },
+  ],
+  safetyTitle: 'רגע של דיוק',
+  safetyText: 'הכלי נועד לתת מרווח נשימה והכוונה ראשונית ברגעי לחץ. הוא אינו תחליף לליווי מקצועי במצבי סיכון או משבר מתמשך.',
+}
+
+const tool = page?.interactiveTool || fallback
+const title = page?.title || 'מפענח רגעי הפיצוץ (Parenting Pause)'
+const description = page?.seoDescription || page?.subtitle || 'כלי מעשי של 60 שניות להורים למתבגרים: עצירה ברגע שהמתח עולה כדי להבין מה מופעל בך, מה קורה לילד, ואיך מגיבים נכון.'
+const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
+const defaultWhatsAppHref = buildWhatsAppHref(site.whatsAppPhone, 'היי יוסי, השתמשתי במפענח רגעי הפיצוץ לגבי מצב מול המתבגר שלי ואשמח להתייעץ איתך.')
+const breadcrumbSchema = buildBreadcrumbListSchema({
+  siteUrl: site.siteUrl,
+  brandName: site.brand,
+  crumbs: [
+    { name: 'כלים ומדריכים', item: `${site.siteUrl}/tools` },
+    { name: title, item: canonical }
+  ]
+})
+---
+
+<BaseLayout title={`${title} | ${site.brand}`} description={description} canonical={canonical} schema={[breadcrumbSchema]}>
+  <section class="animate-fade-in py-16 md:py-24 bg-background min-h-screen">
+    <div class="max-w-3xl mx-auto px-6">
+      <Breadcrumbs withSchema={false} items={[{ name: 'כלים ומדריכים', href: '/tools' }, { name: title }]} />
+
+      <header class="text-center mb-10 md:mb-14">
+        <p class="text-accent font-display font-black text-sm tracking-wide mb-4">
+          {tool.eyebrow}
+        </p>
+        <h1 class="text-4xl md:text-5xl font-black text-primary font-display mb-6">
+          {title}
+        </h1>
+        <p class="text-xl text-primary/75 font-body leading-relaxed max-w-2xl mx-auto">
+          {page?.subtitle || 'המתבגר טרק את הדלת או זרק מילה פוגעת? קחו נשימה עמוקה אחת: 60 שניות שיחזירו לכם את השקט והשליטה רגע לפני שמגיבים.'}
+        </p>
+      </header>
+
+      <div class="bg-white rounded-[2.5rem] shadow-elegant border border-primary/10 p-6 md:p-10" data-parent-pause-tool>
+        
+        {/* Grounding Breathing Screen (Initial) */}
+        <div data-screen="breathe" class="text-center py-6">
+          <div class="mb-8 flex flex-col items-center justify-center">
+            <div
+              class="w-44 h-44 rounded-full bg-primary/5 border-4 border-primary/20 flex flex-col items-center justify-center transition-all duration-1000 shadow-inner"
+              data-breathe-circle
+            >
+              <span class="text-2xl font-black text-primary font-display" data-breathe-text>שאיפה</span>
+              <span class="text-sm font-bold text-accent mt-1" data-breathe-sec>4 שניות</span>
+            </div>
+            <p class="text-primary/70 font-body text-base mt-6 max-w-md">
+              קחו רגע אחד לעצמכם. שאיפה עמוקה פנימה, הוצאת אוויר איטית. קליפת המוח חוזרת לפעולה.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-primary text-white font-bold text-lg hover:bg-primary-dark transition shadow-md"
+            data-start-decoder
+          >
+            התחלת פענוח (30 שניות) ←
+          </button>
+        </div>
+
+        {/* Decoder Progress Bar */}
+        <div data-decoder-wrap class="hidden">
+          <div class="flex items-center gap-3 mb-8" aria-label="התקדמות במפענח">
+            <span class="w-8 h-8 rounded-full bg-accent text-primary font-black flex items-center justify-center text-sm" data-step-number>1</span>
+            <div class="h-2 flex-1 rounded-full bg-primary/10 overflow-hidden" aria-hidden="true">
+              <div class="h-full bg-accent transition-all duration-300" style="width: 50%" data-progress></div>
+            </div>
+            <span class="text-sm text-primary/60 font-body font-bold" data-step-label>שלב 1 מתוך 2</span>
+          </div>
+
+          <form data-tool-form>
+            {/* Step 1: Trigger Situation */}
+            <fieldset data-question="first">
+              <legend class="text-2xl md:text-3xl font-black text-primary font-display mb-6">
+                {tool.firstQuestion}
+              </legend>
+              <div class="grid gap-3">
+                {tool.firstOptions.map((option: any) => (
+                  <button
+                    type="button"
+                    class="tool-choice text-right rounded-2xl border border-primary/15 p-5 font-body font-bold text-primary transition hover:border-accent hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-accent"
+                    data-first-option={option.key}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            {/* Step 2: Parent Inner Feeling */}
+            <fieldset data-question="second" class="hidden" aria-live="polite">
+              <legend class="text-2xl md:text-3xl font-black text-primary font-display mb-6">
+                {tool.secondQuestion}
+              </legend>
+              <div class="grid gap-3">
+                {tool.secondOptions.map((option: any) => (
+                  <button
+                    type="button"
+                    class="tool-choice text-right rounded-2xl border border-primary/15 p-5 font-body font-bold text-primary transition hover:border-accent hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-accent"
+                    data-second-option={option.key}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              <button type="button" class="mt-6 text-primary/65 underline font-body text-sm" data-back>
+                חזרה לשלב הקודם
+              </button>
+            </fieldset>
+          </form>
+
+          {/* Results Screen */}
+          <section data-result class="hidden" tabindex="-1" aria-live="polite">
+            <div class="mb-4 text-center">
+              <span class="inline-block rounded-full bg-accent/15 px-4 py-1.5 text-xs font-black text-accent font-display uppercase tracking-wider">
+                פענוח מיידי בשיטת מ.ס.ע
+              </span>
+            </div>
+
+            <h2 class="text-3xl font-black text-primary font-display mb-6 text-center" data-result-title></h2>
+
+            {/* Step 1: Mapping */}
+            <div class="rounded-2xl bg-primary/5 p-6 border border-primary/10 mb-4">
+              <h3 class="font-black text-primary text-lg mb-2 flex items-center gap-2">
+                <span>🧠</span> 1. מיפוי (מ') — מה קורה כרגע אצל המתבגר:
+              </h3>
+              <p class="text-primary/80 font-body leading-relaxed text-base" data-result-text></p>
+            </div>
+
+            {/* Step 2: Independence - Action Step */}
+            <div class="rounded-2xl bg-amber-50/60 p-6 border border-amber-200/60 mb-4">
+              <h3 class="font-black text-amber-900 text-lg mb-2 flex items-center gap-2">
+                <span>🌱</span> 2. הצעד המעשי ל-10 הדקות הקרובות:
+              </h3>
+              <p class="text-amber-950 font-body leading-relaxed text-base" data-result-step></p>
+            </div>
+
+            {/* Step 3: Independence - Gold Phrase */}
+            <div class="rounded-2xl bg-emerald-50 border-2 border-emerald-500 p-6 mb-8 shadow-sm">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="font-black text-emerald-900 text-lg flex items-center gap-2">
+                  <span>💬</span> משפט זהב מדויק לומר עכשיו (בקול רגוע):
+                </h3>
+                <button
+                  type="button"
+                  class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold px-3 py-1.5 rounded-lg border border-emerald-300 transition"
+                  data-copy-phrase
+                >
+                  העתקת משפט
+                </button>
+              </div>
+              <p class="text-emerald-950 font-body text-xl font-bold leading-relaxed" data-result-phrase></p>
+            </div>
+
+            {/* CTAs */}
+            <div class="flex flex-col sm:flex-row gap-3">
+              <a
+                href={defaultWhatsAppHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex justify-center items-center px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md transition flex-1 text-center"
+                data-whatsapp-link
+              >
+                רוצים לפענח יחד את הלופ בבית? דברו עם יוסי בוואטסאפ ←
+              </a>
+              <button
+                type="button"
+                class="px-6 py-4 rounded-2xl border border-primary/20 text-primary font-bold hover:bg-primary/5 transition"
+                data-restart
+              >
+                להתחיל שוב
+              </button>
+            </div>
+          </section>
+        </div>
+
+      </div>
+
+      <aside class="mt-8 rounded-3xl bg-white border border-primary/10 p-7 text-right">
+        <h2 class="text-xl font-black text-primary font-display mb-3">{tool.safetyTitle}</h2>
+        <p class="text-primary/75 font-body leading-relaxed">{tool.safetyText}</p>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ results: tool.results, firstOptions: tool.firstOptions, secondOptions: tool.secondOptions, whatsAppPhone: site.whatsAppPhone }}>
+  const root = document.querySelector('[data-parent-pause-tool]');
+  if (root) {
+    const screenBreathe = root.querySelector('[data-screen="breathe"]');
+    const decoderWrap = root.querySelector('[data-decoder-wrap]');
+    const first = root.querySelector('[data-question="first"]');
+    const second = root.querySelector('[data-question="second"]');
+    const result = root.querySelector('[data-result]');
+    const progress = root.querySelector('[data-progress]');
+    const stepNumber = root.querySelector('[data-step-number]');
+    const stepLabel = root.querySelector('[data-step-label]');
+    const whatsappLink = root.querySelector('[data-whatsapp-link]');
+    const copyBtn = root.querySelector('[data-copy-phrase]');
+
+    // Breathing loop
+    const breatheStages = [
+      { text: 'שאיפה', sec: 4 },
+      { text: 'החזקה', sec: 4 },
+      { text: 'נשיפה איטית', sec: 6 },
+      { text: 'מרחב שקט', sec: 2 }
+    ];
+    let bStageIdx = 0;
+    let bSecLeft = breatheStages[0].sec;
+
+    const breatheTextEl = root.querySelector('[data-breathe-text]');
+    const breatheSecEl = root.querySelector('[data-breathe-sec]');
+    const breatheCircle = root.querySelector('[data-breathe-circle]');
+
+    setInterval(() => {
+      if (!breatheTextEl || !breatheSecEl) return;
+      bSecLeft--;
+      if (bSecLeft <= 0) {
+        bStageIdx = (bStageIdx + 1) % breatheStages.length;
+        bSecLeft = breatheStages[bStageIdx].sec;
+        breatheTextEl.textContent = breatheStages[bStageIdx].text;
+        if (breatheStages[bStageIdx].text === 'שאיפה') {
+          breatheCircle.style.transform = 'scale(1.1)';
+        } else if (breatheStages[bStageIdx].text === 'נשיפה איטית') {
+          breatheCircle.style.transform = 'scale(0.95)';
+        }
+      }
+      breatheSecEl.textContent = `${bSecLeft} שניות`;
+    }, 1000);
+
+    let selectedTrigger = '';
+
+    const startDecoder = () => {
+      screenBreathe.classList.add('hidden');
+      decoderWrap.classList.remove('hidden');
+      first.classList.remove('hidden');
+      second.classList.add('hidden');
+      result.classList.add('hidden');
+      progress.style.width = '50%';
+      stepNumber.textContent = '1';
+      stepLabel.textContent = 'שלב 1 מתוך 2';
+    };
+
+    root.querySelector('[data-start-decoder]').addEventListener('click', startDecoder);
+
+    root.querySelectorAll('[data-first-option]').forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedTrigger = button.dataset.firstOption;
+        first.classList.add('hidden');
+        second.classList.remove('hidden');
+        progress.style.width = '100%';
+        stepNumber.textContent = '2';
+        stepLabel.textContent = 'שלב 2 מתוך 2';
+        second.querySelector('[data-second-option]')?.focus();
+      });
+    });
+
+    root.querySelector('[data-back]').addEventListener('click', () => {
+      first.classList.remove('hidden');
+      second.classList.add('hidden');
+      progress.style.width = '50%';
+      stepNumber.textContent = '1';
+      stepLabel.textContent = 'שלב 1 מתוך 2';
+    });
+
+    root.querySelector('[data-restart]').addEventListener('click', () => {
+      screenBreathe.classList.remove('hidden');
+      decoderWrap.classList.add('hidden');
+    });
+
+    root.querySelectorAll('[data-second-option]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const key = button.dataset.secondOption;
+        const chosen = results.find((item) => item.key === key);
+        const trigger = firstOptions.find((item) => item.key === selectedTrigger);
+        const feeling = secondOptions.find((item) => item.key === key);
+
+        if (!chosen || !trigger || !feeling) return;
+
+        second.classList.add('hidden');
+        result.classList.remove('hidden');
+
+        root.querySelector('[data-result-title]').textContent = chosen.title;
+        root.querySelector('[data-result-text]').textContent = chosen.text;
+        root.querySelector('[data-result-step]').textContent = chosen.nextStep;
+        root.querySelector('[data-result-phrase]').textContent = chosen.phrase;
+
+        const message = `היי יוסי, השתמשתי במפענח רגעי הפיצוץ באתר. במצב של "${trigger.label}" הרגשתי בגוף "${feeling.label}". אשמח להתייעץ איך לעצור את הלופ הזה.`;
+        whatsappLink.href = `https://wa.me/${whatsAppPhone}?text=${encodeURIComponent(message)}`;
+
+        result.focus();
+      });
+    });
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const phrase = root.querySelector('[data-result-phrase]').textContent;
+        navigator.clipboard.writeText(phrase).then(() => {
+          copyBtn.textContent = 'הועתק בהצלחה! ✓';
+          setTimeout(() => {
+            copyBtn.textContent = 'העתקת משפט';
+          }, 2500);
+        });
+      });
+    }
+  }
+</script>
