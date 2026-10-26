@@ -9,6 +9,7 @@ import { buildBreadcrumbListSchema } from '../lib/breadcrumbs'
 import { sanity } from '../lib/sanity'
 import { VIDEO_PAGE_QUERY } from '../lib/sanityQueries'
 import site from '../content/pages/site.json'
+import { normalizeVideoDate } from '../lib/videoDates.mjs'
 
 const videoWhatsAppHref = buildWhatsAppHref(
   site.whatsAppPhone,
@@ -67,13 +68,14 @@ const collectionSchema = {
   },
 }
 
-const videoSchemas = videos.map((video) => ({
+// Keep cards available, but never emit incomplete VideoObjects.
+const videoSchemas = videos.filter((video) => normalizeVideoDate(video.published)).map((video) => ({
   '@context': 'https://schema.org',
   '@type': 'VideoObject',
   name: video.title,
   description: video.title,
   thumbnailUrl: `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`,
-  uploadDate: video.published || undefined,
+  uploadDate: normalizeVideoDate(video.published),
   embedUrl: `https://www.youtube.com/embed/${video.id}`,
   contentUrl: `https://www.youtube.com/watch?v=${video.id}`,
   publisher: {
