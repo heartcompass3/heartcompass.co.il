@@ -1,11 +1,12 @@
 import { readFile, writeFile, rename } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import { normalizeVideoDate } from '../src/lib/videoDates.mjs'
 
 export const CHANNEL_ID = 'UCo3tMRDrFY_zUlgeJXyvxjQ'
 const snapshotPath = new URL('../src/data/videos.json', import.meta.url)
 const validId = /^[\w-]{11}$/
 
-export function parseChannel(html) {
+export function parseChannel(html, requestedTab) {
   const match = html.match(/(?:var\s+ytInitialData\s*=\s*|window\["ytInitialData"\]\s*=\s*)(\{[^]*?\});?\s*<\/script>/)
   if (!match) throw new Error('YouTube channel data is unavailable; keeping saved videos')
   const data = JSON.parse(match[1])
@@ -13,6 +14,16 @@ export function parseChannel(html) {
     throw new Error('Unexpected YouTube channel; keeping saved videos')
   }
   const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || []
+  if (requestedTab) {
+    const requested = tabs.find((tab) => {
+      const url = tab.tabRenderer?.endpoint?.commandMetadata?.webCommandMetadata?.url
+      return url?.endsWith(`/${requestedTab}`)
+    })?.tabRenderer
+    // YouTube returns Home when a channel has no uploads of the requested type.
+    // Never collect Home shelves, recommendations, or other channels in that case.
+    if (!requested) return null
+    if (!requested.selected) throw new Error(`YouTube ${requestedTab} tab is not selected; keeping saved videos`)
+  }
   const selected = tabs.find((tab) => tab.tabRenderer?.selected)?.tabRenderer?.content
   if (!selected) throw new Error('YouTube tab content is unavailable')
   return selected
@@ -56,6 +67,31 @@ export function mergeVideos(saved, fetched) {
   return [...merged.values()]
 }
 
+export function parseVideoPublished(html, videoId) {
+  const match = html.match(/(?:var\s+ytInitialPlayerResponse\s*=\s*|window\["ytInitialPlayerResponse"\]\s*=\s*)(\{[^]*?\});?\s*<\/script>/)
+  if (!match) throw new Error(`YouTube publication metadata unavailable for ${videoId}`)
+  const player = JSON.parse(match[1])
+  if (player.videoDetails?.videoId !== videoId || player.videoDetails?.channelId !== CHANNEL_ID) {
+    throw new Error(`Unexpected YouTube video or channel for ${videoId}`)
+  }
+  const published = normalizeVideoDate(player.microformat?.playerMicroformatRenderer?.publishDate)
+  if (!published) throw new Error(`YouTube publication timestamp unavailable for ${videoId}`)
+  return published
+}
+
+export async function fillPublicationDates(videos) {
+  const result = []
+  for (const video of videos) {
+    let published = normalizeVideoDate(video.published)
+    if (!published) {
+      const html = await (await request(`https://www.youtube.com/watch?v=${video.id}`)).text()
+      published = parseVideoPublished(html, video.id)
+    }
+    result.push({ ...video, published })
+  }
+  return result
+}
+
 async function request(url, options = {}) {
   const response = await fetch(url, {
     ...options,
@@ -66,9 +102,11 @@ async function request(url, options = {}) {
   return response
 }
 
-export async function fetchChannelVideos() {
-  const html = await (await request('https://www.youtube.com/@yossimedalsi/shorts')).text()
-  const first = collectVideos(parseChannel(html))
+async function fetchTabVideos(tab) {
+  const html = await (await request(`https://www.youtube.com/@yossimedalsi/${tab}`)).text()
+  const content = parseChannel(html, tab)
+  if (!content) return []
+  const first = collectVideos(content)
   const videos = [...first.videos]
   const pending = [...first.continuations]
   const seen = new Set()
@@ -91,9 +129,16 @@ export async function fetchChannelVideos() {
   return videos
 }
 
+export async function fetchChannelVideos() {
+  const shorts = await fetchTabVideos('shorts')
+  const regular = await fetchTabVideos('videos')
+  return [...new Map([...shorts, ...regular].map((video) => [video.id, video])).values()]
+}
+
 async function main() {
   const saved = JSON.parse(await readFile(snapshotPath, 'utf8'))
-  const videos = mergeVideos(saved.videos, await fetchChannelVideos())
+  const videos = await fillPublicationDates(mergeVideos(saved.videos, await fetchChannelVideos()))
+  videos.sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
   if (JSON.stringify(videos) === JSON.stringify(saved.videos)) {
     console.log(`Video library unchanged: ${videos.length} videos`)
     return
