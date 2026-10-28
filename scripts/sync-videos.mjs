@@ -92,14 +92,49 @@ export async function fillPublicationDates(videos) {
   return result
 }
 
-async function request(url, options = {}) {
-  const response = await fetch(url, {
-    ...options,
-    headers: { 'user-agent': 'Mozilla/5.0', 'accept-language': 'he,en;q=0.8', ...options.headers },
-    signal: AbortSignal.timeout(20000),
-  })
-  if (!response.ok) throw new Error(`YouTube returned HTTP ${response.status}; keeping saved videos`)
-  return response
+async function request(url, options = {}, retries = 2) {
+  const defaultHeaders = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'accept-language': 'he,en;q=0.9',
+    'cookie': 'SOCS=CAESEwgDEgk2OTc3OTM3MjAaAmVuIAEaBgiA_LyaBg; CONSENT=PENDING+999',
+    'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'none',
+    'sec-fetch-user': '?1',
+    'upgrade-insecure-requests': '1',
+  }
+  let lastError
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: { ...defaultHeaders, ...options.headers },
+        signal: AbortSignal.timeout(20000),
+      })
+      if (!response.ok) {
+        const error = new Error(`YouTube returned HTTP ${response.status}; keeping saved videos`)
+        if (response.status === 404) throw error
+        lastError = error
+        if (attempt < retries) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)))
+          continue
+        }
+        throw error
+      }
+      return response
+    } catch (err) {
+      if (err.message && err.message.includes('HTTP 404')) throw err
+      lastError = err
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)))
+      }
+    }
+  }
+  throw lastError
 }
 
 async function fetchTabVideos(tab) {
