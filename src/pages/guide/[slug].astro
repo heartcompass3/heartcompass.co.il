@@ -155,16 +155,9 @@ const faqSchema = pageData.faqItems?.length > 0
             </div>
 
             <div class="flex items-start gap-3 px-1 pt-1">
-              <input type="checkbox" id="lead-consent" name="consent" value="yes" class="w-5 h-5 mt-0.5 accent-slate-900 cursor-pointer shrink-0">
+              <input type="checkbox" id="lead-consent" name="consent" value="yes" required class="w-5 h-5 mt-0.5 accent-slate-900 cursor-pointer shrink-0">
               <label for="lead-consent" class="text-slate-700 text-sm cursor-pointer select-none leading-snug font-medium">
-                {(pageData.newsletterConsentText && pageData.newsletterConsentText.includes('בוואטסאפ')) ? pageData.newsletterConsentText : 'אשמח לקבל תכנים, עדכונים שקטים והזמנות לסדנאות במייל ובוואטסאפ (ללא ספאם, אפשר להסיר בכל עת).'}
-              </label>
-            </div>
-
-            <div class="flex items-start gap-3 px-1">
-              <input type="checkbox" id="privacy" name="privacy_ack" required class="w-5 h-5 mt-0.5 accent-slate-900 cursor-pointer shrink-0">
-              <label for="privacy" class="text-slate-500 text-xs cursor-pointer select-none leading-snug">
-                קראתי ואישרתי את <a href="/privacy" class="underline hover:text-slate-900" target="_blank" rel="noopener">מדיניות הפרטיות</a>.
+                אני מאשר/ת קבלת תכנים, עדכונים והזמנות לסדנאות במייל ובוואטסאפ, לרבות הזמנה להצטרף לקבוצת וואטסאפ, וקראתי את <a href="/privacy" class="underline hover:text-slate-900" target="_blank" rel="noopener">מדיניות הפרטיות</a>. אפשר לבטל את ההרשמה בכל עת.
               </label>
             </div>
 
