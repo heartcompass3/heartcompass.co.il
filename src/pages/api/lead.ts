@@ -19,7 +19,7 @@ function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string))
 }
 
-function errorPage(message: string) {
+function errorPage(message: string, status = 502) {
   return new Response(
     `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>שגיאה</title>
     <meta name="robots" content="noindex,nofollow">
@@ -31,7 +31,7 @@ function errorPage(message: string) {
     <p style="color:#40525a">${escapeHtml(message)}</p>
     <a href="https://wa.me/972544580285">לכתוב לי בוואטסאפ במקום</a>
     </div></body></html>`,
-    { status: 502, headers: { 'content-type': 'text/html; charset=utf-8' } }
+    { status, headers: { 'content-type': 'text/html; charset=utf-8' } }
   )
 }
 
@@ -115,7 +115,7 @@ async function addToAudience(name: string, email: string) {
   const audienceId = await getAudienceId()
   if (!audienceId) {
     console.error('audience-not-found: contact not added', email)
-    return
+    return false
   }
   const [firstName, ...rest] = (name || '').trim().split(/\s+/)
   const res = await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
@@ -134,6 +134,8 @@ async function addToAudience(name: string, email: string) {
   if (res && !res.ok) {
     console.error('audience-add-failed', res.status, await res.text().catch(() => ''))
   }
+  if (!res) console.error('audience-add-failed: network error')
+  return Boolean(res?.ok)
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -163,15 +165,22 @@ export const POST: APIRoute = async ({ request }) => {
     return errorPage('חסרים שם או מייל בטופס.')
   }
 
+  // אישור פרטיות בלבד אינו הרשמה לעדכונים. כל טופסי ההרשמה שולחים consent=yes.
+  // בודקים גם בשרת כדי שלא תתאפשר המשך הרשמה באמצעות טופס ישן או עקיפת required.
+  if (fields.consent !== 'yes') {
+    return errorPage('כדי להמשיך, חזרו לטופס וסמנו את האישור לקבלת תכנים ועדכונים.', 400)
+  }
+
   const notified = await sendNotification(fields)
 
   if (!notified.ok) {
     return errorPage('לא הצלחנו לשלוח את הפנייה כרגע. נסה שוב או כתוב לנו בוואטסאפ.')
   }
 
-  // מוסיפים לרשימת התפוצה רק אם ניתנה הסכמה מפורשת לשיווק שוטף
-  if (fields.consent === 'yes') {
-    await addToAudience(name, email)
+  // לא מציגים הצלחה או מעבירים למדריך כאשר הסנכרון לרשימת התפוצה נכשל.
+  const subscribed = await addToAudience(name, email)
+  if (!subscribed) {
+    return errorPage('הפנייה התקבלה, אך ההרשמה לעדכונים לא הושלמה. חזרו לטופס ונסו שוב בעוד רגע.')
   }
 
   return new Response(null, { status: 302, headers: { Location: next } })
