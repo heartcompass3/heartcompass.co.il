@@ -33,7 +33,7 @@ const paragraphs = (page?.body || []).map((block: any) => ({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
+    <meta name="robots" content={page?.seo?.noindex ? "noindex, nofollow" : "index, follow"} />
     <title>{title}</title>
     <meta name="description" content={description} />
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
