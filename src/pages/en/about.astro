@@ -4,7 +4,6 @@ import site from '../../content/pages/site.json'
 
 // Isolated English pilot. No language switcher or changes to Hebrew routes.
 // Keep the page out of search results until the translation and navigation are approved.
-import { createClient } from '@sanity/client'
 import { sanity } from '../../lib/sanity'
 
 // Preview branch reads the Sanity draft on the server. Never expose its token to the browser.
@@ -12,7 +11,16 @@ const preview = import.meta.env.VERCEL_ENV !== 'production'
 const draftClient = preview && process.env.SANITY_AUTH_TOKEN
   ? sanity.withConfig({ token: process.env.SANITY_AUTH_TOKEN, useCdn: false, perspective: 'drafts' })
   : null
-const page = await (draftClient ?? sanity).fetch(`*[_type == "page" && slug.current == "en/about"][0]{title,excerpt,body,seo}`)
+const page = await (draftClient ?? sanity).fetch(`*[_type == "page" && slug.current == "en/about"][0]{title,excerpt,body,seo,aiCitation,aiContext,painTags,specialty{faqTitle,faq[]{question,answer}}}`)
+const faq = (page?.specialty?.faq || []).filter((item: any) => item.question && item.answer)
+const structuredData = {
+ '@context': 'https://schema.org',
+ '@graph': [
+  { '@type': 'Person', '@id': 'https://www.heartcompass.co.il/about#person', name: 'Yossi Medalsi', alternateName: 'יוסי מדלסי', jobTitle: 'Emotional Coach', url: 'https://www.heartcompass.co.il/about', description: page?.aiCitation },
+  { '@type': 'AboutPage', name: page?.title, description: page?.seo?.description, inLanguage: 'en', about: { '@id': 'https://www.heartcompass.co.il/about#person' }, keywords: (page?.painTags || []).join(', ') },
+  { '@type': 'FAQPage', mainEntity: faq.map((q: any) => ({ '@type': 'Question', name: q.question, acceptedAnswer: { '@type': 'Answer', text: q.answer } })) }
+ ]
+}
 const title = page?.seo?.title || 'About Yossi Medalsi | Heart Compass'
 const description = page?.seo?.description || 'Emotional coaching with Yossi Medalsi, founder of Heart Compass.'
 const paragraphs = (page?.body || []).map((block: any) => ({
@@ -28,6 +36,7 @@ const paragraphs = (page?.body || []).map((block: any) => ({
     <meta name="robots" content="noindex, nofollow" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <link rel="icon" href="/assets/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -58,6 +67,13 @@ const paragraphs = (page?.body || []).map((block: any) => ({
           ? <h2 class="mb-5 mt-8 text-3xl font-extrabold text-primary">{p.text}</h2>
           : <p class="mb-5 text-lg leading-relaxed">{p.text}</p>)}
       </section>
+      {faq.length > 0 && <section class="mt-16" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" class="mb-8 text-3xl font-extrabold text-primary">{page?.specialty?.faqTitle || 'Frequently asked questions'}</h2>
+        {faq.map((item: any) => <div class="mb-5 rounded-2xl bg-white/80 p-6">
+          <h3 class="mb-3 text-xl font-bold text-primary">{item.question}</h3>
+          <p class="text-lg leading-relaxed">{item.answer}</p>
+        </div>)}
+      </section>}
     </main>
     <footer class="border-t border-foreground/10 px-6 py-8 text-center text-sm text-foreground/70">
       <p>Heart Compass · Yossi Medalsi</p>
