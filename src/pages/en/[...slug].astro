@@ -10,7 +10,7 @@ const preview = import.meta.env.VERCEL_ENV !== 'production'
 const draftClient = preview && process.env.SANITY_AUTH_TOKEN
   ? sanity.withConfig({ token: process.env.SANITY_AUTH_TOKEN, useCdn: false, perspective: 'drafts' })
   : null
-const slug = Astro.params.slug?.replace(/^\\/+|\\/+$/g, '')
+const slug = (Astro.params.slug || '').split('/').filter(Boolean).join('/')
 if (!slug || !/^[a-z0-9]+(?:[a-z0-9/-]*[a-z0-9])?$/.test(slug)) return Astro.redirect('/404', 302)
 const page = await (draftClient ?? sanity).fetch(`*[_type == "page" && slug.current == $slug][0]{title,excerpt,body,seo,aiCitation,aiContext,painTags,specialty{faqTitle,faq[]{question,answer},closing}}`, { slug: `en/${slug}` })
 if (!page) return Astro.redirect('/404', 302)
