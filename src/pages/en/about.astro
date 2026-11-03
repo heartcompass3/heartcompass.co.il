@@ -4,8 +4,21 @@ import site from '../../content/pages/site.json'
 
 // Isolated English pilot. No language switcher or changes to Hebrew routes.
 // Keep the page out of search results until the translation and navigation are approved.
-const title = 'About Yossi Medalsi | Heart Compass'
-const description = 'Emotional coaching in Hebrew for Israelis and Jewish families living abroad. Support with relocation, relationships, parenting and finding your footing in a new country.'
+import { createClient } from '@sanity/client'
+import { sanity } from '../../lib/sanity'
+
+// Preview branch reads the Sanity draft on the server. Never expose its token to the browser.
+const preview = import.meta.env.VERCEL_ENV !== 'production'
+const draftClient = preview && process.env.SANITY_AUTH_TOKEN
+  ? sanity.withConfig({ token: process.env.SANITY_AUTH_TOKEN, useCdn: false, perspective: 'drafts' })
+  : null
+const page = await (draftClient ?? sanity).fetch(`*[_type == "page" && slug.current == "en/about"][0]{title,excerpt,body,seo}`)
+const title = page?.seo?.title || 'About Yossi Medalsi | Heart Compass'
+const description = page?.seo?.description || 'Emotional coaching with Yossi Medalsi, founder of Heart Compass.'
+const paragraphs = (page?.body || []).map((block: any) => ({
+  style: block.style,
+  text: (block.children || []).map((child: any) => child.text || '').join('')
+})).filter((item: any) => item.text.trim())
 ---
 <!doctype html>
 <html lang="en" dir="ltr">
@@ -31,11 +44,9 @@ const description = 'Emotional coaching in Hebrew for Israelis and Jewish famili
       <div class="grid items-center gap-12 md:grid-cols-2">
         <div>
           <p class="mb-4 text-sm font-bold uppercase tracking-widest text-accent">About Heart Compass</p>
-          <h1 class="mb-7 text-4xl font-extrabold leading-tight text-primary md:text-6xl">You moved abroad. Life moved with you.</h1>
-          <p class="mb-6 text-xl font-semibold leading-relaxed text-primary">A new country can offer a fresh start. It can also bring old fears, family tensions and questions about where you belong into sharper focus.</p>
-          <p class="mb-5 text-lg leading-relaxed">I'm Yossi Medalsi, founder of Heart Compass. I work with Israelis and Jewish individuals and families living abroad, including people navigating relocation, relationships, parenting and major life changes. Our sessions are available online, in Hebrew.</p>
-          <p class="mb-5 text-lg leading-relaxed">Moving countries doesn't automatically change the way we react when we're hurt, overwhelmed or afraid. You may know exactly what you want to do, yet find yourself withdrawing, arguing, second-guessing yourself or putting things off. Together, we look at what drives those reactions and work on changing them, so you have more say in what happens next.</p>
-          <p class="mb-8 text-lg leading-relaxed">I believe real progress shows up in everyday choices: having a difficult conversation, setting a boundary, helping your child through a tough transition or taking a step you've been avoiding. You don't need to know how everything will turn out to trust yourself to face it.</p>
+          <h1 class="mb-7 text-4xl font-extrabold leading-tight text-primary md:text-6xl">Meet Yossi Medalsi</h1>
+          <p class="mb-6 text-xl font-semibold leading-relaxed text-primary">{page?.excerpt || 'Emotional coaching for a life with more choice and confidence.'}</p>
+          {paragraphs.slice(0,3).map((p: any) => <p class="mb-5 text-lg leading-relaxed">{p.text}</p>)}
           <a href={`https://wa.me/${site.whatsAppPhone}`} class="inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-7 py-3 font-bold text-white hover:opacity-90">Let's talk on WhatsApp</a>
         </div>
         <div class="mx-auto w-full max-w-md overflow-hidden rounded-3xl border-8 border-white shadow-xl">
@@ -43,9 +54,9 @@ const description = 'Emotional coaching in Hebrew for Israelis and Jewish famili
         </div>
       </div>
       <section class="mt-16 rounded-3xl bg-white/70 p-8 md:p-12">
-        <h2 class="mb-5 text-3xl font-extrabold text-primary">How we work together</h2>
-        <p class="mb-4 text-lg leading-relaxed">At Heart Compass, I use a three-stage approach: first, we identify the reactions and beliefs that keep showing up in your life. Then we work with what sits underneath them, rather than relying on willpower alone. Finally, we build your confidence in making decisions and following through, even when things feel uncertain.</p>
-        <p class="text-lg leading-relaxed">Whether you're settling into a new country, feeling distant from your partner, or trying to support a child who misses home, the work is about what changes in your life between sessions, not just what we talk about during them.</p>
+        {paragraphs.slice(3).map((p: any) => p.style === 'h2'
+          ? <h2 class="mb-5 mt-8 text-3xl font-extrabold text-primary">{p.text}</h2>
+          : <p class="mb-5 text-lg leading-relaxed">{p.text}</p>)}
       </section>
     </main>
     <footer class="border-t border-foreground/10 px-6 py-8 text-center text-sm text-foreground/70">
