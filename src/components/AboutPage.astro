@@ -25,13 +25,17 @@ const audienceLinks = [
   { label: t('זוגות', 'Couples'), href: '/specialties/couples' },
   { label: t('תהליך אישי', 'Personal coaching'), href: '/specialties/personal' },
 ]
-const moreDetailsHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(t('היי יוסי, קראתי את דף האודות ואשמח לפרטים נוספים על הליווי.', 'Hi Yossi, I read your About page and would like to know more about coaching.'))}`
+const moreDetailsHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(t('היי יוסי, קראתי את דף האודות. יש משהו שאני רוצה לשנות ואשמח לדבר איתך עליו.', 'Hi Yossi, I read your About page. There is something I want to change and I would like to talk with you about it.'))}`
 
 // פתיחה (הזהוב)
 const opening =
   page?.excerpt?.trim() ||
   'הייתי שם. אני יודע איך זה מרגיש כשהלב רוצה משהו אחד, והראש אומר משהו אחר.'
 
+const body = page?.body || []
+const sectionStart = body.findIndex((block: any) => block._type === 'block' && block.style === 'h2')
+const personalStory = sectionStart < 0 ? body : body.slice(0, sectionStart)
+const coachingSections = sectionStart < 0 ? [] : body.slice(sectionStart)
 const practicalGuidance = page?.specialty?.practicalGuidance
 const guidanceSteps = practicalGuidance?.steps?.filter((step) => step.title && step.text) || []
 const faqItems = (page?.specialty?.faq || [])
@@ -172,7 +176,7 @@ const faqSchema = faqItems.length > 0 ? {
             ))}
           </nav>
           <p class="font-bold text-gold-dark text-xl md:text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl leading-9">
-            "{opening}"
+            {opening}
           </p>
         </header>
 
@@ -193,7 +197,7 @@ const faqSchema = faqItems.length > 0 ? {
         <div class="w-full relative z-10 text-center md:text-right md:col-start-1 md:row-start-2">
           <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none">
             {page?.body?.length ? (
-              <PortableText value={page.body} language={language} />
+              <PortableText value={personalStory} language={language} />
             ) : (
               <p>עדיין אין תוכן בדף אודות בסאניטי. הוסף תוכן לשדה “תוכן”.</p>
             )}
@@ -241,6 +245,13 @@ const faqSchema = faqItems.length > 0 ? {
 
         </div>
 
+        {coachingSections.length > 0 && (
+          <div class="md:col-span-2 mt-8 pt-8 border-t border-primary/10 w-full">
+            <div class="prose prose-xl max-w-4xl mx-auto text-primary/80 font-body leading-9">
+              <PortableText value={coachingSections} language={language} />
+            </div>
+          </div>
+        )}
       </div>
 
       {practicalGuidance ? (
@@ -278,9 +289,9 @@ const faqSchema = faqItems.length > 0 ? {
       )}
 
       <div class="mt-12 text-center">
-        <p class="text-lg text-primary/80 mb-5">{t('רוצים לדעת יותר על אחד ממסלולי הליווי? כתבו לי מה מעניין אתכם ואשלח פרטים בהתאם.', 'Want to know more about coaching? Tell me what you are looking for and I will send you the relevant details.')}</p>
+        <p class="text-lg text-primary/80 mb-5">{page?.specialty?.closing || t('כתבו לי מה הייתם רוצים לשנות ונוכל להתחיל משם.', 'Tell me what you would like to change. We can start there.')}</p>
         <a href={moreDetailsHref} class="inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-white font-bold shadow-lg hover:bg-primary/90 transition-colors">
-          {t('לפרטים נוספים בוואטסאפ', 'Ask me on WhatsApp')}
+          {t('יוסי, יש משהו שאני רוצה לשנות', 'Yossi, I want to make a change')}
         </a>
       </div>
     </div>

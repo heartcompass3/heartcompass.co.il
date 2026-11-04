@@ -8,6 +8,7 @@ export const ABOUT_QUERY = /* groq */ `
     painTags,
     aiContext,
     specialty{
+      closing,
       practicalGuidance{
         label,
         title,
