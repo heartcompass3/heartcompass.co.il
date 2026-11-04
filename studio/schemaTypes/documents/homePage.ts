@@ -195,7 +195,7 @@ export default defineType({
   ],
 
   preview: {
-    select: {title: 'title'},
+    select: {title: 'h1'},
     prepare({title}) {
       return {title: title || 'דף הבית'}
     },

@@ -2,7 +2,7 @@
 // ─── עדכון: ARTICLE_BY_SLUG_QUERY כולל עכשיו faqItems ───────────
 
 export const HOME_PAGE_QUERY = /* groq */ `
-*[_type == "homePage"][0]{
+*[_type == "homePage" && _id == $homeId][0]{
   seo{
     ...,
     ogImage{ alt, asset->{url} }

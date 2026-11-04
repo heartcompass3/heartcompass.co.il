@@ -1,0 +1,8 @@
+---
+import HomePage from '../../components/HomePage.astro'
+import { sanity } from '../../lib/sanity'
+import { HOME_PAGE_QUERY } from '../../lib/sanityQueries'
+const home = await sanity.fetch(HOME_PAGE_QUERY, { homeId: 'en-home-page' })
+if (!home) return new Response('Not found', { status: 404 })
+---
+<HomePage home={home} language="en" />

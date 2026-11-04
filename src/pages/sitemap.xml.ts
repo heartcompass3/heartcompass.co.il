@@ -31,7 +31,7 @@ export const GET: APIRoute = async () => {
   try {
     // תאריכי עדכון אמיתיים (contentUpdatedAt) לעמודי הסינגלטון — לא buildDate
     // שמשתנה בכל דיפלוי בלי קשר לשינוי תוכן בפועל.
-    const home = await sanity.fetch(`*[_type == "homePage"][0]{contentUpdatedAt, _updatedAt}`)
+    const home = await sanity.fetch(`*[_type == "homePage" && _id == "ec083d12-f9de-4504-98f7-75f8fe42e099"][0]{contentUpdatedAt, _updatedAt}`)
     homeUpdatedAt = home?.contentUpdatedAt || home?._updatedAt || ''
 
     const method = await sanity.fetch(`*[_type == "methodPage" && _id == "6d628745-9229-4c8d-b5bc-7f727ff158b7"][0]{contentUpdatedAt, _updatedAt}`)
@@ -66,6 +66,9 @@ export const GET: APIRoute = async () => {
 
     const englishMethod = await sanity.fetch(`*[_type == "methodPage" && _id == "en-method-page" && coalesce(seo.noindex, false) == false][0]{"slug": "en/method", "_updatedAt": coalesce(contentUpdatedAt, _createdAt)}`)
     if (englishMethod) pages.push(englishMethod)
+
+    const englishHome = await sanity.fetch(`*[_type == "homePage" && _id == "en-home-page" && coalesce(seo.noindex, false) == false][0]{"slug": "en", "_updatedAt": coalesce(contentUpdatedAt, _createdAt)}`)
+    if (englishHome) pages.push(englishHome)
 
     // משיכת מוקדי הכאב (Pain Hubs) — contentUpdatedAt, לא _updatedAt הטכני
     pains = await sanity.fetch(`

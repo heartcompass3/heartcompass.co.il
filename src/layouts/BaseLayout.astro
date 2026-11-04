@@ -9,6 +9,7 @@ import SeoHead from '../components/SeoHead.astro'
 
 import Navigation from '../components/Navigation.astro'
 import Footer from '../components/Footer.astro'
+import EnglishSiteFooter from '../components/EnglishSiteFooter.astro'
 import WhatsAppFloat from '../components/WhatsAppFloat.astro'
 import Tracking from '../components/Tracking.astro'
 import CookieBanner from '../components/CookieBanner.astro'
@@ -303,11 +304,11 @@ if (isArticlePage) {
     >
       {language === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
     </a>
-    <div lang="he" dir="rtl"><Navigation settings={resolvedSiteSettings} /></div>
+    <div lang={language} dir={language === 'en' ? 'ltr' : 'rtl'}><Navigation settings={resolvedSiteSettings} language={language} /></div>
     <main id="main-content">
       <slot />
     </main>
-    <div lang="he" dir="rtl"><Footer settings={resolvedSiteSettings} /></div>
+    {language === 'en' ? <EnglishSiteFooter /> : <div lang="he" dir="rtl"><Footer settings={resolvedSiteSettings} /></div>}
     <WhatsAppFloat settings={resolvedSiteSettings} />
     <BackToTop />
     <CookieBanner />

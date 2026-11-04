@@ -53,7 +53,7 @@ function urlForDoc(doc: any): string | null {
 
   switch (doc._type) {
     case 'homePage':
-      return `${site.siteUrl}/`
+      return `${site.siteUrl}${doc._id?.replace(/^drafts\./, '') === 'en-home-page' ? '/en' : '/'}`
     case 'article':
       return slug ? `${site.siteUrl}/${doc.language === "en" ? "en/" : ""}articles/${slug}` : null
     case 'service':

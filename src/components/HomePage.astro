@@ -1,0 +1,363 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import PortableText from '../components/PortableText.astro'
+import { urlFor } from '../lib/sanity'
+import LanguageLink from './LanguageLink.astro'
+import { buildWhatsAppHref } from '../lib/whatsapp'
+import site from '../content/pages/site.json'
+
+const { home, language = 'he' } = Astro.props
+const isEn = language === 'en'
+if (!home) throw new Error('HomePage not found')
+
+// SEO
+const seoTitle = home.seo?.title
+const seoDescription = home.seo?.description
+const noindex = home.seo?.noindex
+const seoOgImage = home.seo?.ogImage?.asset?.url
+const seoOgImageAlt = home.seo?.ogImage?.alt
+
+// HERO
+const hero = home.hero ?? {}
+const heroBadge = hero.badge
+const heroTitle1 = hero.titleLine1
+const heroTitle2 = hero.titleLine2
+const heroTitle3 = hero.titleLine3
+
+// תמונת הירו: אם יש תמונה בסאניטי משתמשים בה, אחרת נשארים עם התמונה הקבועה
+const heroImg =
+  hero.image ? urlFor(hero.image).width(800).quality(85).url() : '/assets/yossi-hero.jpg'
+
+// תמונות רספונסיביות ל-hero (LCP) — srcset לפי רוחב תצוגה אמיתי במקום 1400 קבוע.
+const heroSrcset = hero.image
+  ? [600, 900, 1200]
+      .map((w) => `${urlFor(hero.image).width(w).quality(85).url()} ${w}w`)
+      .join(', ')
+  : undefined
+const heroSizes = '(max-width: 1023px) 100vw, 600px'
+
+// מידות אמיתיות לתמונת הירו (מונע CLS) — נגזר מ-Sanity, נפילה חזרה ל-1400x2100.
+const heroDims = home.heroImageDims
+const heroW = 800
+const heroH =
+  heroDims?.width && heroDims?.height
+    ? Math.round((800 * heroDims.height) / heroDims.width)
+    : 1200
+
+const primaryCtaHref = hero.primaryCtaHref
+const primaryCtaLabel = hero.primaryCtaText || 'בוא נדבר תכל׳ס ←'
+const homepageWhatsAppMessage =
+  isEn ? 'Hi Yossi, I found Heart Compass and would like to talk about what is happening in my life and how we can work on it.' : 'היי יוסי, הגעתי דרך דף הבית של מצפן הלב. אני רוצה לעבוד על מה שעוצר אותי ולבדוק איך אפשר להתקדם.'
+const primaryCtaHrefWithMessage = primaryCtaHref?.includes('wa.me')
+  ? buildWhatsAppHref(site.whatsAppPhone, homepageWhatsAppMessage)
+  : primaryCtaHref
+
+const secondaryCtaHref = hero.secondaryCtaHref || '/about'
+const secondaryCtaLabel = hero.secondaryCtaText || 'נעים להכיר, יוסי'
+
+// H1 (צהוב, יחיד בדף)
+const H1 =
+  home.h1 ||
+  'תהליך אימון וליווי רגשי עמוק לשחרור דפוסים ואמונות מגבילות מהשורש לבני נוער , הורים , זוגות ותהליכי עומק אישיים'
+
+// פסקת גשר – Rich קודם, ואם אין אז טקסט
+const bridgeRich = home.introParagraphRich
+const bridgeText =
+  home.introParagraph ||
+  'תהליך עומק לשחרור חסמים בזוגיות, הורות, בני נוער ותהליכי עומק אישיים.'
+
+// Cards
+const cards = home.cards?.items ?? []
+const cardsSectionTitle = home.cards?.title || 'תחומי האימון'
+const cardsSectionDescription =
+  home.cards?.description || 'אימון רגשי המותאם לקושי, למטרות ולשלב בחיים.'
+
+// MSA content is managed in Sanity and rendered at build time.
+const msaIntro = home.methodIntro
+const msa = home.msa?.items ?? []
+
+// FAQ
+const faq = home.faq?.items ?? []
+
+// FAQ Schema for Google Rich Results
+const faqSchema =
+  faq.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((it: { question: string; answer: string }) => ({
+          '@type': 'Question',
+          name: it.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: it.answer,
+          },
+        })),
+      }
+    : null
+
+// AEO (נסתר — JSON-LD בלבד)
+const aiCitation = home.aiCitation || ''
+const painTags = Array.isArray(home.painTags) ? home.painTags : []
+const aiContext = home.aiContext || ''
+const aeoSchema = (aiCitation || painTags.length > 0 || aiContext)
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': `${site.siteUrl}${isEn ? '/en' : '/'}#webpage`,
+      url: `${site.siteUrl}${isEn ? '/en' : '/'}`,
+      inLanguage: language,
+      name: seoTitle || site.brand,
+      description: seoDescription || '',
+      ...(aiCitation ? { abstract: aiCitation } : {}),
+      ...(aiContext ? { disambiguatingDescription: aiContext } : {}),
+      ...(painTags.length > 0 ? { keywords: painTags.join(', ') } : {}),
+    }
+  : null
+
+// Bottom CTA
+const bottomCtaText = home.bottomCtaText
+const bottomCtaHref = home.bottomCtaHref
+
+// צבע כותרות לפי הלוגו
+const brandDeep = '#295157'
+---
+
+<BaseLayout
+  title={seoTitle}
+  language={language}
+  canonical={`${site.siteUrl}${isEn ? '/en' : '/'}`}
+  languageLinks={[
+    { language: 'he', href: `${site.siteUrl}/` },
+    { language: 'en', href: `${site.siteUrl}/en` },
+  ]}
+  description={seoDescription}
+  noindex={noindex}
+  ogImage={seoOgImage}
+  ogImageAlt={seoOgImageAlt}
+  preload={{ srcset: heroSrcset, sizes: heroSizes, href: heroImg }}
+  schema={[...(aeoSchema ? [aeoSchema] : []), ...(faqSchema ? [faqSchema] : [])]}
+>
+  <!-- HERO -->
+  <section class="relative overflow-hidden">
+    <div class="container mx-auto px-6 py-16 md:py-24">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <!-- טקסט -->
+        <div class:list={["text-center order-1", isEn ? "lg:text-left" : "lg:text-right"]}>
+          <div class="mb-4"><LanguageLink href={isEn ? `${site.siteUrl}/` : `${site.siteUrl}/en`} language={isEn ? "he" : "en"} /></div>
+          {heroBadge && (
+            <span class="inline-flex items-center gap-2 rounded-full border border-gold-dark/40 bg-white/80 px-4 py-2 text-sm font-body font-bold text-gold-dark">
+              <span class="inline-block h-2 w-2 rounded-full bg-accent"></span>
+              {heroBadge}
+            </span>
+          )}
+
+          <!-- הכותרת העיצובית (לא H1) -->
+          <div
+            class="mt-7 leading-[1] text-6xl md:text-7xl lg:text-8xl font-black font-display tracking-tight"
+            style={`color:${brandDeep}`}
+          >
+            <div>{heroTitle1}</div>
+            <div>{heroTitle2}</div>
+            <div>{heroTitle3}</div>
+          </div>
+
+          <!-- H1 יחיד, צהוב, ואין שורה מעליו -->
+          <h1 class="mt-7 text-2xl md:text-3xl lg:text-4xl font-black font-display text-gold-dark">
+            {H1}
+          </h1>
+
+          <div class:list={["mt-6 max-w-xl mx-auto text-foreground/70 font-body leading-relaxed", isEn ? "lg:ml-0 lg:mr-auto" : "lg:mr-0 lg:ml-auto"]}>
+            {bridgeRich ? (
+              <div class="portabletext">
+                <PortableText value={bridgeRich} language={language} />
+              </div>
+            ) : (
+              <p>{bridgeText}</p>
+            )}
+          </div>
+
+          <!-- כפתורים בדסקטופ -->
+          <div class="mt-10 hidden lg:flex gap-6 justify-center">
+            {primaryCtaHref && (
+              <a
+                href={primaryCtaHrefWithMessage}
+                class="h-14 min-w-[240px] inline-flex items-center justify-center rounded-2xl bg-accent px-10 font-body font-bold text-primary shadow hover:opacity-90 transition"
+              >
+                {primaryCtaLabel}
+              </a>
+            )}
+            <a
+              href={secondaryCtaHref}
+              class="h-14 min-w-[240px] inline-flex items-center justify-center rounded-2xl border border-foreground/10 bg-white/70 px-10 font-body font-bold"
+              style={`color:${brandDeep}`}
+            >
+              {secondaryCtaLabel}
+            </a>
+          </div>
+        </div>
+
+        <!-- תמונה -->
+        <div class="order-2 lg:-translate-y-5 lg:scale-[1.06] transition-transform duration-500">
+          <div class="rounded-[36px] border border-accent/20 bg-white/40 p-3">
+            <div class="rounded-[28px] overflow-hidden bg-white">
+              <img
+                src={heroImg}
+                srcset={heroSrcset}
+                sizes={heroSizes}
+                alt={isEn ? "Yossi Medalsi, emotional coach and founder of Heart Compass" : "יוסי מדלסי, מאמן רגשי ומייסד מצפן הלב"}
+                width={heroW}
+                height={heroH}
+                fetchpriority="high"
+                loading="eager"
+                decoding="async"
+                class="w-full h-auto object-cover max-h-[520px] md:max-h-none"
+              />
+            </div>
+          </div>
+
+          <!-- כפתורים במובייל -->
+          <div class="mt-6 flex flex-col gap-4 lg:hidden">
+            {primaryCtaHref && (
+              <a
+                href={primaryCtaHrefWithMessage}
+                class="h-14 inline-flex items-center justify-center rounded-2xl bg-accent px-8 font-body font-bold text-primary shadow hover:opacity-90 transition"
+              >
+                {primaryCtaLabel}
+              </a>
+            )}
+            <a
+              href={secondaryCtaHref}
+              class="h-14 inline-flex items-center justify-center rounded-2xl border border-foreground/10 bg-white/70 px-8 font-body font-bold"
+              style={`color:${brandDeep}`}
+            >
+              {secondaryCtaLabel}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- תחומי האימון -->
+  <section id="coaching" class="container mx-auto px-6 pt-20 pb-14 text-center scroll-mt-24">
+    <h2 class="text-4xl md:text-5xl font-black font-display" style={`color:${brandDeep}`}>
+      {cardsSectionTitle}
+    </h2>
+    <p class="mt-4 text-base md:text-lg text-muted-foreground font-body">
+      {cardsSectionDescription}
+    </p>
+  </section>
+
+  <!-- CARDS -->
+  <section class="container mx-auto px-6 pb-14">
+    <div class="home-specialties-grid grid grid-cols-1 md:grid-cols-2 gap-8">
+      {cards.map((item) => (
+        <a
+          href={item.link}
+          class="group rounded-[36px] bg-white shadow-lg border border-foreground/5 p-10 text-center hover:shadow-xl transition"
+        >
+          <div class="mx-auto h-20 w-20 rounded-3xl bg-accent flex items-center justify-center text-primary text-2xl">
+            ✦
+          </div>
+
+          <h3 class="mt-8 text-2xl font-black font-display" style={`color:${brandDeep}`}>
+            {item.title}
+          </h3>
+          <p class="mt-4 text-muted-foreground leading-relaxed font-body">{item.text}</p>
+
+          <div class="mt-8 font-body font-bold text-gold-dark inline-flex items-center gap-2">
+            <span>{isEn ? (item.link.startsWith("/en/") ? "Explore this coaching" : "Explore this coaching (Hebrew)") : "לקריאה מלאה"}</span>
+            <span class="transition group-hover:translate-x-[-2px]" aria-hidden="true">{isEn ? "→" : "←"}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- MSA -->
+  <section class="relative text-white">
+    <div class="absolute inset-0 bg-[radial-gradient(900px_500px_at_50%_-150px,rgba(255,255,255,0.20),rgba(255,255,255,0)_55%),linear-gradient(180deg,#2b4f4a_0%,#0f2f33_55%,#0b2629_100%)]"></div>
+    <div class="relative container mx-auto px-6 py-16 md:py-20">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div class="order-1 lg:order-1 flex flex-col items-center text-center">
+          <h2 class="font-display font-black leading-[0.95] text-6xl lg:text-7xl m-0">
+            <span class="block text-white">{home.methodHeading || (isEn ? "The approach" : "שיטת")}</span>
+            <span class="block mt-2 text-accent">{home.methodTitle || (isEn ? "M.S.A." : "מ.ס.ע")}</span>
+          </h2>
+
+          {msaIntro && (
+            <p class="mt-6 lg:mt-7 text-white/75 font-body leading-relaxed max-w-xl mx-auto">
+              {msaIntro}
+            </p>
+          )}
+          <a href={isEn ? "/en/method" : "/method"} class="mt-8 inline-flex items-center gap-2 rounded-2xl border border-accent/60 px-6 py-3 font-body font-bold text-accent hover:bg-white/10 transition">{isEn ? "Explore the M.S.A. approach" : "איך עובדת שיטת מ.ס.ע?"} <span aria-hidden="true">{isEn ? "→" : "←"}</span></a>
+        </div>
+
+        <div class="order-2 lg:order-2 space-y-6">
+          {msa.map((step) => (
+            <div class="rounded-[28px] bg-white/10 border border-white/10 p-8 backdrop-blur-md shadow-[0_20px_60px_-40px_rgba(0,0,0,0.7)]">
+              <div class="flex items-start gap-4">
+                <div class="h-14 w-14 rounded-2xl bg-accent flex items-center justify-center text-2xl font-black font-display text-primary">
+                  {step.letter}
+                </div>
+
+                <div class:list={["flex-1", isEn ? "text-left" : "text-right"]}>
+                  <h3 class="text-xl md:text-2xl font-black font-display">
+                    {step.title}
+                    {step.subtitle && (
+                      <span class="text-white/70 font-body text-base md:text-lg"> | {step.subtitle}</span>
+                    )}
+                  </h3>
+                  <p class="mt-3 text-white/75 font-body leading-relaxed">{step.text}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="container mx-auto px-6 py-20">
+    <h2 class="text-3xl md:text-4xl text-center font-black font-display" style={`color:${brandDeep}`}>
+      {isEn ? "Questions before getting started" : "שאלות לפני שמתחילים"}
+    </h2>
+
+    <div class="mt-10 max-w-4xl mx-auto space-y-6">
+      {faq.map((it) => (
+        <details name="home-faq" class="home-faq-item rounded-3xl bg-white border border-foreground/5 p-6">
+          <summary class="cursor-pointer list-none flex items-start justify-between gap-4">
+            <h3 class="m-0 text-xl font-black font-display">{it.question}</h3>
+            <span class="home-faq-icon" aria-hidden="true"><span class="home-faq-plus">+</span><span class="home-faq-minus">−</span></span>
+          </summary>
+
+          <div class="mt-4 text-muted-foreground font-body leading-relaxed">
+            {it.answer}
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  {bottomCtaText && bottomCtaHref && (
+    <section class="container mx-auto px-6 pb-24 text-center">
+      <a
+        href={bottomCtaHref}
+        class="h-14 inline-flex items-center justify-center rounded-2xl bg-accent px-10 font-body font-bold text-primary shadow hover:opacity-90 transition"
+      >
+        {bottomCtaText}
+      </a>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .home-faq-item summary::-webkit-details-marker { display: none; }
+  .home-faq-item summary:focus-visible { outline: 3px solid #b89128; outline-offset: 6px; }
+  .home-faq-item[open] { border-color: #b89128; }
+  .home-faq-icon { display: grid; place-items: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%; background: rgb(212 175 55 / 14%); color: #304e55; font-size: 1.5rem; line-height: 1; }
+  .home-faq-minus, .home-faq-item[open] .home-faq-plus { display: none; }
+  .home-faq-item[open] .home-faq-minus { display: inline; }
+</style>

@@ -3,7 +3,8 @@ import site from '../content/pages/site.json'
 import insightDomains from '../content/insights-domains.json'
 
 const currentPath = Astro.url.pathname
-const { settings = null } = Astro.props
+const { settings = null, language = 'he' } = Astro.props
+const isEn = language === 'en'
 let nav = settings?.nav ?? []
 
 /* fallback מלא במקרה ש-Sanity לא זמין */
@@ -41,9 +42,25 @@ const specialtiesChildrenFallback = [
   { label: 'אימון לנוער', href: '/specialties/youth' }
 ]
 
+if (isEn) {
+  nav = [
+    { label: 'Home', href: '/en' },
+    { label: 'About Yossi', href: '/en/about' },
+    { label: 'The M.S.A. approach', href: '/en/method' },
+    { label: 'Coaching', href: '/en#coaching', children: [
+      { label: 'Personal growth', href: '/en/specialties/personal' },
+      { label: 'Parent coaching (Hebrew)', href: '/specialties/parents' },
+      { label: 'Teen coaching (Hebrew)', href: '/specialties/youth' },
+      { label: 'Couples coaching (Hebrew)', href: '/specialties/couples' },
+    ] },
+    { label: 'עברית', href: '/', },
+  ]
+}
+
 const isActive = (href) => {
   if (!href) return false
   if (href === '/') return currentPath === '/'
+  if (href === '/en') return currentPath === '/en' || currentPath === '/en/'
   return currentPath === href || currentPath.startsWith(href + '/')
 }
 ---
@@ -56,12 +73,12 @@ const isActive = (href) => {
     <div class="flex items-center justify-between h-20">
 
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-4">
-        <img src="/assets/logo.webp" alt="לוגו מצפן הלב" width="40" height="40" class="h-10 w-auto" />
+      <a href={isEn ? '/en' : '/'} class="flex items-center gap-4">
+        <img src="/assets/logo.webp" alt={isEn ? 'Heart Compass logo' : 'לוגו מצפן הלב'} width="40" height="40" class="h-10 w-auto" />
         <div class="flex flex-col leading-tight">
-          <span class="font-display text-xl">{site.brand}</span>
-          <span class="font-body text-xs text-muted-foreground">אימון רגשי תודעתי</span>
-          <span class="font-body text-xs text-muted-foreground">לבני נוער, הורים וזוגות</span>
+          <span class="font-display text-xl">{isEn ? 'Heart Compass' : site.brand}</span>
+          <span class="font-body text-xs text-muted-foreground">{isEn ? 'Emotional coaching with Yossi Medalsi' : 'אימון רגשי תודעתי'}</span>
+          <span class="font-body text-xs text-muted-foreground">{isEn ? 'Online sessions in Hebrew' : 'לבני נוער, הורים וזוגות'}</span>
         </div>
       </a>
 
@@ -144,7 +161,7 @@ const isActive = (href) => {
         <button
           type="button"
           class="text-2xl"
-          aria-label="פתח תפריט"
+          aria-label={isEn ? 'Open menu' : 'פתח תפריט'}
           aria-expanded="false"
           aria-controls="mobile-navigation-menu"
           data-menu-button
@@ -156,14 +173,14 @@ const isActive = (href) => {
           id="mobile-navigation-menu"
           class="hidden fixed inset-0 z-[1000] bg-[#fbf8f2] overflow-y-auto"
           role="dialog"
-          aria-label="תפריט ניווט"
+          aria-label={isEn ? 'Navigation menu' : 'תפריט ניווט'}
           data-mobile-menu
         >
           <div class="p-6 flex flex-col gap-6">
 
             <button
               type="button"
-              aria-label="סגור תפריט"
+              aria-label={isEn ? 'Close menu' : 'סגור תפריט'}
               class="self-end text-3xl"
               data-menu-close
             >
