@@ -4,7 +4,6 @@ import Breadcrumbs from '../../../components/Breadcrumbs.astro'
 import PortableText from '../../../components/PortableText.astro'
 import SpecialtyDecisionCards from '../../../components/SpecialtyDecisionCards.astro'
 import SpecialtyOutcomeCards from '../../../components/SpecialtyOutcomeCards.astro'
-import WhatsAppTestimonials from '../../../components/WhatsAppTestimonials.astro'
 import LanguageLink from '../../../components/LanguageLink.astro'
 import site from '../../../content/pages/site.json'
 import { sanity } from '../../../lib/sanity'
@@ -126,28 +125,6 @@ const stagesTitle = page?.specialty?.stagesTitle || 'The Three Stages of the Per
 const stages = page?.specialty?.stages || []
 const outcomeCards = guidanceSteps
 
-const englishTestimonials = [
-  {
-    context: 'Career & Money: Salary Negotiation',
-    role: 'Client Message • Personal Coaching',
-    text: 'Yossi, I just walked out of his office and had to write to you. My knees were shaking, but I was smiling. For the first time in my life, I didn\'t apologize for asking for what I deserve. I simply put the numbers on the table calmly without fearing he would be angry. He didn\'t even push back, he just said "You\'re completely right, we\'ll update it starting next month." For years I thought I\'d get fired just for opening my mouth...',
-  },
-  {
-    context: 'Separation & Divorce: Setting Boundaries in Peace',
-    role: 'Client Message • Personal Coaching',
-    text: 'He tried to trigger me again today in messages about the kids. I felt that familiar knot in my stomach, but instead of panicking, shouting, or crying like I always did, I paused and took a breath. I replied with one factual sentence, without defending or attacking. He was stunned that it didn\'t turn into a war. Yossi, I\'m realizing that I\'m starting to build my life anew from a place of peace.',
-  },
-  {
-    context: 'Stuckness & Perfectionism: Releasing Control',
-    role: 'Client Message • Personal Coaching',
-    text: 'I caught myself yesterday evening: instead of getting stuck in front of the computer all night analyzing a million scenarios and deleting the draft, I simply told myself "Good enough is great." I sent it and closed the laptop. I went to sleep without a racing heart and without beating myself up. It might sound small, but for me, letting go of control like that is breathing room.',
-  },
-  {
-    context: 'Dating & Relationships: Overcoming Fear of Rejection',
-    role: 'Client Message • Personal Coaching',
-    text: 'I had my first date yesterday after a very long time. For the first time, I didn\'t play "who I\'m supposed to be" and didn\'t spend every second worrying about how I looked in his eyes. I was just myself, and we even laughed about something that used to paralyze me with embarrassment. What a difference it makes when fear of rejection isn\'t sitting at the table with you.',
-  },
-]
 
 const breadcrumbSchema = buildBreadcrumbListSchema({
   siteUrl: site.siteUrl,
@@ -296,14 +273,6 @@ if (faqSchema) {
       </p>
 
       <SpecialtyOutcomeCards label={guidanceLabel} title={guidanceTitle} outcomes={outcomeCards} />
-
-      <WhatsAppTestimonials
-        title="Real Moments of Change"
-        subtitle="What choosing, acting, and trusting yourself looks like in everyday life"
-        disclaimer="Authentic messages from coaching clients, shared anonymously to protect privacy"
-        isEn={true}
-        items={englishTestimonials}
-      />
 
       {faqs.length > 0 && (
         <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white mb-16 text-left">
