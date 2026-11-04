@@ -154,7 +154,7 @@ const brandDeep = '#295157'
 
           <!-- הכותרת העיצובית (לא H1) -->
           <div
-            class="mt-7 leading-[1] text-6xl md:text-7xl lg:text-8xl font-black font-display tracking-tight"
+            class:list={["mt-7 leading-[1.05] font-black font-display tracking-tight", isEn ? "text-5xl md:text-6xl lg:text-6xl" : "text-6xl md:text-7xl lg:text-8xl"]}
             style={`color:${brandDeep}`}
           >
             <div>{heroTitle1}</div>
