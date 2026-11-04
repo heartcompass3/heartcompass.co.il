@@ -153,6 +153,7 @@
   .font-body { font-family: 'Heebo', 'Heebo-fallback', sans-serif; }
 
   [dir="rtl"] { text-align: right; }
+  [dir="ltr"] { text-align: left; }
 
   ::selection {
     @apply bg-accent text-accent-foreground;
@@ -161,6 +162,15 @@
   /* ===== PortableText / RichText spacing ===== */
   .portabletext {
     direction: rtl;
+  }
+
+  /* LTR override for English pages and containers */
+  [dir="ltr"] .portabletext,
+  :lang(en) .portabletext,
+  .portabletext[dir="ltr"],
+  .portabletext-ltr {
+    direction: ltr;
+    text-align: left;
   }
 
   .portabletext > * + * {
@@ -193,10 +203,34 @@
     margin-top: 0.4rem;
   }
 
+  .portabletext ol {
+    list-style: decimal;
+    padding-right: 1.25rem;
+  }
+
+  [dir="ltr"] .portabletext ul,
+  :lang(en) .portabletext ul,
+  .portabletext-ltr ul,
+  [dir="ltr"] .portabletext ol,
+  :lang(en) .portabletext ol,
+  .portabletext-ltr ol {
+    padding-right: 0;
+    padding-left: 1.25rem;
+  }
+
   .portabletext blockquote {
     border-right: 4px solid hsl(var(--accent));
     padding-right: 1rem;
     color: hsl(var(--muted-foreground));
+  }
+
+  [dir="ltr"] .portabletext blockquote,
+  :lang(en) .portabletext blockquote,
+  .portabletext-ltr blockquote {
+    border-right: 0;
+    border-left: 4px solid hsl(var(--accent));
+    padding-right: 0;
+    padding-left: 1rem;
   }
 }
 

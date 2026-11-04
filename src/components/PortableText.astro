@@ -83,12 +83,29 @@ const components = {
   },
 }
 
+const isEn = language === 'en'
 const html = value ? toHTML(value, { components }) : ''
 ---
 
-{html ? <div class="portabletext" set:html={html} /> : null}
+{html ? (
+  <div
+    class:list={['portabletext', { 'portabletext-ltr': isEn }]}
+    dir={isEn ? 'ltr' : 'rtl'}
+    lang={language}
+    set:html={html}
+  />
+) : null}
 
 <style>
+  .portabletext-ltr {
+    direction: ltr;
+    text-align: left;
+  }
+  .portabletext-ltr :global(blockquote) {
+    border-right: 0;
+    border-left: 3px solid rgba(41, 81, 87, 0.35);
+  }
+
   /* פסקאות */
   .portabletext :global(p) {
     margin: 0;

@@ -127,7 +127,7 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
       </header>
 
       {intro && (
-        <div class="mb-10 space-y-5 text-lg text-primary/80 font-body leading-relaxed max-w-3xl mx-auto text-right">
+        <div class:list={["mb-10 space-y-5 text-lg text-primary/80 font-body leading-relaxed max-w-3xl mx-auto", en ? "text-left" : "text-right"]}>
           {intro.split(/\n\s*\n/).map((paragraph: string) => (
             <p>{paragraph}</p>
           ))}
@@ -136,7 +136,7 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
 
       <!-- Visible method summary -->
       {(aiCitation || keyTakeaways.length > 0) && (
-        <aside class="max-w-3xl mx-auto mb-10 bg-accent/10 border-r-4 border-accent rounded-2xl p-6 md:p-8 text-right">
+        <aside class:list={["max-w-3xl mx-auto mb-10 bg-accent/10 rounded-2xl p-6 md:p-8", en ? "border-l-4 border-accent text-left" : "border-r-4 border-accent text-right"]}>
           <h2 class="text-accent font-display font-black text-lg mb-3">{ktHeading}</h2>
           {aiCitation && (
             <p class="text-primary font-body font-semibold text-lg leading-relaxed">{aiCitation}</p>
@@ -366,6 +366,14 @@ const schemas = faqSchema ? [methodSchema, faqSchema] : [methodSchema]
 <style>
   .method-page { overflow-wrap: anywhere; }
   .method-heading { max-width: 24ch; margin-inline: auto; text-wrap: balance; }
+  .english-method {
+    direction: ltr;
+    text-align: left;
+  }
+  .english-method :global(.portabletext) {
+    direction: ltr;
+    text-align: left;
+  }
   .english-method :global(.text-right) { text-align: left; }
   .english-method aside { border-right-width: 0; border-left-width: 4px; }
   .method-page :global(.portabletext p + p) { margin-top: 1rem; }
