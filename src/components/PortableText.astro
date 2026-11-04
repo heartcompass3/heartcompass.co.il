@@ -6,7 +6,7 @@ import { withFilename } from '../lib/img'
 
 // filenamePrefix (בד"כ slug הדף/המאמר) — בסיס לשם קובץ תיאורי לתמונות בגוף
 // (Sanity vanity filename). אופציונלי: בלי זה, תמונות הגוף נשארות עם hash גולמי.
-const { value, filenamePrefix } = Astro.props
+const { value, filenamePrefix, language = "he" } = Astro.props
 let inlineImageIndex = 0
 
 const headingId = (v: any) => slugify((v?.children || []).map((c: any) => c.text || '').join(''))
@@ -57,7 +57,7 @@ const components = {
 
       return `
         <figure class="hc-inline-image">
-          <button type="button" class="hc-inline-image__trigger" aria-label="הגדלת תמונה">
+          <button type="button" class="hc-inline-image__trigger" aria-label="${language === 'en' ? 'Enlarge image' : 'הגדלת תמונה'}">
             <img
               src="${src}"
               data-full="${fullSrc}"

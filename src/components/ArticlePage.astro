@@ -1,0 +1,460 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import site from '../content/pages/site.json'
+import { sanity } from '../lib/sanity'
+import { ARTICLES_QUERY } from '../lib/sanityQueries'
+import PortableText from '../components/PortableText.astro'
+import Breadcrumbs from './Breadcrumbs.astro'
+import LanguageLink from './LanguageLink.astro'
+import { optImg } from '../lib/img'
+import { slugify } from '../lib/slug'
+import fallbackTaxonomy from '../content/insights-taxonomy.json'
+import insightDomains from '../content/insights-domains.json'
+import { relatedArticles, effectiveTaxonomy } from '../lib/insights.mjs'
+
+const { article, slug, language = "he" } = Astro.props
+const en = language === "en"
+const t = (he: string, english: string) => en ? english : he
+const alternates = [{language, slug: article.slug}, ...(article.translations || [])].filter(a => a.slug?.current)
+const languageLinks = alternates.map(a => ({language: a.language || "he", href: new URL(`${a.language === "en" ? "/en" : ""}/articles/${a.slug.current}`, site.siteUrl).toString()}))
+const otherLanguage = languageLinks.find(a => a.language !== language)
+// Related reading stays within the body-reviewed primary audience and shared topics.
+const allArticles = en ? [] : await sanity.fetch(ARTICLES_QUERY)
+const taxonomy = effectiveTaxonomy([...allArticles,article],fallbackTaxonomy)
+const placement = taxonomy[slug]
+const library = insightDomains.find(d => d.id === placement?.domain)
+const related = !en && library ? relatedArticles(allArticles, taxonomy, slug) : []
+
+// זמן קריאה + ספירת מילים מגוף ה-PortableText
+const bodyText = (Array.isArray(article.body) ? article.body : [])
+  .filter((b: any) => b?._type === 'block')
+  .flatMap((b: any) => (b.children || []).map((c: any) => c.text || ''))
+  .join(' ')
+const wordCount = bodyText.trim() ? bodyText.trim().split(/\s+/).length : 0
+const readTime = Math.max(1, Math.round(wordCount / 200))
+// תאריך עדכון תוכן אמיתי (contentUpdatedAt מעודכן ידנית) — לא _updatedAt הטכני
+// של Sanity, שמשתנה בכל שמירה כולל תיקונים טכניים שלא רלוונטיים לקורא/לגוגל.
+const displayUpdatedAt = article.contentUpdatedAt || article.publishedAt
+const updatedDate = displayUpdatedAt
+  ? new Date(displayUpdatedAt).toLocaleDateString(en ? 'en-GB' : 'he-IL')
+  : ''
+
+// תוכן עניינים — מכותרות H2/H3 בגוף (חייב להתאים ל-id ב-PortableText)
+const headings = (Array.isArray(article.body) ? article.body : [])
+  .filter((b: any) => b?._type === 'block' && (b.style === 'h2' || b.style === 'h3'))
+  .map((b: any) => {
+    const text = (b.children || []).map((c: any) => c.text || '').join('')
+    return { text, id: slugify(text), level: b.style }
+  })
+  .filter((h: any) => h.text)
+const showToc = headings.length >= 3
+
+// seo.title/description הם override אופציונלי — ברירת המחדל היא מה שהקורא רואה בפועל
+const title = article.seo?.title?.trim()
+  ? article.seo.title
+  : `${article.title} | ${site.brand}`
+const description = article.seo?.description?.trim() || article.excerpt || 'מאמר מתוך מצפן הלב.'
+
+const canonical = new URL(Astro.url.pathname, site.siteUrl).toString()
+// תמונת שיתוף ממוטבת (~1200px, WebP/AVIF) במקום המקור המלא הכבד.
+const ogImage = article.mainImage?.asset?.url
+  ? optImg(article.mainImage.asset.url, 1200, 80, slug)
+  : undefined
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.title,
+  description,
+  abstract: article.aiCitation || undefined,
+  disambiguatingDescription: article.aiContext || undefined,
+  inLanguage: language,
+  image: ogImage ? [ogImage] : undefined,
+  author: {
+    '@type': 'Person',
+    '@id': `${site.siteUrl}/#person`,
+    name: en ? 'Yossi Medalsi' : article.author?.name || article.authorLine || site.fullName,
+    jobTitle: t('מאמן רגשי מוסמך', 'Certified emotional coach'),
+    url: `${site.siteUrl}/${en ? 'en/about' : 'about'}`,
+  },
+  publisher: {
+    '@type': 'Organization',
+    '@id': `${site.siteUrl}/#business`,
+    name: site.brand,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${site.siteUrl}/assets/logo.png`,
+    },
+  },
+  datePublished: article.publishedAt || undefined,
+  // תאריך עדכון תוכן אמיתי (contentUpdatedAt); נופל חזרה לתאריך הפרסום —
+  // לא ל-_updatedAt הטכני, כדי לא לזייף אות רעננות על עריכות שוליות.
+  dateModified: displayUpdatedAt || undefined,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonical,
+  },
+  ...(wordCount ? { wordCount } : {}),
+  ...(article.tags?.length ? { articleSection: en ? "Teens" : article.tags[0] } : {}),
+  ...(article.painTags?.length ? { keywords: article.painTags.join(', ') } : {}),
+  ...(article.sources?.length
+    ? {
+        citation: article.sources.map((s: any) => ({
+          '@type': 'CreativeWork',
+          name: s.title,
+          ...(s.authors ? { creditText: s.authors } : {}),
+          ...(s.publisher ? { publisher: { '@type': 'Organization', name: s.publisher } } : {}),
+          ...(s.url ? { url: s.url } : {}),
+        })),
+      }
+    : {}),
+}
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: en ? 'Heart Compass' : site.brand,
+      item: `${site.siteUrl}/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: t('מאמרים', 'Articles in Hebrew'),
+      item: `${site.siteUrl}/articles`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: article.title,
+      item: canonical,
+    },
+  ],
+}
+
+// ─── FAQPage Schema — רק אם יש שאלות ────────────────────────────
+const faqSchema = article.faqItems?.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: article.faqItems.map((item: { question: string; answer: string }) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    }
+  : null
+
+const schemas = faqSchema
+  ? [articleSchema, breadcrumbSchema, faqSchema]
+  : [articleSchema, breadcrumbSchema]
+// ──────────────────────────────────────────────────────────────────
+---
+
+<BaseLayout
+  title={title}
+  language={language}
+  languageLinks={languageLinks}
+  description={description}
+  canonical={canonical}
+  ogImage={ogImage}
+  ogImageAlt={article.mainImage?.alt}
+  pageType="article"
+  publishedTime={article.publishedAt}
+  modifiedTime={displayUpdatedAt}
+  schema={schemas}
+>
+  <article lang={language} dir={en ? "ltr" : "rtl"} class:list={["animate-fade-in py-24 bg-background min-h-screen", {"english-article": en}]}>
+    <div class={showToc ? 'max-w-6xl mx-auto px-6' : 'max-w-5xl mx-auto px-6'}>
+      <a
+        href="/articles"
+        class="flex items-center text-primary hover:text-gold-dark mb-10 font-bold transition-colors bg-white px-6 py-3 rounded-full shadow-md w-fit border border-accent/20"
+      >
+        {t('← חזרה למאמרים', '← Articles in Hebrew')}
+      </a>
+
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <Breadcrumbs language={language} items={[{ name: t('מאמרים', 'Articles in Hebrew'), href: '/articles' }, { name: article.title }]} withSchema={false} />
+        {otherLanguage && <LanguageLink href={otherLanguage.href} language={otherLanguage.language} />}
+      </div>
+      {!en && library && <p class="mb-6 text-primary/75"><a href={`/insights/${library.id}`} class="underline font-bold">למאמרים נוספים: {library.name}</a></p>}
+
+      <div class={showToc ? 'lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start' : ''}>
+        {/* ─── תוכן עניינים: סיידבר דביק בצד (דסקטופ בלבד) ─────── */}
+        {showToc && (
+          <aside class="hidden lg:block lg:sticky lg:top-28">
+            <nav class="bg-white border border-primary/10 border-r-4 border-r-accent rounded-2xl px-5 py-5 text-right shadow-sm">
+              <p class="text-accent font-display font-black text-sm tracking-wide mb-4">{t('תוכן העניינים', 'On this page')}</p>
+              <ul class="space-y-2.5">
+                {headings.map((h: any) => (
+                  <li class={h.level === 'h3' ? 'pr-4' : ''}>
+                    <a href={`#${h.id}`} class="block text-sm leading-snug text-primary/75 hover:text-accent hover:underline underline-offset-4 font-body transition-colors">{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        )}
+
+      <div class="min-w-0">
+        <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-2xl border border-white">
+        {article.mainImage?.asset?.url && (
+          <div class="w-full h-80 rounded-[2rem] overflow-hidden mb-12 shadow-lg">
+            <img
+              src={optImg(article.mainImage.asset.url, 1400, 80, slug)}
+              srcset={`${optImg(article.mainImage.asset.url, 700, 80, slug)} 700w, ${optImg(article.mainImage.asset.url, 1400, 80, slug)} 1400w, ${optImg(article.mainImage.asset.url, 2100, 80, slug)} 2100w`}
+              sizes="(max-width: 768px) 100vw, 900px"
+              alt={article.mainImage.alt || article.title || `מאמר | ${site.brand}`}
+              class="w-full h-full object-cover"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        )}
+
+        <header class="text-center">
+
+          <h1 class="text-4xl md:text-6xl font-black text-primary font-display leading-tight mx-auto max-w-[20ch]">
+            {article.title}
+          </h1>
+
+          {article.goldLine && (
+            <p class="text-accent font-bold tracking-wide mt-5 font-display">
+              {article.goldLine}
+            </p>
+          )}
+
+          <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-primary/60 font-body mt-6 text-sm">
+            <span class="font-bold text-primary">{article.authorLine || `מאת ${article.author?.name || site.fullName}`}</span>
+            <span class="inline-flex items-center gap-1 text-accent font-bold"><span>✓</span> {t("נבדק ואומת", "Reviewed")}</span>
+            {updatedDate && <><span>•</span><span>{t("עודכן:", "Updated:")} {updatedDate}</span></>}
+            {readTime > 0 && <><span>•</span><span>{readTime} {t("דק׳ קריאה", "min read")}</span></>}
+          </div>
+
+          {/* ─── מוקדי כאב (צ'יפים → /pain/[slug]) — הקשר נושאי מוקדם ─── */}
+          {!en && article.pains?.length > 0 && (
+            <div class="flex flex-wrap items-center justify-center gap-2.5 mt-6">
+              {article.pains.map((p: any) => (
+                <a
+                  href={`/pain/${p.slug}`}
+                  class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent/10 text-accent font-bold text-sm font-body hover:bg-accent hover:text-primary transition-colors"
+                >
+                  <span aria-hidden="true">🩹</span>{p.title}
+                </a>
+              ))}
+            </div>
+          )}
+
+          {/* excerpt לא מוצג כאן בכוונה: הוא משמש כ-meta description ובכרטיסים,
+             ואין צורך לחזור עליו מעל תיבת "בקצרה". */}
+        </header>
+
+        {/* ─── בקצרה: משפט תשובה (AEO) + נקודות מפתח, בתיבה אחת ─────── */}
+        {(article.aiCitation || article.keyTakeaways?.items?.length > 0) && (
+          <aside class="mt-10 bg-accent/10 border-r-4 border-accent rounded-2xl p-6 md:p-8 max-w-3xl mx-auto text-right">
+            <p class="text-accent font-display font-black text-sm tracking-wide mb-3">{article.keyTakeaways?.heading || t('בקצרה', 'At a glance')}</p>
+
+            {article.aiCitation && (
+              <p class="text-primary font-body font-semibold text-lg leading-relaxed">
+                {article.aiCitation}
+              </p>
+            )}
+
+            {article.keyTakeaways?.items?.length > 0 && (
+              <ul class={`space-y-3 ${article.aiCitation ? 'mt-5 pt-5 border-t border-accent/20' : ''}`}>
+                {article.keyTakeaways.items.map((point: string) => (
+                  <li class="flex items-start gap-3 text-primary/80 font-body leading-relaxed">
+                    <span class="text-accent font-black mt-0.5">✓</span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </aside>
+        )}
+        {/* ───────────────────────────────────────────────────────── */}
+
+        {/* ─── תוכן עניינים: אקורדיון מתקפל (מובייל בלבד) ─────── */}
+        {showToc && (
+          <details class="lg:hidden mt-8 bg-white border border-primary/10 border-r-4 border-r-accent rounded-2xl px-6 py-4 text-right shadow-sm group">
+            <summary class="text-accent font-display font-black text-sm tracking-wide cursor-pointer list-none flex items-center justify-between">
+              {t('תוכן העניינים', 'On this page')}
+              <span class="text-accent transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <ul class="space-y-2.5 mt-4">
+              {headings.map((h: any) => (
+                <li class={h.level === 'h3' ? 'pr-4' : ''}>
+                  <a href={`#${h.id}`} class="block text-sm text-primary/75 hover:text-accent font-body">{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+
+        <div class="mt-14 prose prose-xl max-w-none text-primary/80 font-body leading-9">
+          <PortableText value={article.body} filenamePrefix={slug} language={language} />
+        </div>
+
+        {/* ─── שאלות נפוצות ──────────────────────────────────────── */}
+        {article.faqItems?.length > 0 && (
+          <section class="mt-16 border-t border-primary/10 pt-12">
+            <h2 class="text-2xl font-black text-primary font-display mb-8 text-center">
+              {t('שאלות נפוצות', 'Frequently asked questions')}
+            </h2>
+            <div class="space-y-4">
+              {article.faqItems.map((item: { question: string; answer: string }) => (
+                <details class="group border border-primary/10 rounded-2xl overflow-hidden bg-background">
+                  <summary class="px-6 py-5 cursor-pointer font-bold text-primary font-body text-lg list-none flex justify-between items-center hover:bg-primary/5 transition-colors">
+                    {item.question}
+                    <span class="text-accent text-xl transition-transform group-open:rotate-45 mr-4">+</span>
+                  </summary>
+                  <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed text-base">
+                    {item.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+        {/* ───────────────────────────────────────────────────────── */}
+
+        {/* ─── מקורות ──────────────────────────────────────────────── */}
+        {article.sources?.length > 0 && (
+          <section class="mt-16 border-t border-primary/10 pt-12">
+            <h2 class="text-2xl font-black text-primary font-display mb-8 text-center">
+              {t('מקורות', 'Sources')}
+            </h2>
+            <ul class="space-y-4 max-w-3xl mx-auto">
+              {article.sources.map((s: any) => (
+                <li class="text-sm text-primary/70 font-body leading-relaxed border-r-2 border-accent/30 pr-4">
+                  <span class="font-bold text-primary">
+                    {s.url ? (
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" class="hover:text-gold-dark underline decoration-accent/40">
+                        {s.title}
+                      </a>
+                    ) : (
+                      s.title
+                    )}
+                  </span>
+                  {(s.authors || s.publisher || s.year) && (
+                    <span class="block text-primary/50 text-xs mt-0.5">
+                      {[s.authors, s.publisher, s.year].filter(Boolean).join(' · ')}
+                    </span>
+                  )}
+                  {s.note && <span class="block mt-1">{s.note}</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {/* ───────────────────────────────────────────────────────── */}
+
+        {/* ─── קריאה לפעולה (CTA) ─────────────────────────────────── */}
+        {(article.cta?.heading || article.cta?.text) && (
+          <section class="mt-16 bg-gradient-to-br from-primary to-gold-dark rounded-[2rem] p-10 md:p-14 text-center shadow-xl">
+            {article.cta.heading && (
+              <h2 class="text-3xl md:text-4xl font-black text-white font-display leading-tight mb-5">
+                {article.cta.heading}
+              </h2>
+            )}
+            {article.cta.text && (
+              <p class="text-white/90 font-body text-lg leading-relaxed max-w-2xl mx-auto mb-8">
+                {article.cta.text}
+              </p>
+            )}
+            {article.cta.buttonLabel && article.cta.buttonHref && (
+              <a
+                href={article.cta.buttonHref}
+                class="inline-block bg-white text-primary font-bold text-lg px-10 py-4 rounded-full shadow-lg hover:scale-105 transition-transform"
+              >
+                {article.cta.buttonLabel}
+              </a>
+            )}
+          </section>
+        )}
+        {/* ───────────────────────────────────────────────────────── */}
+      </div>
+
+      {/* ─── תיבת מחבר (E-E-A-T) ──────────────────────────────── */}
+      <aside class="mt-12 max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-right">
+        <img
+          src="/assets/yossi-hero.jpg"
+          alt={en ? 'Yossi Medalsi' : article.author?.name || 'יוסי מדלסי'}
+          width="96" height="96"
+          class="w-24 h-24 rounded-full object-cover object-top shrink-0 border-2 border-accent/20"
+          loading="lazy"
+        />
+        <div>
+          <a href={en ? "/en/about" : "/about"} class="text-xl font-black text-primary font-display hover:text-gold-dark transition-colors">
+            {en ? 'Yossi Medalsi' : article.author?.name || 'יוסי מדלסי'}
+          </a>
+          <p class="mt-2 text-primary/70 font-body leading-relaxed">
+            {t('מאמן רגשי מוסמך ומפתח שיטת מ.ס.ע במצפן הלב. מלווה נוער, הורים וזוגות לשחרור דפוסים רגשיים מהשורש.', 'Yossi Medalsi, emotional coach and founder of Heart Compass. Work begins with the patterns holding you back, then moves to the goals and life you want to build.')}
+          </p>
+        </div>
+      </aside>
+
+      {/* ─── מאמרים נוספים (אוטומטי לפי תגיות) ──────────────────── */}
+      {related?.length > 0 && (
+        <section class="mt-20">
+          <h2 class="text-3xl font-black text-primary font-display mb-10 text-center">
+            מאמרים נוספים
+          </h2>
+          <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+            {related.map((a: any) => (
+              <a
+                href={`/articles/${a.slug?.current}`}
+                class="bg-white rounded-[2rem] shadow-xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border border-white/50 flex flex-col h-full overflow-hidden hover:-translate-y-2 group ring-1 ring-black/5"
+              >
+                {a.mainImage?.asset?.url && (
+                  <div class="h-44 overflow-hidden relative w-full">
+                    <img
+                      src={optImg(a.mainImage.asset.url, 600, 80, a.slug?.current)}
+                      alt={a.mainImage.alt || a.title || `מאמר | ${site.brand}`}
+                      width="600" height="352"
+                      class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[1.5s]"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div class="p-8 flex-1 flex flex-col text-center items-center">
+                  <h3 class="text-xl font-black text-primary mb-2 font-display leading-tight group-hover:text-gold-dark transition-colors">
+                    {a.title}
+                  </h3>
+                  {a.goldLine && (
+                    <p class="text-accent font-bold tracking-wide mb-3 font-display text-sm">
+                      {a.goldLine}
+                    </p>
+                  )}
+                  {a.excerpt && (
+                    <p class="text-primary/70 font-body leading-relaxed line-clamp-3 text-base">
+                      {a.excerpt}
+                    </p>
+                  )}
+                  <div class="mt-auto pt-5 flex items-center text-accent font-bold tracking-wide group-hover:gap-2 transition-all">
+                    קרא עוד <span class="mr-2">←</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+      {/* ───────────────────────────────────────────────────────── */}
+      </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .english-article :global(.sm\:text-right), .english-article :global(.text-right) { text-align: left; }
+  .english-article :global(.portabletext) { direction: ltr; text-align: left; }
+  .english-article :global(blockquote) { border-right: 0; border-left: 4px solid var(--color-accent, #b9814f); padding-left: 1rem; }
+</style>

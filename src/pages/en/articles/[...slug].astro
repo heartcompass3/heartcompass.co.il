@@ -1,0 +1,11 @@
+---
+import ArticlePage from '../../../components/ArticlePage.astro'
+import { sanity } from '../../../lib/sanity'
+import { ARTICLE_BY_SLUG_QUERY } from '../../../lib/sanityQueries'
+const raw = Astro.params.slug || ''
+const slug = raw.trim().replace(/^\/+/, '')
+if (slug !== raw) return Astro.redirect(`/en/articles/${encodeURI(slug)}`, 301)
+const article = await sanity.fetch(ARTICLE_BY_SLUG_QUERY, {slug, language: 'en'})
+if (!article) return new Response('Article not found', {status: 404})
+---
+<ArticlePage article={article} slug={slug} language="en" />

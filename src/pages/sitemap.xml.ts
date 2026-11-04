@@ -49,6 +49,7 @@ export const GET: APIRoute = async () => {
     articles = await sanity.fetch(`
       *[_type == "article" && defined(slug.current)]{
         "slug": slug.current,
+        language,
         "_updatedAt": coalesce(contentUpdatedAt, publishedAt, _updatedAt),
         mainImage{ alt, asset->{url} },
         "bodyImages": body[_type == "image"]{ alt, asset->{url} }
@@ -128,7 +129,8 @@ export const GET: APIRoute = async () => {
         entries.push({ loc: encodeURI(`${baseUrl}${prefix}${d.slug}`), lastmod: d._updatedAt, images: d.images })
       )
 
-  addDocs(articles, '/articles/')
+  addDocs(articles.filter((a: any) => !a.language || a.language === 'he'), '/articles/')
+  addDocs(articles.filter((a: any) => a.language === 'en'), '/en/articles/')
   addDocs(pages, '/')
   addDocs(pains, '/pain/')
   addDocs(landingPages, '/guide/')

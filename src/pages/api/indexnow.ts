@@ -55,7 +55,7 @@ function urlForDoc(doc: any): string | null {
     case 'homePage':
       return `${site.siteUrl}/`
     case 'article':
-      return slug ? `${site.siteUrl}/articles/${slug}` : null
+      return slug ? `${site.siteUrl}/${doc.language === "en" ? "en/" : ""}articles/${slug}` : null
     case 'service':
       return slug ? `${site.siteUrl}/services/${slug}` : null
     case 'page':

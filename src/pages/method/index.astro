@@ -58,7 +58,7 @@ if (!data) {
 }
 
 const methodArticles = await sanity.fetch(/* groq */ `
-*[_type == "article" && relatedToMethod == true] | order(coalesce(publishedAt, _createdAt) desc){
+*[_type == "article" && coalesce(language, "he") == "he" && relatedToMethod == true] | order(coalesce(publishedAt, _createdAt) desc){
   title,
   "slug": slug.current,
   excerpt,

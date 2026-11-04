@@ -125,7 +125,7 @@ export const SITE_SETTINGS_QUERY = /* groq */ `
 // =======================
 
 export const ARTICLES_QUERY = /* groq */ `
-*[_type == "article"]
+*[_type == "article" && coalesce(language, "he") == "he"]
 | order(coalesce(publishedAt, _createdAt) desc)
 {
   _id,
@@ -154,9 +154,12 @@ export const ARTICLES_QUERY = /* groq */ `
 `
 
 export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
-*[_type == "article" && slug.current == $slug][0]{
+*[_type == "article" && coalesce(language, "he") == $language && slug.current == $slug][0]{
   _id,
   _updatedAt,
+  language,
+  translationOf,
+  "translations": *[_type == "article" && !(_id in path("drafts.**")) && defined(slug.current) && (_id == ^.translationOf._ref || translationOf._ref == ^._id)]{language, slug},
   title,
   goldLine,
   slug,
@@ -215,7 +218,7 @@ export const ARTICLE_BY_SLUG_QUERY = /* groq */ `
 // ייחנקו לטובת החדשים בלבד. נופל חזרה ל-tags רק אם אין חפיפת pains בכלל
 // (לדוגמה מאמר עם מוקד כאב אחד ייחודי).
 export const RELATED_ARTICLES_QUERY = /* groq */ `
-*[_type == "article" && slug.current != $slug && contentRole != "legacy" && (
+*[_type == "article" && coalesce(language, "he") == "he" && slug.current != $slug && contentRole != "legacy" && (
   count(pains[]->slug.current[@ in $painSlugs]) > 0 ||
   count(tags[@ in $tags]) > 0
 )]
@@ -259,7 +262,7 @@ export const PAIN_BY_SLUG_QUERY = /* groq */ `
   seo,
   faqItems[]{ question, answer },
   cta{ heading, text, buttonLabel, buttonHref },
-  "articles": *[_type == "article" && references(^._id)]
+  "articles": *[_type == "article" && coalesce(language, "he") == "he" && references(^._id)]
     | order(coalesce(publishedAt, _createdAt) desc){
       _id,
       title,
@@ -282,7 +285,7 @@ export const PAINS_LIST_QUERY = /* groq */ `
   goldLine,
   "slug": slug.current,
   excerpt,
-  "count": count(*[_type == "article" && references(^._id)])
+  "count": count(*[_type == "article" && coalesce(language, "he") == "he" && references(^._id)])
 }
 `
 

@@ -14,6 +14,18 @@ export default defineType({
 
   fields: [
     defineField({
+      name: 'language', title: 'שפת המאמר', type: 'string', initialValue: 'he',
+      options: {list: [{title: 'עברית', value: 'he'}, {title: 'English', value: 'en'}]},
+      description: 'מאמרים ללא ערך נחשבים לעברית. אנגלית אינה מופיעה ברשימות בעברית.',
+      validation: (Rule) => Rule.valid('he', 'en'),
+    }),
+    defineField({
+      name: 'translationOf', title: 'תרגום של המאמר', type: 'reference', to: [{type: 'article'}],
+      description: 'בגרסה האנגלית בחרו את המאמר המקורי בעברית. הקישור בשני הכיוונים נוצר אוטומטית רק אחרי פרסום התרגום.',
+      options: {filter: 'coalesce(language, "he") == "he"'},
+      hidden: ({document}) => document?.language !== 'en',
+    }),
+    defineField({
       name: 'title',
       title: 'כותרת ראשית',
       type: 'string',
