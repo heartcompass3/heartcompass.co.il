@@ -1,0 +1,8 @@
+---
+import MethodPage from '../../components/MethodPage.astro'
+import { loadMethodPage } from '../../lib/methodQuery'
+const props = await loadMethodPage('en')
+if (!props.data) return new Response('Not found', { status: 404 })
+---
+<MethodPage {...props} language="en" />
+
