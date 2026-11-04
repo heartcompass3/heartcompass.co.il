@@ -10,6 +10,7 @@ interface Props {
   title?: string
   subtitle?: string
   disclaimer?: string
+  isEn?: boolean
   items: TestimonialItem[]
 }
 
@@ -17,6 +18,7 @@ const {
   title = 'רגעים של שינוי מהשטח',
   subtitle = 'איך נראית היציאה מתקיעות לעצמאות בחיים האמיתיים',
   disclaimer = 'הודעות אותנטיות מתוך ליוויים אישיים, בעילום שם מלא לשמירה על סודיות',
+  isEn = false,
   items = [],
 } = Astro.props
 ---
@@ -42,7 +44,7 @@ const {
 
     <div class="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
       {items.map((item) => (
-        <article class="relative flex flex-col justify-between rounded-3xl p-6 md:p-7 bg-[#E7FEE4]/80 dark:bg-emerald-950/30 border border-emerald-600/20 shadow-sm hover:shadow-md transition-shadow">
+        <article class:list={["relative flex flex-col justify-between rounded-3xl p-6 md:p-7 bg-[#E7FEE4]/80 dark:bg-emerald-950/30 border border-emerald-600/20 shadow-sm hover:shadow-md transition-shadow", isEn ? "text-left" : "text-right"]} dir={isEn ? "ltr" : "rtl"}>
           <div>
             {item.context && (
               <div class="flex items-center justify-between mb-4 border-b border-emerald-700/10 pb-2.5">
@@ -50,7 +52,7 @@ const {
                   {item.context}
                 </span>
                 <span class="text-[11px] text-emerald-900/60 font-mono">
-                  {item.time || 'הודעה מוקלטת/נכנסת'}
+                  {item.time || (isEn ? 'Incoming message' : 'הודעה נכנסת')}
                 </span>
               </div>
             )}
@@ -59,9 +61,9 @@ const {
             </p>
           </div>
           <div class="mt-5 pt-3 flex items-center justify-between text-emerald-800/70 text-xs border-t border-emerald-700/10">
-            <span class="font-medium">{item.role || 'מתוך וואטסאפ'}</span>
+            <span class="font-medium">{item.role || (isEn ? 'WhatsApp message' : 'מתוך וואטסאפ')}</span>
             <div class="flex items-center gap-1 text-emerald-600">
-              <span class="text-[11px] font-mono">נקרא</span>
+              <span class="text-[11px] font-mono">{isEn ? 'Read' : 'נקרא'}</span>
               <svg class="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
                 <path stroke-linecap="round" stroke-linejoin="round" d="m9.5 12.75 3.5 3.5 6.5-9.75"/>

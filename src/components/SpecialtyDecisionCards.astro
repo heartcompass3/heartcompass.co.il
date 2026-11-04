@@ -6,40 +6,52 @@ const {
   fitNote = {},
   safety = {},
   professionalTrust = {},
+  sectionLabel = 'לפני הפגישה הראשונה',
+  sectionTitle = 'הדברים שכדאי לדעת לפני שמחליטים להתחיל',
+  aboutHref = '/about',
+  aboutLabel = 'להכיר את יוסי ואת ההכשרות',
+  isEn = false,
 } = Astro.props as {
   gettingStarted?: Card
   fitNote?: Card
   safety?: Card
   professionalTrust?: Card
+  sectionLabel?: string
+  sectionTitle?: string
+  aboutHref?: string
+  aboutLabel?: string
+  isEn?: boolean
 }
 ---
 
 <section class="mb-16" aria-labelledby="before-first-meeting">
   <div class="mx-auto mb-8 max-w-3xl text-center">
-    <p class="mb-3 text-sm font-black tracking-wide text-accent">לפני הפגישה הראשונה</p>
-    <h2 id="before-first-meeting" class="font-display text-3xl font-black text-primary">הדברים שכדאי לדעת לפני שמחליטים להתחיל</h2>
+    <p class="mb-3 text-sm font-black tracking-wide text-accent">{sectionLabel}</p>
+    <h2 id="before-first-meeting" class="font-display text-3xl font-black text-primary">{sectionTitle}</h2>
   </div>
 
   <div class="grid gap-6 md:grid-cols-3">
-    <div class="rounded-3xl border-r-4 border-accent bg-accent/10 p-7">
-    <h2 class="font-display text-2xl font-black text-primary">{gettingStarted.title}</h2>
-    <p class="mt-4 font-body leading-relaxed text-primary/80">{gettingStarted.text}</p>
-  </div>
+    <div class:list={['rounded-3xl bg-accent/10 p-7', isEn ? 'border-l-4 border-accent text-left' : 'border-r-4 border-accent text-right']}>
+      <h2 class="font-display text-2xl font-black text-primary">{gettingStarted.title}</h2>
+      <p class="mt-4 font-body leading-relaxed text-primary/80">{gettingStarted.text}</p>
+    </div>
 
-  <div class="rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
-    <h2 class="font-display text-2xl font-black text-primary">{fitNote.title}</h2>
-    <p class="mt-4 font-body leading-relaxed text-primary/80">{fitNote.text}</p>
-  </div>
+    <div class="rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
+      <h2 class="font-display text-2xl font-black text-primary">{fitNote.title}</h2>
+      <p class="mt-4 font-body leading-relaxed text-primary/80">{fitNote.text}</p>
+    </div>
 
-  <div class="rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
-    <h2 class="font-display text-2xl font-black text-primary">{professionalTrust.title}</h2>
-    <p class="mt-4 font-body leading-relaxed text-primary/80">{professionalTrust.text}</p>
-    <a href="/about" class="mt-4 inline-block font-bold text-accent underline underline-offset-4">להכיר את יוסי ואת ההכשרות</a>
+    <div class="rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
+      <h2 class="font-display text-2xl font-black text-primary">{professionalTrust.title}</h2>
+      <p class="mt-4 font-body leading-relaxed text-primary/80">{professionalTrust.text}</p>
+      <a href={aboutHref} class="mt-4 inline-block font-bold text-accent underline underline-offset-4">{aboutLabel}</a>
     </div>
   </div>
 </section>
 
-<section class="mb-16 rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
-  <h2 class="font-display text-2xl font-black text-primary">{safety.title}</h2>
-  <p class="mt-4 font-body leading-relaxed text-primary/80">{safety.text}</p>
-</section>
+{safety?.text && (
+  <section class="mb-16 rounded-3xl border border-primary/10 bg-white p-7 shadow-sm">
+    <h2 class="font-display text-2xl font-black text-primary">{safety.title}</h2>
+    <p class="mt-4 font-body leading-relaxed text-primary/80">{safety.text}</p>
+  </section>
+)}

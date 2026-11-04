@@ -6,6 +6,7 @@ import SpecialtyDecisionCards from '../../components/SpecialtyDecisionCards.astr
 import SpecialtyOutcomeCards from '../../components/SpecialtyOutcomeCards.astro'
 import SpecialtyArticles from '../../components/SpecialtyArticles.astro'
 import WhatsAppTestimonials from '../../components/WhatsAppTestimonials.astro'
+import LanguageLink from '../../components/LanguageLink.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
@@ -215,13 +216,13 @@ const personalTestimonials = [
     context: 'פרידה וגירושין: הצבת גבול ושקט מול הגרוש',
     time: 'היום, 14:15',
     role: 'הודעת לקוחה • תהליך אישי',
-    text: 'הוא שוב ניסה להדליק אותי היום בהודעות על הילדים. הרגשתי את הכיווץ המוכר בבטן, אבל במקום להיכנס להיסטריה, לצרוח או לבכות כמו שהיה קורה לי תמיד — עצרתי ונשמתי. עניתי לו משפט אחד ענייני, בלי להתגונן ובלי לתקוף. הוא היה בהלם שזה לא הפך למלחמה. יוסי, אני קולטת שאני מתחילה לבנות את החיים שלי מחדש מתוך שקט.',
+    text: 'הוא שוב ניסה להדליק אותי היום בהודעות על הילדים. הרגשתי את הכיווץ המוכר בבטן, אבל במקום להיכנס להיסטריה, לצרוח או לבכות כמו שהיה קורה לי תמיד, עצרתי ונשמתי. עניתי לו משפט אחד ענייני, בלי להתגונן ובלי לתקוף. הוא היה בהלם שזה לא הפך למלחמה. יוסי, אני קולטת שאני מתחילה לבנות את החיים שלי מחדש מתוך שקט.',
   },
   {
     context: 'תקיעות ופרפקציוניזם: שחרור שליטה ותנועה',
     time: 'אתמול, 23:08',
     role: 'הודעת לקוח • תהליך אישי',
-    text: 'תפסתי את עצמי אתמול בערב: במקום להיתקע עוד פעם מול המחשב כל הלילה, לנתח מיליון תרחישים ולמחוק את הטיוטה — פשוט אמרתי לעצמי "טוב מספיק זה מצוין". שלחתי את זה וסגרתי את הלפטופ. הלכתי לישון בלי הדפיקות לב ובלי ההלקאה העצמית. זה נשמע אולי קטן, אבל בשבילי היכולת לשחרר ככה את השליטה זה אוויר לנשימה.',
+    text: 'תפסתי את עצמי אתמול בערב: במקום להיתקע עוד פעם מול המחשב כל הלילה, לנתח מיליון תרחישים ולמחוק את הטיוטה, פשוט אמרתי לעצמי "טוב מספיק זה מצוין". שלחתי את זה וסגרתי את הלפטופ. הלכתי לישון בלי הדפיקות לב ובלי ההלקאה העצמית. זה נשמע אולי קטן, אבל בשבילי היכולת לשחרר ככה את השליטה זה אוויר לנשימה.',
   },
   {
     context: 'זוגיות ודייטים: להשתחרר מפחד מדחייה',
@@ -244,7 +245,10 @@ const personalTestimonials = [
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-4xl mx-auto px-6">
-      <Breadcrumbs withSchema={false} items={[{ name: 'תחומי התמחות', href: '/specialties' }, { name: 'התפתחות אישית' }]} />
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <Breadcrumbs withSchema={false} items={[{ name: 'תחומי התמחות', href: '/specialties' }, { name: 'התפתחות אישית' }]} />
+        <LanguageLink href="https://www.heartcompass.co.il/en/specialties/personal" language="en" />
+      </div>
       <header class="mb-10 text-center">
         <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6">
           {h1}

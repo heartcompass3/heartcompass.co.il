@@ -1,0 +1,348 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../../components/Breadcrumbs.astro'
+import PortableText from '../../../components/PortableText.astro'
+import SpecialtyDecisionCards from '../../../components/SpecialtyDecisionCards.astro'
+import SpecialtyOutcomeCards from '../../../components/SpecialtyOutcomeCards.astro'
+import WhatsAppTestimonials from '../../../components/WhatsAppTestimonials.astro'
+import LanguageLink from '../../../components/LanguageLink.astro'
+import site from '../../../content/pages/site.json'
+import { sanity } from '../../../lib/sanity'
+import { buildBreadcrumbListSchema } from '../../../lib/breadcrumbs'
+import { buildAeoWebPageSchema, buildServiceSchema } from '../../../lib/schema'
+import { buildWhatsAppHref } from '../../../lib/whatsapp'
+
+const SLUG = 'en/specialties/personal'
+const ctaMessage = 'Hi Yossi, I visited the personal coaching page. I feel there are patterns holding me back, and I would like to explore taking the next step.'
+const ctaHref = buildWhatsAppHref(site.whatsAppPhone, ctaMessage)
+
+const page = await sanity.fetch(
+  `*[_type=="page" && slug.current in [$slug, "en-specialties-personal"]][0]{
+    title,
+    excerpt,
+    body,
+    specialty{
+      intro,
+      practicalGuidance{
+        label,
+        title,
+        intro,
+        steps[]{
+          _key,
+          title,
+          text
+        },
+        withoutTeen{
+          title,
+          text
+        },
+        safety{
+          title,
+          text
+        },
+        gettingStarted{
+          title,
+          text
+        },
+        professionalTrust{
+          title,
+          text
+        }
+      },
+      faqTitle,
+      faq[]{
+        question, answer
+      },
+      stagesTitle,
+      stages[]{
+        key, title, text
+      },
+      closing
+    },
+    aiCitation,
+    painTags,
+    aiContext,
+    seo{
+      title,
+      description,
+      canonical,
+      noindex,
+      ogImage{
+        alt,
+        asset->{url}
+      }
+    }
+  }`,
+  { slug: SLUG }
+)
+
+const fallback = {
+  title: 'Personal Emotional Coaching | Heart Compass',
+  gold: 'Release anxiety, perfectionism, and feeling stuck. Unpack automatic patterns, build steady self-trust, and turn your goals into independent action.',
+  intro: 'You can show up every day, work, care for others, and still feel that your own life is waiting. The thoughts run in loops of "what if", the business idea has waited years for more preparation, the conversation about a raise gets postponed again, and in relationships or after a breakup, the same old fears keep running the show. Personal coaching with the M.S.A. approach is designed to interrupt this cycle: understand what stops you at decisive moments, release the protective pattern at its root, and build steady autonomy to act from inner calm.',
+  faqTitle: 'Frequently Asked Questions About Personal Coaching',
+  closing: 'What decision, conversation, or beginning have you been putting off? We can start there. In an introductory call, we will explore what stands between you and that step, and how one-on-one coaching in the M.S.A. approach can help you build genuine autonomy and calm.'
+}
+
+const title = page?.seo?.title || page?.title || `${fallback.title} | ${site.brand}`
+const description = page?.seo?.description || page?.excerpt || fallback.gold
+const canonical = page?.seo?.canonical || new URL(Astro.url.pathname, site.siteUrl).toString()
+const noindex = page?.seo?.noindex || false
+const ogImage = page?.seo?.ogImage?.asset?.url || undefined
+const ogImageAlt = page?.seo?.ogImage?.alt || undefined
+
+const h1 = page?.title || fallback.title
+const gold = page?.excerpt || fallback.gold
+const deepDive = page?.body || []
+const intro = page?.specialty?.intro || fallback.intro
+const practicalGuidance = page?.specialty?.practicalGuidance || {}
+const guidanceLabel = practicalGuidance.label || 'What You Build Along the Way'
+const guidanceTitle = practicalGuidance.title || 'Using Conscious Choice in Critical Moments'
+const guidanceSteps = practicalGuidance.steps || [
+  { title: 'Voice and Boundaries', text: 'Expressing what you want, making clear requests, and setting boundaries without getting tangled in guilt.' },
+  { title: 'Action Without Perfectionism', text: 'Bringing ideas into the world, learning from feedback, and moving forward even when things are imperfect.' },
+  { title: 'Personal Direction', text: 'Knowing what you are working toward, choosing steps aligned with your values, and adapting as life evolves.' },
+]
+const withoutTeen = practicalGuidance.withoutTeen || {
+  title: 'Choosing One Focal Point to Begin',
+  text: 'Even if several areas feel challenging, you do not need to solve everything at once. We choose one meaningful pattern and goal, discovering along the way how it influences other areas of your life.',
+}
+const safety = practicalGuidance.safety || {
+  title: 'When is Medical or Psychiatric Care Essential?',
+  text: 'In cases of acute distress, self-harm, suicidal ideation, substance abuse, severe dissociation, or abrupt ongoing functional decline, it is essential to seek timely care from mental health professionals, your physician, or emergency services.',
+}
+const gettingStarted = practicalGuidance.gettingStarted || {
+  title: 'Starting Even Without a Clear Goal',
+  text: 'In an introductory call, we explore what weighs on you and what you would like to feel different. All sessions take place online via Zoom in a private, quiet space.'
+}
+const professionalTrust = practicalGuidance.professionalTrust || {
+  title: 'One-on-One Coaching with Yossi Medalsi',
+  text: 'I guide you through mapping, deep emotional release, and turning insights into practical steps. Direction is chosen together and tested through what happens between sessions.'
+}
+const faqTitle = page?.specialty?.faqTitle || fallback.faqTitle
+const faqs = page?.specialty?.faq || []
+const closing = page?.specialty?.closing || fallback.closing
+const stagesTitle = page?.specialty?.stagesTitle || 'The Three Stages of the Personal Process'
+const stages = page?.specialty?.stages || []
+const outcomeCards = guidanceSteps
+
+const englishTestimonials = [
+  {
+    context: 'Career & Money: Salary Negotiation',
+    time: 'Yesterday, 17:42',
+    role: 'Client Message • Personal Coaching',
+    text: 'Yossi, I just walked out of his office and had to write to you. My knees were shaking, but I was smiling. For the first time in my life, I didn\'t apologize for asking for what I deserve. I simply put the numbers on the table calmly without fearing he would be angry. He didn\'t even push back, he just said "You\'re completely right, we\'ll update it starting next month." For years I thought I\'d get fired just for opening my mouth...',
+  },
+  {
+    context: 'Separation & Divorce: Setting Boundaries in Peace',
+    time: 'Today, 14:15',
+    role: 'Client Message • Personal Coaching',
+    text: 'He tried to trigger me again today in messages about the kids. I felt that familiar knot in my stomach, but instead of panicking, shouting, or crying like I always did, I paused and took a breath. I replied with one factual sentence, without defending or attacking. He was stunned that it didn\'t turn into a war. Yossi, I\'m realizing that I\'m starting to build my life anew from a place of peace.',
+  },
+  {
+    context: 'Stuckness & Perfectionism: Releasing Control',
+    time: 'Yesterday, 23:08',
+    role: 'Client Message • Personal Coaching',
+    text: 'I caught myself yesterday evening: instead of getting stuck in front of the computer all night analyzing a million scenarios and deleting the draft, I simply told myself "Good enough is great." I sent it and closed the laptop. I went to sleep without a racing heart and without beating myself up. It might sound small, but for me, letting go of control like that is breathing room.',
+  },
+  {
+    context: 'Dating & Relationships: Overcoming Fear of Rejection',
+    time: 'Friday, 10:20',
+    role: 'Client Message • Personal Coaching',
+    text: 'I had my first date yesterday after a very long time. For the first time, I didn\'t play "who I\'m supposed to be" and didn\'t spend every second worrying about how I looked in his eyes. I was just myself, and we even laughed about something that used to paralyze me with embarrassment. What a difference it makes when fear of rejection isn\'t sitting at the table with you.',
+  },
+]
+
+const breadcrumbSchema = buildBreadcrumbListSchema({
+  siteUrl: site.siteUrl,
+  brandName: site.brand,
+  crumbs: [
+    { name: 'Home', item: `${site.siteUrl}/en/about` },
+    { name: 'Personal Coaching', item: canonical },
+  ],
+})
+
+const faqSchema = faqs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${canonical}#faq`,
+  mainEntity: faqs.map((item: any) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+} : null
+
+const serviceSchema = buildServiceSchema({
+  siteUrl: site.siteUrl,
+  name: h1,
+  url: canonical,
+  description,
+  serviceType: 'Personal Emotional Coaching - M.S.A. Approach',
+})
+
+const webPageSchema = buildAeoWebPageSchema({
+  url: canonical,
+  name: h1 || title,
+  description,
+  abstract: page?.aiCitation,
+  disambiguatingDescription: page?.aiContext,
+  keywords: page?.painTags,
+  mainEntityId: serviceSchema['@id'],
+})
+const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema]
+if (faqSchema) {
+  schemaArray.push(faqSchema)
+}
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  noindex={noindex}
+  ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
+  schema={schemaArray}
+  language="en"
+>
+  <section class="animate-fade-in py-24 bg-background min-h-screen" dir="ltr" lang="en">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <Breadcrumbs withSchema={false} items={[{ name: 'Home', href: '/en/about' }, { name: 'Personal Coaching' }]} />
+        <LanguageLink href="https://www.heartcompass.co.il/specialties/personal" language="he" />
+      </div>
+      <header class="mb-10 text-center">
+        <h1 class="text-4xl md:text-6xl font-black text-primary font-display mb-6">
+          {h1}
+        </h1>
+        
+        <p class="text-xl text-accent font-body font-bold max-w-3xl mx-auto leading-relaxed">
+          {gold}
+        </p>
+      </header>
+
+      <!-- At a glance (AEO) -->
+      {(page?.aiCitation || (page?.painTags && page.painTags.length > 0)) && (
+        <aside class="max-w-3xl mx-auto mb-14 bg-accent/10 border-l-4 border-accent rounded-2xl p-6 md:p-8 text-left">
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">AT A GLANCE</p>
+          {page?.aiCitation && (
+            <p class="text-primary font-body font-semibold text-lg leading-relaxed">{page.aiCitation}</p>
+          )}
+          {page?.painTags && page.painTags.length > 0 && (
+            <div class={page?.aiCitation ? 'mt-5 pt-5 border-t border-accent/20' : ''}>
+              <p class="font-black text-primary font-body mb-3">A good fit if you experience:</p>
+              <ul class="space-y-2">
+                {page.painTags.map((t: string) => (
+                  <li class="flex items-start gap-3 text-primary/80 font-body leading-relaxed">
+                    <span class="text-accent font-black mt-0.5">✓</span>
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </aside>
+      )}
+
+      <p class="mb-12 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
+        {intro}
+      </p>
+
+      {deepDive.length > 0 && (
+        <section class="mb-16 rounded-[2.5rem] border border-primary/10 bg-white p-8 shadow-elegant md:p-12 text-left" aria-labelledby="personal-deep-dive">
+          <div class="mx-auto max-w-3xl">
+            <p class="mb-3 text-sm font-black tracking-wide text-accent">UNDERSTANDING THE PROCESS IN DEPTH</p>
+            <div id="personal-deep-dive" class="text-primary/80 font-body text-lg leading-relaxed">
+              <PortableText value={deepDive} language="en" />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <SpecialtyDecisionCards
+        gettingStarted={gettingStarted}
+        fitNote={withoutTeen}
+        safety={safety}
+        professionalTrust={professionalTrust}
+        sectionLabel="BEFORE YOUR FIRST SESSION"
+        sectionTitle="Important Things to Know Before Getting Started"
+        aboutHref="/en/about"
+        aboutLabel="Learn more about Yossi and my background"
+        isEn={true}
+      />
+
+      {stages.length > 0 && (
+        <section class="mb-16 text-left">
+          <h2 class="text-3xl font-black text-primary font-display text-center mb-10">{stagesTitle}</h2>
+          <div class="grid gap-6 md:grid-cols-3">
+            {stages.map((stage: any, index: number) => (
+              <div class="bg-white rounded-2xl p-6 shadow-md border border-primary/10">
+                <h3 class="text-accent font-black text-xl mb-2">{index + 1}. {stage.title}</h3>
+                <p class="text-primary/80 leading-relaxed">{stage.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <p class="mb-12 text-center">
+        <a href="/en/method" class="font-bold text-primary underline underline-offset-4">
+          Learn more about the M.S.A. approach &rarr;
+        </a>
+      </p>
+
+      <SpecialtyOutcomeCards label={guidanceLabel} title={guidanceTitle} outcomes={outcomeCards} />
+
+      <WhatsAppTestimonials
+        title="Real Moments of Change"
+        subtitle="What moving from feeling stuck to grounded autonomy looks like in everyday life"
+        disclaimer="Authentic messages from coaching clients, shared anonymously to protect privacy"
+        isEn={true}
+        items={englishTestimonials}
+      />
+
+      {faqs.length > 0 && (
+        <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white mb-16 text-left">
+          <h2 class="text-2xl md:text-3xl font-black text-primary font-display mb-10 text-center">
+            {faqTitle}
+          </h2>
+
+          <div class="space-y-4">
+            {faqs.map((item: any) => (
+              <details name="specialty-faq" class="specialty-faq-item border border-primary/10 rounded-2xl p-6 bg-background cursor-pointer">
+                <summary class="flex justify-between items-center list-none font-black text-lg text-primary">
+                  {item.question}
+                  <span class="specialty-faq-icon" aria-hidden="true"><span class="specialty-faq-plus">+</span><span class="specialty-faq-minus">&minus;</span></span>
+                </summary>
+                <p class="mt-4 text-primary/80 leading-relaxed">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {closing && (
+        <div class="mt-10 mb-16 bg-white p-8 rounded-2xl shadow-sm border border-accent/10">
+          <div class="text-primary/85 font-body leading-relaxed text-center text-lg font-bold">
+            {closing}
+          </div>
+        </div>
+      )}
+
+      <div class="text-center pb-16">
+        <a
+          href={ctaHref}
+          data-track-event="service_cta"
+          data-track-label="personal_en"
+          class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
+        >
+          I want to move forward in what matters to me <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
