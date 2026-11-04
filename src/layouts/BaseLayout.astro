@@ -18,6 +18,7 @@ import BackToTop from '../components/BackToTop.astro'
 
 const {
   title,
+  languageLinks = [],
   description,
   canonical,
   // תאימות לאחור: חלק מהעמודים מעבירים noindex (ישן) וחלק noIndex (חדש)
@@ -268,6 +269,7 @@ if (isArticlePage) {
 
     <SeoHead
       title={title}
+      languageLinks={languageLinks}
       description={resolvedDescription}
       canonical={resolvedCanonical}
       noIndex={resolvedNoIndex}

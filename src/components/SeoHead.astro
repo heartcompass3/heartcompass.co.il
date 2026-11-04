@@ -3,6 +3,7 @@ import site from '../content/pages/site.json'
 
 const {
   title,
+  languageLinks = [],
   description,
   canonical,
   noIndex = false,
@@ -57,6 +58,9 @@ const resolvedOgImageAlt = clean(ogImageAlt) || resolvedTitle
 <meta name="description" content={resolvedDescription} />
 {resolvedAuthor && <meta name="author" content={resolvedAuthor} />}
 <link rel="canonical" href={resolvedCanonical} />
+{languageLinks.length > 1 && languageLinks.map((alternate: {language: string; href: string}) => (
+  <link rel="alternate" hreflang={alternate.language} href={alternate.href} />
+))}
 {resolvedAuthor && <meta name="creator" content={resolvedAuthor} />}
 {siteName && <meta name="publisher" content={siteName} />}
 {noIndex ? (

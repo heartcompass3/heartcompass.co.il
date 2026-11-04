@@ -16,6 +16,13 @@ const page = await (draftClient ?? sanity).fetch(`*[_type == "page" && slug.curr
 if (!page) return Astro.redirect('/404', 302)
 const faq = (page?.specialty?.faq || []).filter((item: any) => item.question && item.answer)
 const isAbout = slug === 'about'
+const hebrewAbout = isAbout
+  ? await sanity.fetch(`*[_type == "page" && slug.current == "about" && coalesce(seo.noindex, false) == false][0]{_id}`)
+  : null
+const languageLinks = hebrewAbout && !page?.seo?.noindex ? [
+  {language: 'he', href: `${site.siteUrl}/about`},
+  {language: 'en', href: `${site.siteUrl}/en/about`},
+] : []
 const pageUrl = `https://www.heartcompass.co.il/en/${slug}`
 const structuredData = {
  '@context': 'https://schema.org',
@@ -41,6 +48,7 @@ const paragraphs = (page?.body || []).map((block: any) => ({
     <title>{title}</title>
     <link rel="canonical" href={page?.seo?.canonical || pageUrl} />
     <meta name="description" content={description} />
+    {languageLinks.map(alternate => <link rel="alternate" hreflang={alternate.language} href={alternate.href} />)}
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <link rel="icon" href="/assets/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,7 +59,7 @@ const paragraphs = (page?.body || []).map((block: any) => ({
     <header class="border-b border-foreground/10 bg-white/80">
       <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5" aria-label="Main navigation">
         <a href="/en/about" class="text-xl font-extrabold text-primary">Heart Compass</a>
-        {isAbout && <a href="/about" class="text-sm font-semibold text-primary underline underline-offset-4" lang="he" dir="rtl">עברית</a>}
+        {hebrewAbout && <a href="/about" hreflang="he" class="text-sm font-semibold text-primary underline underline-offset-4" lang="he" dir="rtl">לקריאה בעברית</a>}
       </nav>
     </header>
     <main id="main" class="mx-auto max-w-6xl px-6 py-14 md:py-24">
@@ -83,7 +91,7 @@ const paragraphs = (page?.body || []).map((block: any) => ({
     </main>
     <footer class="border-t border-foreground/10 px-6 py-8 text-center text-sm text-foreground/70">
       <p>Heart Compass · Yossi Medalsi</p>
-      {isAbout && <a href="/about" class="mt-2 inline-block underline underline-offset-4">Read the Hebrew about page</a>}
+      {hebrewAbout && <a href="/about" hreflang="he" class="mt-2 inline-block underline underline-offset-4">Read the Hebrew about page</a>}
     </footer>
   </body>
 </html>
