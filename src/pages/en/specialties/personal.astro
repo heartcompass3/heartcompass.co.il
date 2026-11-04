@@ -129,25 +129,21 @@ const outcomeCards = guidanceSteps
 const englishTestimonials = [
   {
     context: 'Career & Money: Salary Negotiation',
-    time: 'Yesterday, 17:42',
     role: 'Client Message • Personal Coaching',
     text: 'Yossi, I just walked out of his office and had to write to you. My knees were shaking, but I was smiling. For the first time in my life, I didn\'t apologize for asking for what I deserve. I simply put the numbers on the table calmly without fearing he would be angry. He didn\'t even push back, he just said "You\'re completely right, we\'ll update it starting next month." For years I thought I\'d get fired just for opening my mouth...',
   },
   {
     context: 'Separation & Divorce: Setting Boundaries in Peace',
-    time: 'Today, 14:15',
     role: 'Client Message • Personal Coaching',
     text: 'He tried to trigger me again today in messages about the kids. I felt that familiar knot in my stomach, but instead of panicking, shouting, or crying like I always did, I paused and took a breath. I replied with one factual sentence, without defending or attacking. He was stunned that it didn\'t turn into a war. Yossi, I\'m realizing that I\'m starting to build my life anew from a place of peace.',
   },
   {
     context: 'Stuckness & Perfectionism: Releasing Control',
-    time: 'Yesterday, 23:08',
     role: 'Client Message • Personal Coaching',
     text: 'I caught myself yesterday evening: instead of getting stuck in front of the computer all night analyzing a million scenarios and deleting the draft, I simply told myself "Good enough is great." I sent it and closed the laptop. I went to sleep without a racing heart and without beating myself up. It might sound small, but for me, letting go of control like that is breathing room.',
   },
   {
     context: 'Dating & Relationships: Overcoming Fear of Rejection',
-    time: 'Friday, 10:20',
     role: 'Client Message • Personal Coaching',
     text: 'I had my first date yesterday after a very long time. For the first time, I didn\'t play "who I\'m supposed to be" and didn\'t spend every second worrying about how I looked in his eyes. I was just myself, and we even laughed about something that used to paralyze me with embarrassment. What a difference it makes when fear of rejection isn\'t sitting at the table with you.',
   },
@@ -157,7 +153,7 @@ const breadcrumbSchema = buildBreadcrumbListSchema({
   siteUrl: site.siteUrl,
   brandName: site.brand,
   crumbs: [
-    { name: 'Home', item: `${site.siteUrl}/en/about` },
+    { name: 'About Yossi', item: `${site.siteUrl}/en/about` },
     { name: 'Personal Coaching', item: canonical },
   ],
 })
@@ -208,11 +204,15 @@ if (faqSchema) {
   ogImageAlt={ogImageAlt}
   schema={schemaArray}
   language="en"
+  languageLinks={[
+    { language: 'he', href: `${site.siteUrl}/specialties/personal` },
+    { language: 'en', href: `${site.siteUrl}/en/specialties/personal` },
+  ]}
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen" dir="ltr" lang="en">
     <div class="max-w-4xl mx-auto px-6">
       <div class="mb-6 flex items-center justify-between gap-4">
-        <Breadcrumbs withSchema={false} items={[{ name: 'Home', href: '/en/about' }, { name: 'Personal Coaching' }]} />
+        <Breadcrumbs withSchema={false} items={[{ name: 'About Yossi', href: '/en/about' }, { name: 'Personal Coaching' }]} />
         <LanguageLink href="https://www.heartcompass.co.il/specialties/personal" language="he" />
       </div>
       <header class="mb-10 text-center">
@@ -299,7 +299,7 @@ if (faqSchema) {
 
       <WhatsAppTestimonials
         title="Real Moments of Change"
-        subtitle="What moving from feeling stuck to grounded autonomy looks like in everyday life"
+        subtitle="What choosing, acting, and trusting yourself looks like in everyday life"
         disclaimer="Authentic messages from coaching clients, shared anonymously to protect privacy"
         isEn={true}
         items={englishTestimonials}
@@ -340,7 +340,7 @@ if (faqSchema) {
           data-track-label="personal_en"
           class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
         >
-          I want to move forward in what matters to me <span aria-hidden="true">&rarr;</span>
+          Yossi, I’m ready to work on what’s holding me back <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
     </div>
