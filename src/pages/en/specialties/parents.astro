@@ -1,0 +1,300 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../../components/Breadcrumbs.astro'
+import PortableText from '../../../components/PortableText.astro'
+import SpecialtyDecisionCards from '../../../components/SpecialtyDecisionCards.astro'
+import SpecialtyOutcomeCards from '../../../components/SpecialtyOutcomeCards.astro'
+import LanguageLink from '../../../components/LanguageLink.astro'
+import site from '../../../content/pages/site.json'
+import { sanity } from '../../../lib/sanity'
+import { buildBreadcrumbListSchema } from '../../../lib/breadcrumbs'
+import { buildAeoWebPageSchema, buildServiceSchema } from '../../../lib/schema'
+import { buildWhatsAppHref } from '../../../lib/whatsapp'
+
+const SLUG = 'en/specialties/parents'
+const ctaMessage = 'Hi Yossi, I read about parent coaching. We keep running into the same difficulties at home, and I would like to discuss how we can change the pattern.'
+const ctaHref = buildWhatsAppHref(site.whatsAppPhone, ctaMessage)
+
+const page = await sanity.fetch(
+  `*[_type=="page" && slug.current in [$slug, "en-specialties-parents"]][0]{
+    title,
+    excerpt,
+    body,
+    specialty{
+      intro,
+      practicalGuidance{
+        label,
+        title,
+        intro,
+        steps[]{
+          _key,
+          title,
+          text
+        },
+        withoutTeen{
+          title,
+          text
+        },
+        safety{
+          title,
+          text
+        },
+        gettingStarted{
+          title,
+          text
+        },
+        professionalTrust{
+          title,
+          text
+        }
+      },
+      faqTitle,
+      faq[]{
+        question, answer
+      },
+      stagesTitle,
+      stages[]{
+        key, title, text
+      },
+      closing
+    },
+    aiCitation,
+    painTags,
+    aiContext,
+    seo{
+      title,
+      description,
+      canonical,
+      noindex,
+      ogImage{
+        alt,
+        asset->{url}
+      }
+    }
+  }`,
+  { slug: SLUG }
+)
+
+const fallback = {
+  title: 'Online Parent Coaching for Parents of Teenagers',
+  gold: 'Build connection, clear boundaries, and confidence in your parenting.',
+  intro: 'Practical online parent coaching with Yossi Medalsi for parents of teenagers, including through relocation and divorce.',
+  faqTitle: 'Questions about parent coaching for the teenage years',
+  closing: 'Tell me what keeps happening at home and what you would like to change. We can explore how to begin together.'
+}
+
+const title = page?.seo?.title || page?.title || `${fallback.title} | ${site.brand}`
+const description = page?.seo?.description || page?.excerpt || fallback.gold
+const canonical = page?.seo?.canonical || new URL(Astro.url.pathname, site.siteUrl).toString()
+const noindex = page?.seo?.noindex || false
+const ogImage = page?.seo?.ogImage?.asset?.url || undefined
+const ogImageAlt = page?.seo?.ogImage?.alt || undefined
+
+const h1 = page?.title || fallback.title
+const gold = page?.excerpt || fallback.gold
+const deepDive = page?.body || []
+const intro = page?.specialty?.intro || fallback.intro
+const practicalGuidance = page?.specialty?.practicalGuidance || {}
+const guidanceLabel = practicalGuidance.label || 'What You Build Along the Way'
+const guidanceTitle = practicalGuidance.title || 'A closer relationship and clearer parenting decisions'
+const guidanceSteps = practicalGuidance.steps || []
+const withoutTeen = practicalGuidance.withoutTeen || { title: 'Parents and privacy', text: 'We agree on parent involvement, updates, and confidentiality in advance.' }
+const safety = practicalGuidance.safety || { title: 'Urgent support', text: 'Seek timely professional care if there is an immediate safety concern.' }
+const gettingStarted = practicalGuidance.gettingStarted || { title: 'Start with a conversation', text: 'Sessions take place online via Zoom in a private space.' }
+const professionalTrust = practicalGuidance.professionalTrust || { title: 'Coaching with Yossi Medalsi', text: 'I work with you personally on parenting decisions and relationships at home.' }
+const faqTitle = page?.specialty?.faqTitle || fallback.faqTitle
+const faqs = page?.specialty?.faq || []
+const closing = page?.specialty?.closing || fallback.closing
+const stagesTitle = page?.specialty?.stagesTitle || 'The M.S.A. approach for parent coaching'
+const stages = page?.specialty?.stages || []
+const outcomeCards = guidanceSteps
+
+const breadcrumbSchema = buildBreadcrumbListSchema({
+  siteUrl: site.siteUrl,
+  brandName: site.brand,
+  crumbs: [
+    { name: 'About Yossi', item: `${site.siteUrl}/en/about` },
+    { name: 'Parent Coaching', item: canonical },
+  ],
+})
+
+const faqSchema = faqs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${canonical}#faq`,
+  mainEntity: faqs.map((item: any) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+} : null
+
+const serviceSchema = buildServiceSchema({
+  siteUrl: site.siteUrl,
+  name: h1,
+  url: canonical,
+  description,
+  serviceType: 'Parent Coaching for the Teenage Years - M.S.A. Approach',
+})
+
+const webPageSchema = buildAeoWebPageSchema({
+  url: canonical,
+  name: h1 || title,
+  description,
+  abstract: page?.aiCitation,
+  disambiguatingDescription: page?.aiContext,
+  keywords: page?.painTags,
+  mainEntityId: serviceSchema['@id'],
+})
+const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema]
+if (faqSchema) {
+  schemaArray.push(faqSchema)
+}
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  noindex={noindex}
+  ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
+  schema={schemaArray}
+  language="en"
+  languageLinks={[
+    { language: 'he', href: `${site.siteUrl}/specialties/parents` },
+    { language: 'en', href: `${site.siteUrl}/en/specialties/parents` },
+  ]}
+>
+  <section class="animate-fade-in py-24 bg-background min-h-screen" dir="ltr" lang="en">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <Breadcrumbs withSchema={false} items={[{ name: 'About Yossi', href: '/en/about' }, { name: 'Parent Coaching' }]} />
+        <LanguageLink href="https://www.heartcompass.co.il/specialties/parents" language="he" />
+      </div>
+      <header class="mb-10 text-center">
+        <h1 class="text-4xl md:text-6xl font-black text-primary font-display mb-6">
+          {h1}
+        </h1>
+        
+        <p class="text-xl text-accent font-body font-bold max-w-3xl mx-auto leading-relaxed">
+          {gold}
+        </p>
+      </header>
+
+      <!-- At a glance (AEO) -->
+      {(page?.aiCitation || (page?.painTags && page.painTags.length > 0)) && (
+        <aside class="max-w-3xl mx-auto mb-14 bg-accent/10 border-l-4 border-accent rounded-2xl p-6 md:p-8 text-left">
+          <p class="text-accent font-display font-black text-sm tracking-wide mb-3">AT A GLANCE</p>
+          {page?.aiCitation && (
+            <p class="text-primary font-body font-semibold text-lg leading-relaxed">{page.aiCitation}</p>
+          )}
+          {page?.painTags && page.painTags.length > 0 && (
+            <div class={page?.aiCitation ? 'mt-5 pt-5 border-t border-accent/20' : ''}>
+              <p class="font-black text-primary font-body mb-3">You may recognise these situations:</p>
+              <ul class="space-y-2">
+                {page.painTags.map((t: string) => (
+                  <li class="flex items-start gap-3 text-primary/80 font-body leading-relaxed">
+                    <span class="text-accent font-black mt-0.5">✓</span>
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </aside>
+      )}
+
+      <p class="mb-12 text-lg text-primary/70 font-body leading-relaxed max-w-3xl mx-auto text-center">
+        {intro}
+      </p>
+
+      {deepDive.length > 0 && (
+        <section class="mb-16 rounded-[2.5rem] border border-primary/10 bg-white p-8 shadow-elegant md:p-12 text-left" aria-labelledby="parents-deep-dive">
+          <div class="mx-auto max-w-3xl">
+            <p class="mb-3 text-sm font-black tracking-wide text-accent">UNDERSTANDING THE PROCESS IN DEPTH</p>
+            <div id="parents-deep-dive" class="text-primary/80 font-body text-lg leading-relaxed">
+              <PortableText value={deepDive} language="en" />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <SpecialtyDecisionCards
+        gettingStarted={gettingStarted}
+        fitNote={withoutTeen}
+        safety={safety}
+        professionalTrust={professionalTrust}
+        sectionLabel="BEFORE YOUR FIRST SESSION"
+        sectionTitle="Important Things to Know Before Getting Started"
+        aboutHref="/en/about"
+        aboutLabel="Learn more about Yossi and my background"
+        isEn={true}
+      />
+
+      {stages.length > 0 && (
+        <section class="mb-16 text-left">
+          <h2 class="text-3xl font-black text-primary font-display text-center mb-10">{stagesTitle}</h2>
+          <div class="grid gap-6 md:grid-cols-3">
+            {stages.map((stage: any, index: number) => (
+              <div class="bg-white rounded-2xl p-6 shadow-md border border-primary/10">
+                <h3 class="text-accent font-black text-xl mb-2">{index + 1}. {stage.title}</h3>
+                <p class="text-primary/80 leading-relaxed">{stage.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <p class="mb-12 text-center">
+        <a href="/en/method" class="font-bold text-primary underline underline-offset-4">
+          Learn more about the M.S.A. approach &rarr;
+        </a>
+      </p>
+
+      <SpecialtyOutcomeCards label={guidanceLabel} title={guidanceTitle} outcomes={outcomeCards} />
+
+      {faqs.length > 0 && (
+        <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white mb-16 text-left">
+          <h2 class="text-2xl md:text-3xl font-black text-primary font-display mb-10 text-center">
+            {faqTitle}
+          </h2>
+
+          <div class="space-y-4">
+            {faqs.map((item: any) => (
+              <details name="specialty-faq" class="specialty-faq-item border border-primary/10 rounded-2xl p-6 bg-background cursor-pointer">
+                <summary class="flex justify-between items-center list-none font-black text-lg text-primary">
+                  {item.question}
+                  <span class="specialty-faq-icon" aria-hidden="true"><span class="specialty-faq-plus">+</span><span class="specialty-faq-minus">&minus;</span></span>
+                </summary>
+                <p class="mt-4 text-primary/80 leading-relaxed">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {closing && (
+        <div class="mt-10 mb-16 bg-white p-8 rounded-2xl shadow-sm border border-accent/10">
+          <div class="text-primary/85 font-body leading-relaxed text-center text-lg font-bold">
+            {closing}
+          </div>
+        </div>
+      )}
+
+      <div class="text-center pb-16">
+        <a
+          href={ctaHref}
+          data-track-event="service_cta"
+          data-track-label="parents_en"
+          class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
+        >
+          Yossi, let’s talk about what happens at home <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import LanguageLink from '../../components/LanguageLink.astro'
 import PortableText from '../../components/PortableText.astro'
 import SpecialtyDecisionCards from '../../components/SpecialtyDecisionCards.astro'
 import SpecialtyOutcomeCards from '../../components/SpecialtyOutcomeCards.astro'
@@ -168,10 +169,17 @@ const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema, ...(faqSche
   ogImage={ogImage}
   ogImageAlt={ogImageAlt}
   schema={schemaArray}
+  languageLinks={[
+    { language: 'he', href: `${site.siteUrl}/specialties/parents` },
+    { language: 'en', href: `${site.siteUrl}/en/specialties/parents` },
+  ]}
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-4xl mx-auto px-6">
-      <Breadcrumbs withSchema={false} items={[{ name: 'תחומי התמחות', href: '/specialties' }, { name: 'הדרכת הורים' }]} />
+<div class="mb-6 flex items-center justify-between gap-4">
+        <Breadcrumbs withSchema={false} items={[{ name: 'תחומי התמחות', href: '/specialties' }, { name: 'הדרכת הורים' }]} />
+        <LanguageLink href="https://www.heartcompass.co.il/en/specialties/parents" language="en" />
+      </div>
       <header class="mb-10 text-center">
         {h1 && (
           <h1 class="text-5xl md:text-6xl font-black text-primary font-display mb-6">
