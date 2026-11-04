@@ -5,6 +5,7 @@ import PortableText from '../../components/PortableText.astro'
 import SpecialtyDecisionCards from '../../components/SpecialtyDecisionCards.astro'
 import SpecialtyOutcomeCards from '../../components/SpecialtyOutcomeCards.astro'
 import SpecialtyArticles from '../../components/SpecialtyArticles.astro'
+import WhatsAppTestimonials from '../../components/WhatsAppTestimonials.astro'
 import site from '../../content/pages/site.json'
 import { sanity } from '../../lib/sanity'
 import { buildBreadcrumbListSchema } from '../../lib/breadcrumbs'
@@ -202,6 +203,34 @@ if (categoryArticles.length > 0) {
 if (faqSchema) {
   schemaArray.push(faqSchema)
 }
+
+const personalTestimonials = [
+  {
+    context: 'קריירה וכסף: שיחת שכר והעלאה',
+    time: 'אתמול, 17:42',
+    role: 'הודעת לקוחה • תהליך אישי',
+    text: 'יוסי, יצאתי עכשיו מהחדר שלו והייתי חייבת לכתוב לך. רעדו לי הרגליים אבל חייכתי. פעם ראשונה בחיים שלי שלא התנצלתי על זה שאני מבקשת מה שמגיע לי. פשוט שמתי את הנתונים על השולחן בצורה רגועה ובלי לפחד שיכעסו עליי. הוא אפילו לא התווכח, אמר "את צודקת לגמרי, נעדכן מראשון לחודש". שנים פחדתי שיפטרו אותי רק אם אפתח את הפה...',
+  },
+  {
+    context: 'פרידה וגירושין: הצבת גבול ושקט מול הגרוש',
+    time: 'היום, 14:15',
+    role: 'הודעת לקוחה • תהליך אישי',
+    text: 'הוא שוב ניסה להדליק אותי היום בהודעות על הילדים. הרגשתי את הכיווץ המוכר בבטן, אבל במקום להיכנס להיסטריה, לצרוח או לבכות כמו שהיה קורה לי תמיד — עצרתי ונשמתי. עניתי לו משפט אחד ענייני, בלי להתגונן ובלי לתקוף. הוא היה בהלם שזה לא הפך למלחמה. יוסי, אני קולטת שאני מתחילה לבנות את החיים שלי מחדש מתוך שקט.',
+  },
+  {
+    context: 'תקיעות ופרפקציוניזם: שחרור שליטה ותנועה',
+    time: 'אתמול, 23:08',
+    role: 'הודעת לקוח • תהליך אישי',
+    text: 'תפסתי את עצמי אתמול בערב: במקום להיתקע עוד פעם מול המחשב כל הלילה, לנתח מיליון תרחישים ולמחוק את הטיוטה — פשוט אמרתי לעצמי "טוב מספיק זה מצוין". שלחתי את זה וסגרתי את הלפטופ. הלכתי לישון בלי הדפיקות לב ובלי ההלקאה העצמית. זה נשמע אולי קטן, אבל בשבילי היכולת לשחרר ככה את השליטה זה אוויר לנשימה.',
+  },
+  {
+    context: 'זוגיות ודייטים: להשתחרר מפחד מדחייה',
+    time: 'יום שישי, 10:20',
+    role: 'הודעת לקוחה • תהליך אישי',
+    text: 'היה לי אתמול דייט ראשון אחרי המון זמן. בפעם הראשונה לא שיחקתי את "מי שאני אמורה להיות" ולא בדקתי כל שנייה איך אני נראית בעיניים שלו. הייתי פשוט אני, אפילו צחקנו על משהו שפעם היה משתק אותי מבושה. איזה הבדל זה כשהפחד מדחייה לא יושב איתך ליד השולחן.',
+  },
+]
+
 ---
 
 <BaseLayout
@@ -303,6 +332,8 @@ if (faqSchema) {
       <p class="mb-12 text-center"><a href="/method" class="font-bold text-primary underline underline-offset-4">להסבר המלא על שיטת מ.ס.ע</a></p>
 
       <SpecialtyOutcomeCards label={guidanceLabel} title={guidanceTitle} outcomes={outcomeCards} />
+
+      <WhatsAppTestimonials items={personalTestimonials} />
 
       {faqs.length > 0 && (
         <div class="bg-white p-10 md:p-16 rounded-[3rem] shadow-elegant border border-white mb-16">
