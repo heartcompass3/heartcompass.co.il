@@ -18,6 +18,7 @@ import BackToTop from '../components/BackToTop.astro'
 
 const {
   title,
+  language = "he",
   languageLinks = [],
   description,
   canonical,
@@ -239,7 +240,7 @@ if (isArticlePage) {
 ---
 
 <!doctype html>
-<html lang="he" dir="rtl" class="bg-background text-foreground">
+<html lang={language} dir={language === "en" ? "ltr" : "rtl"} class="bg-background text-foreground">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -269,6 +270,7 @@ if (isArticlePage) {
 
     <SeoHead
       title={title}
+      language={language}
       languageLinks={languageLinks}
       description={resolvedDescription}
       canonical={resolvedCanonical}
@@ -299,13 +301,13 @@ if (isArticlePage) {
       href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[1001] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
     >
-      דלג לתוכן הראשי
+      {language === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
     </a>
-    <Navigation settings={resolvedSiteSettings} />
+    <div lang="he" dir="rtl"><Navigation settings={resolvedSiteSettings} /></div>
     <main id="main-content">
       <slot />
     </main>
-    <Footer settings={resolvedSiteSettings} />
+    <div lang="he" dir="rtl"><Footer settings={resolvedSiteSettings} /></div>
     <WhatsAppFloat settings={resolvedSiteSettings} />
     <BackToTop />
     <CookieBanner />

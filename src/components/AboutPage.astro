@@ -1,0 +1,296 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Breadcrumbs from './Breadcrumbs.astro'
+import site from '../content/pages/site.json'
+import { sanity, urlFor } from '../lib/sanity'
+import PortableText from './PortableText.astro'
+
+import LanguageLink from "./LanguageLink.astro"
+const {page, language = "he", languageLinks = []} = Astro.props
+const en = language === "en"
+const t = (he: string, english: string) => en ? english : he
+const alternate = languageLinks.find((a: any) => a.language !== language)
+// SEO
+const metaTitle = page?.seo?.title || page?.title || `מי אני | ${site.brand}`
+const metaDescription =
+  page?.seo?.description || 'נעים להכיר. הסיפור של יוסי והדרך שבה נבנתה שיטת מ.ס.ע.'
+
+// כותרת
+const heading = page?.title?.trim() || (en ? 'Hi, I’m Yossi Medalsi.' : `נעים להכיר, אני ${site.fullName}.`)
+const professionalLine = t('מאמן רגשי ומפתח שיטת מ.ס.ע.', 'Emotional coach and creator of the M.S.A. approach.')
+const audienceLine = t('מלווה בני ובנות נוער בגילאי 11–18, הורים, זוגות ומבוגרים בתהליכים אישיים.', 'Online coaching for teens aged 11–18, parents, couples and adults.')
+const audienceLinks = [
+  { label: t('נוער 11–18', 'Teens 11–18'), href: '/specialties/youth' },
+  { label: t('הורים', 'Parents'), href: '/specialties/parents' },
+  { label: t('זוגות', 'Couples'), href: '/specialties/couples' },
+  { label: t('תהליך אישי', 'Personal coaching'), href: '/specialties/personal' },
+]
+const moreDetailsHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(t('היי יוסי, קראתי את דף האודות ואשמח לפרטים נוספים על הליווי.', 'Hi Yossi, I read your About page and would like to know more about coaching.'))}`
+
+// פתיחה (הזהוב)
+const opening =
+  page?.excerpt?.trim() ||
+  'הייתי שם. אני יודע איך זה מרגיש כשהלב רוצה משהו אחד, והראש אומר משהו אחר.'
+
+const practicalGuidance = page?.specialty?.practicalGuidance
+const guidanceSteps = practicalGuidance?.steps?.filter((step) => step.title && step.text) || []
+const faqItems = (page?.specialty?.faq || [])
+  .map((item) => ({
+    _key: item._key,
+    question: item.question?.trim() || '',
+    answer: item.answer?.trim() || '',
+  }))
+  .filter((item) => item.question && item.answer)
+
+// תמונה
+const fallbackImage = '/assets/yossi-about.jpg'
+const imageSrc = page?.heroImage
+  ? urlFor(page.heroImage).width(1000).height(1250).fit('crop').url()
+  : fallbackImage
+
+const ogImageUrl = page?.seo?.ogImage
+  ? urlFor(page.seo.ogImage).width(1200).height(630).fit('crop').url()
+  : undefined
+const ogImageAlt = page?.seo?.ogImage?.alt
+
+// ─── Person schema עשיר לדף האודות ("כרטיס הביקור" של יוסי) ───────
+const aboutUrl = `${site.siteUrl}/${en ? 'en/about' : 'about'}`
+
+const toAbsolute = (v: string) =>
+  v.startsWith('http') ? v : `${site.siteUrl}${v.startsWith('/') ? '' : '/'}${v}`
+
+const personDescription =
+  'יוסי מדלסי הוא מאמן רגשי, מייסד מצפן הלב ומפתח שיטת מ.ס.ע. מלווה בני ובנות נוער בגילאי 11–18, הורים, זוגות ומבוגרים בתהליכים אישיים אונליין.'
+
+const aboutPersonSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${site.siteUrl}/#person`,
+  name: en ? 'Yossi Medalsi' : site.fullName,
+  url: aboutUrl,
+  jobTitle: 'מאמן רגשי',
+  description: en ? page?.aiCitation : personDescription,
+  email: site.email,
+  image: toAbsolute(imageSrc),
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'נתניה',
+    addressRegion: 'מחוז המרכז',
+    addressCountry: 'IL',
+  },
+  hasCredential: [
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Professional Certification',
+      name: 'הכשרה באימון בשיטת פארותרפיה, קמפוס מגדלור (2026)',
+      url: `${site.siteUrl}/assets/certificate-yossi.jpg`,
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Specialized Training',
+      name: 'התמחות באימון רגשי לבני נוער, קמפוס מגדלור (2026)',
+      url: `${site.siteUrl}/assets/certificate-yossi-youth.jpg`,
+    },
+  ],
+  knowsAbout: [
+    'אימון רגשי',
+    'אינטליגנציה רגשית',
+    'הדרכת הורים',
+    'ליווי זוגות',
+    'בני נוער ומתבגרים',
+    'שיטת מ.ס.ע',
+  ],
+  sameAs: [
+    site.instagramUrl,
+    site.facebookUrl,
+    'https://www.linkedin.com/in/yossi-medalsi/',
+    `https://wa.me/${site.whatsAppPhone}`,
+    'https://www.alternabe.co.il/therapist/yossi-madlsi-emotional-coaching',
+  ],
+  worksFor: { '@id': `${site.siteUrl}/#business` },
+  mainEntityOfPage: aboutUrl,
+}
+
+const aboutProfileSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${aboutUrl}#profilepage`,
+  url: aboutUrl,
+  name: metaTitle,
+  inLanguage: language,
+  description: metaDescription,
+  ...(page?.aiCitation ? { abstract: page.aiCitation } : {}),
+  ...(page?.aiContext ? { disambiguatingDescription: page.aiContext } : {}),
+  ...(page?.painTags?.length ? { keywords: page.painTags.join(', ') } : {}),
+  mainEntity: { '@id': `${site.siteUrl}/#person` },
+}
+
+const faqSchema = faqItems.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${aboutUrl}#faq`,
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+} : null
+---
+
+<BaseLayout
+  title={metaTitle}
+  language={language}
+  languageLinks={languageLinks}
+  description={metaDescription}
+  canonical={page?.seo?.canonical}
+  noindex={page?.seo?.noindex}
+  ogImage={ogImageUrl}
+  ogImageAlt={ogImageAlt}
+  schema={[aboutPersonSchema, aboutProfileSchema, ...(faqSchema ? [faqSchema] : [])]}
+>
+  <article lang={language} dir={en ? "ltr" : "rtl"} class:list={["animate-fade-in py-24 bg-background", {"english-about": en}]}>
+    <div class="max-w-6xl mx-auto px-6">
+
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <Breadcrumbs language={language} items={[{ name: t('אודות', 'About') }]} />
+        {alternate && <LanguageLink href={alternate.href} language={alternate.language} />}
+      </div>
+      <div class="bg-white/60 backdrop-blur-xl rounded-[3rem] p-8 md:p-12 shadow-2xl border border-white/50 relative grid gap-12 md:grid-cols-2 md:gap-y-4 items-start">
+
+        <!-- כותרת אחת לכל גודל מסך, עם תשובה מיידית על תחומי הליווי -->
+        <header class="relative z-10 text-center md:text-right md:col-start-1 md:row-start-1">
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-black text-primary font-display mb-7 leading-tight">
+            {heading}
+          </h1>
+          <p class="text-lg md:text-xl font-bold text-primary/75 mb-5">{professionalLine}</p>
+          <p class="text-base md:text-lg font-body text-primary/75 mb-5 leading-8">{audienceLine}</p>
+          <nav class="flex flex-wrap justify-center md:justify-start gap-2 mb-8" aria-label="מסלולי הליווי">
+            {audienceLinks.map((link) => (
+              <a href={link.href} class="rounded-full border border-primary/15 bg-white/70 px-4 py-2 text-sm font-bold text-primary hover:border-accent hover:bg-white transition-colors">
+                {link.label}
+              </a>
+            ))}
+          </nav>
+          <p class="font-bold text-gold-dark text-xl md:text-2xl border-r-4 border-accent pr-4 bg-white/50 p-4 rounded-l-xl leading-9">
+            "{opening}"
+          </p>
+        </header>
+
+        <!-- תמונה -->
+        <div class="w-full relative z-10 md:col-start-2 md:row-start-1 md:row-span-2 md:-translate-y-2">
+          <div class="aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-all duration-700 border-[8px] border-white ring-1 ring-accent/20">
+            <img
+              src={imageSrc}
+              alt={en ? "Yossi Medalsi, founder of Heart Compass" : site.fullName}
+              class="object-cover w-full h-full transform hover:scale-105 transition-transform duration-[1.5s]"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+        </div>
+
+        <!-- הסיפור וההכשרות -->
+        <div class="w-full relative z-10 text-center md:text-right md:col-start-1 md:row-start-2">
+          <div class="prose prose-xl text-primary/80 font-body leading-9 max-w-none">
+            {page?.body?.length ? (
+              <PortableText value={page.body} language={language} />
+            ) : (
+              <p>עדיין אין תוכן בדף אודות בסאניטי. הוסף תוכן לשדה “תוכן”.</p>
+            )}
+          </div>
+
+          <!-- באדג' הסמכה מקצועית — מקשר לתעודה עצמה (לא לגוף חיצוני) -->
+          <div class="mt-10 flex flex-wrap gap-4 justify-center md:justify-start" aria-label="הסמכות מקצועיות">
+            <a
+              href="/assets/certificate-yossi.jpg"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-3 bg-white/80 border border-accent/30 rounded-2xl px-5 py-3 shadow hover:shadow-md transition-shadow no-underline"
+              aria-label="צפייה בתעודת ההכשרה של יוסי מדלסי באימון בשיטת פארותרפיה"
+            >
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="18" cy="18" r="18" fill="#00539B"/>
+                <path d="M10 18C10 13.58 13.58 10 18 10C20.39 10 22.55 10.97 24.12 12.56L21.95 14.73C20.94 13.66 19.55 13 18 13C15.24 13 13 15.24 13 18C13 20.76 15.24 23 18 23C19.55 23 20.94 22.34 21.95 21.27L24.12 23.44C22.55 25.03 20.39 26 18 26C13.58 26 10 22.42 10 18Z" fill="white"/>
+                <path d="M26 17H19V19H26V17Z" fill="white"/>
+                <path d="M23 14H25V22H23V14Z" fill="white"/>
+              </svg>
+              <div class="text-right">
+                <div class="text-xs text-primary/50 font-body leading-none mb-0.5">{t('הסמכה מקצועית', 'Professional certification')}</div>
+                <div class="text-sm font-bold text-primary font-display leading-tight">{t('אימון בשיטת פארותרפיה', 'Parotherapy coaching')}</div>
+                <div class="text-xs text-primary/60 font-body leading-tight mt-0.5">{t('קמפוס מגדלור · 180 שעות אקדמיות ו־40 שעות פרקטיקום', 'Migdalor Campus · 180 academic hours and 40 practicum hours')}</div>
+              </div>
+            </a>
+            <a
+              href="/assets/certificate-yossi-youth.jpg"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-3 bg-white/80 border border-accent/30 rounded-2xl px-5 py-3 shadow hover:shadow-md transition-shadow no-underline"
+              aria-label="צפייה בתעודת ההתמחות באימון רגשי לבני נוער של יוסי מדלסי"
+            >
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="18" cy="18" r="18" fill="#C8A96E"/>
+                <path d="M18 8L20.47 15.38H28.26L21.89 19.74L24.36 27.12L18 22.76L11.64 27.12L14.11 19.74L7.74 15.38H15.53L18 8Z" fill="white"/>
+              </svg>
+              <div class="text-right">
+                <div class="text-xs text-primary/50 font-body leading-none mb-0.5">{t('הכשרה ייעודית', 'Specialist training')}</div>
+                <div class="text-sm font-bold text-primary font-display leading-tight">{t('אימון רגשי לבני נוער', 'Emotional coaching for teens')}</div>
+                <div class="text-xs text-primary/60 font-body leading-tight mt-0.5">{t('קמפוס מגדלור · 30 שעות אקדמיות', 'Migdalor Campus · 30 academic hours')}</div>
+              </div>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+      {practicalGuidance ? (
+        <section class="mt-16 bg-primary text-white rounded-[3rem] p-8 md:p-12" aria-labelledby="about-guidance-heading">
+          {practicalGuidance.label && <p class="text-accent font-bold mb-3">{practicalGuidance.label}</p>}
+          {practicalGuidance.title && <h2 id="about-guidance-heading" class="text-3xl md:text-4xl font-black font-display leading-tight">{practicalGuidance.title}</h2>}
+          {practicalGuidance.intro && <p class="mt-6 text-lg leading-8 text-white/85 max-w-3xl">{practicalGuidance.intro}</p>}
+          {guidanceSteps.length > 0 && (
+            <div class="grid gap-5 md:grid-cols-3 mt-10">
+              {guidanceSteps.map((step) => (
+                <div class="rounded-3xl bg-white/10 p-6 border border-white/15">
+                  <h3 class="text-xl font-bold">{step.title}</h3>
+                  <p class="mt-3 leading-7 text-white/85">{step.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : null}
+
+      {faqItems.length > 0 && (
+        <section class="mt-16 max-w-4xl mx-auto" aria-labelledby="about-faq-heading">
+          <h2 id="about-faq-heading" class="text-3xl md:text-4xl font-black text-primary font-display text-center mb-8">
+            {page?.specialty?.faqTitle || 'שאלות ותשובות'}
+          </h2>
+          <div class="grid gap-4 md:grid-cols-2">
+            {faqItems.map((item) => (
+              <div class="rounded-3xl bg-white border border-primary/10 px-6 py-6 shadow-sm">
+                <h3 class="text-xl font-bold text-primary leading-8">{item.question}</h3>
+                <p class="mt-3 text-primary/80 leading-8 text-lg">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div class="mt-12 text-center">
+        <p class="text-lg text-primary/80 mb-5">{t('רוצים לדעת יותר על אחד ממסלולי הליווי? כתבו לי מה מעניין אתכם ואשלח פרטים בהתאם.', 'Want to know more about coaching? Tell me what you are looking for and I will send you the relevant details.')}</p>
+        <a href={moreDetailsHref} class="inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-white font-bold shadow-lg hover:bg-primary/90 transition-colors">
+          {t('לפרטים נוספים בוואטסאפ', 'Ask me on WhatsApp')}
+        </a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .english-about :global(.portabletext) { direction: ltr; text-align: left; }
+  .english-about :global(.text-right), .english-about :global(.md\:text-right) { text-align: left; }
+  .english-about :global(.prose) { overflow-wrap: anywhere; }
+  .english-about header > p:last-child { border-right: 0; border-left: 4px solid #c8a96e; border-radius: 0 0.75rem 0.75rem 0; }
+  .english-about h1 { font-size: clamp(2.6rem, 5vw, 4.5rem); }
+</style>

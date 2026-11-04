@@ -11,7 +11,7 @@
  */
 import site from '../content/pages/site.json'
 
-const { items = [], withSchema = true } = Astro.props
+const { items = [], withSchema = true, language = "he" } = Astro.props
 
 const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
 const toAbs = (href?: string) => {
@@ -21,7 +21,7 @@ const toAbs = (href?: string) => {
 }
 
 // הבית תמיד ראשון
-const trail = [{ name: site.brand, href: '/' }, ...items]
+const trail = [{ name: language === "en" ? "Heart Compass" : site.brand, href: '/' }, ...items]
 
 const breadcrumbSchema = withSchema
   ? {
@@ -37,7 +37,7 @@ const breadcrumbSchema = withSchema
   : null
 ---
 
-<nav aria-label="פירורי לחם" class="mb-6 text-sm font-body text-primary/55" dir="rtl">
+<nav aria-label={language === "en" ? "Breadcrumbs" : "פירורי לחם"} class="mb-6 text-sm font-body text-primary/55" dir={language === "en" ? "ltr" : "rtl"}>
   <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
     {trail.map((it: any, i: number) => (
       <li class="flex items-center gap-x-2">

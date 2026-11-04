@@ -1,0 +1,80 @@
+---
+import '../styles/global.css'
+import site from '../content/pages/site.json'
+const {page, slug} = Astro.props
+const faq = (page?.specialty?.faq || []).filter((item: any) => item.question && item.answer)
+const isAbout = false
+const hebrewAbout = null
+const languageLinks = []
+const pageUrl = `https://www.heartcompass.co.il/en/${slug}`
+const structuredData = {
+ '@context': 'https://schema.org',
+ '@graph': [
+  ...(isAbout ? [{ '@type': 'Person', '@id': 'https://www.heartcompass.co.il/#person', name: 'Yossi Medalsi', alternateName: 'יוסי מדלסי', jobTitle: 'Emotional Coach', url: 'https://www.heartcompass.co.il/about', description: page?.aiCitation }] : []),
+  { '@type': isAbout ? 'ProfilePage' : 'WebPage', '@id': `${pageUrl}#webpage`, url: pageUrl, name: page?.title, description: page?.seo?.description, inLanguage: 'en', ...(isAbout ? { mainEntity: { '@id': 'https://www.heartcompass.co.il/#person' } } : {}), ...(page?.aiCitation ? { abstract: page.aiCitation } : {}), ...(page?.aiContext ? { disambiguatingDescription: page.aiContext } : {}), keywords: (page?.painTags || []).join(', ') },
+  ...(faq.length ? [{ '@type': 'FAQPage', mainEntity: faq.map((q: any) => ({ '@type': 'Question', name: q.question, acceptedAnswer: { '@type': 'Answer', text: q.answer } })) }] : [])
+ ]
+}
+const title = page?.seo?.title || 'About Yossi Medalsi | Heart Compass'
+const description = page?.seo?.description || 'Emotional coaching with Yossi Medalsi, founder of Heart Compass.'
+const paragraphs = (page?.body || []).map((block: any) => ({
+  style: block.style,
+  text: (block.children || []).map((child: any) => child.text || '').join('')
+})).filter((item: any) => item.text.trim())
+---
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content={page?.seo?.noindex ? "noindex, nofollow" : "index, follow"} />
+    <title>{title}</title>
+    <link rel="canonical" href={page?.seo?.canonical || pageUrl} />
+    <meta name="description" content={description} />
+    {languageLinks.map(alternate => <link rel="alternate" hreflang={alternate.language} href={alternate.href} />)}
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <link rel="icon" href="/assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class="min-h-screen bg-background text-foreground" style="font-family: Assistant, sans-serif">
+    <header class="border-b border-foreground/10 bg-white/80">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5" aria-label="Main navigation">
+        <a href="/en/about" class="text-xl font-extrabold text-primary">Heart Compass</a>
+        {hebrewAbout && <a href="/about" hreflang="he" class="text-sm font-semibold text-primary underline underline-offset-4" lang="he" dir="rtl">לקריאה בעברית</a>}
+      </nav>
+    </header>
+    <main id="main" class="mx-auto max-w-6xl px-6 py-14 md:py-24">
+      <div class="grid items-center gap-12 md:grid-cols-2">
+        <div>
+          <p class="mb-4 text-sm font-bold uppercase tracking-widest text-accent">Heart Compass</p>
+          <h1 class="mb-7 text-4xl font-extrabold leading-tight text-primary md:text-6xl">{page.title}</h1>
+          <p class="mb-6 text-xl font-semibold leading-relaxed text-primary">{page?.excerpt || 'Emotional coaching for a life with more choice and confidence.'}</p>
+          {paragraphs.slice(0,3).map((p: any) => <p class="mb-5 text-lg leading-relaxed">{p.text}</p>)}
+          <a href={`https://wa.me/${site.whatsAppPhone}`} class="inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-7 py-3 font-bold text-white hover:opacity-90">Let's talk on WhatsApp</a>
+        </div>
+        <div class="mx-auto w-full max-w-md overflow-hidden rounded-3xl border-8 border-white shadow-xl">
+          {isAbout && <img src="/assets/yossi-about.jpg" alt="Yossi Medalsi, founder of Heart Compass" width="800" height="1000" class="h-auto w-full object-cover" />}
+        </div>
+      </div>
+      <section class="mt-16 rounded-3xl bg-white/70 p-8 md:p-12">
+        {paragraphs.slice(3).map((p: any) => p.style === 'h2'
+          ? <h2 class="mb-5 mt-8 text-3xl font-extrabold text-primary">{p.text}</h2>
+          : <p class="mb-5 text-lg leading-relaxed">{p.text}</p>)}
+      </section>
+      {page?.specialty?.closing && <p class="mt-12 text-lg leading-relaxed">{page.specialty.closing}</p>}
+      {faq.length > 0 && <section class="mt-16" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" class="mb-8 text-3xl font-extrabold text-primary">{page?.specialty?.faqTitle || 'Frequently asked questions'}</h2>
+        {faq.map((item: any) => <div class="mb-5 rounded-2xl bg-white/80 p-6">
+          <h3 class="mb-3 text-xl font-bold text-primary">{item.question}</h3>
+          <p class="text-lg leading-relaxed">{item.answer}</p>
+        </div>)}
+      </section>}
+    </main>
+    <footer class="border-t border-foreground/10 px-6 py-8 text-center text-sm text-foreground/70">
+      <p>Heart Compass · Yossi Medalsi</p>
+      {hebrewAbout && <a href="/about" hreflang="he" class="mt-2 inline-block underline underline-offset-4">Read the Hebrew about page</a>}
+    </footer>
+  </body>
+</html>

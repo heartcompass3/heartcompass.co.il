@@ -1,0 +1,16 @@
+---
+const {href, language} = Astro.props
+const english = language === 'en'
+---
+<a href={href} hreflang={language} lang={language} dir="ltr" class="language-link" aria-label={english ? 'Read this page in English' : 'לקריאת העמוד בעברית'}>
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c4 5 4 13 0 18-4-5-4-13 0-18Z"/></svg>
+  <span>{english ? 'English' : 'עברית'}</span>
+  <span class="language-link__arrow" aria-hidden="true">↗</span>
+</a>
+<style>
+.language-link { display:inline-flex;align-items:center;gap:.6rem;min-height:44px;padding:.45rem 1rem;border:1px solid #c8a96e88;border-radius:999px;background:#fff;color:#153d45;font-size:.875rem;font-weight:700;line-height:1;box-shadow:0 3px 12px #153d4508;transition:background .2s,box-shadow .2s,transform .2s;white-space:nowrap; }
+.language-link:hover {background:#f5efe3;box-shadow:0 4px 14px #153d4512;transform:translateY(-1px);}
+.language-link:focus-visible {outline:2px solid #153d45;outline-offset:4px;}
+.language-link__arrow {color:#99743d;font-size:1.05rem;}
+@media(prefers-reduced-motion:reduce){.language-link{transition:none}.language-link:hover{transform:none}}
+</style>

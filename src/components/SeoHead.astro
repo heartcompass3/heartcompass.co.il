@@ -3,6 +3,7 @@ import site from '../content/pages/site.json'
 
 const {
   title,
+  language = "he",
   languageLinks = [],
   description,
   canonical,
@@ -16,9 +17,9 @@ const {
   schema = [],
 } = Astro.props
 
-const brand = site.brand
+const brand = language === "en" ? "Heart Compass" : site.brand
 // הנה החוט שחיברנו:
-const siteName = site.siteName
+const siteName = language === "en" ? "Heart Compass" : site.siteName
 
 const clean = (v) => (typeof v === 'string' ? v.trim() : '')
 
@@ -50,7 +51,7 @@ const toAbsoluteUrl = (v) => {
 const defaultOgImage = `${site.siteUrl}/assets/og-image.jpg`
 const resolvedOgImage = toAbsoluteUrl(ogImage) || defaultOgImage
 
-const resolvedAuthor = clean(author) || site.fullName
+const resolvedAuthor = clean(author) || (language === "en" ? "Yossi Medalsi" : site.fullName)
 const resolvedOgImageAlt = clean(ogImageAlt) || resolvedTitle
 ---
 
@@ -70,7 +71,7 @@ const resolvedOgImageAlt = clean(ogImageAlt) || resolvedTitle
 )}
 
 <meta property="og:site_name" content={siteName} />
-<meta property="og:locale" content="he_IL" />
+<meta property="og:locale" content={language === "en" ? "en_US" : "he_IL"} />
 <meta property="og:type" content={pageType} />
 <meta property="og:title" content={resolvedTitle} />
 <meta property="og:description" content={resolvedDescription} />
