@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Breadcrumbs from '../components/Breadcrumbs.astro'
+import PortableText from '../components/PortableText.astro'
+import site from '../content/pages/site.json'
+import { sanity } from '../lib/sanity'
+import LanguageLink from './LanguageLink.astro'
+import { optImg } from '../lib/img'
+import InsightArticleCard from '../components/InsightArticleCard.astro'
+import fallbackTaxonomy from '../content/insights-taxonomy.json'
+import insightDomains from '../content/insights-domains.json'
+import { audienceGroups, effectiveTaxonomy } from '../lib/insights.mjs'
+
+const {pain, slug, language = 'he', languageLinks = []} = Astro.props
+const en = language === 'en'
+const t = (he: string, english: string) => en ? english : he
+const alternate = languageLinks.find((item: any) => item.language !== language)
+const articles = pain.articles ?? []
+const taxonomy = effectiveTaxonomy(articles,fallbackTaxonomy)
+const groupNames = {personal: 'Personal growth and emotional patterns', parents: 'Parenting teens', youth: 'Teen emotional life', relationships: 'Relationships and connection', business: 'Business and career'}
+const groups = audienceGroups(articles, taxonomy, insightDomains).map(group => ({...group, name: en ? groupNames[group.id] || 'More reading' : group.name}))
+
+const canonical = `${site.siteUrl}${en ? '/en' : ''}/pain/${slug}`
+
+const fallbackDesc = String(pain.heroIntro || '')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, 160)
+const description = pain.excerpt?.trim() || pain.seo?.description?.trim() || fallbackDesc
+const title = pain.seo?.title?.trim() || `${pain.title} | ${site.brand}`
+const noIndex = pain.seo?.noindex === true
+
+// תמונת שיתוף נושאית: התמונה של המאמר הראשון במוקד הכאב (אם קיים),
+// אחרת נופל חזרה לתמונת ברירת המחדל של המותג ב-SeoHead.
+const ogSource = articles.find((a: any) => a.mainImage?.asset?.url)
+const ogImage = ogSource ? optImg(ogSource.mainImage.asset.url, 1200, 80, slug) : undefined
+const ogImageAlt = ogSource?.mainImage?.alt || undefined
+
+// ── Schema: CollectionPage (ה-hub) + רשימת המאמרים + AEO ──────────
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${canonical}#collection`,
+  name: pain.title,
+  headline: pain.goldLine || pain.title,
+  description,
+  abstract: pain.aiCitation || undefined,
+  inLanguage: language,
+  // dateModified אמיתי (contentUpdatedAt, מעודכן ידנית) — לא _updatedAt הטכני.
+  dateModified: pain.contentUpdatedAt || pain._updatedAt || undefined,
+  isPartOf: { '@id': `${site.siteUrl}/#website` },
+  about: pain.definition
+    ? { '@type': 'Thing', name: pain.title, description: pain.definition }
+    : { '@id': `${site.siteUrl}/#business` },
+  ...(pain.painKeywords?.length ? { keywords: pain.painKeywords.join(', ') } : {}),
+  ...(articles.length
+    ? {
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: articles.length,
+          itemListElement: articles.map((a: any, i: number) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            url: `${site.siteUrl}${en ? "/en" : ""}/articles/${a.slug}`,
+            name: a.title,
+          })),
+        },
+      }
+    : {}),
+}
+
+const faqSchema = pain.faqItems?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: pain.faqItems.map((item: { question: string; answer: string }) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    }
+  : null
+
+const schemas = faqSchema ? [collectionSchema, faqSchema] : [collectionSchema]
+
+const fmtDate = (d?: string) =>
+  d ? new Date(d).toLocaleDateString(en ? 'en-GB' : 'he-IL') : ''
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  noindex={noIndex}
+  language={language}
+  languageLinks={languageLinks}
+  ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
+  pageType="website"
+  schema={schemas}
+>
+  <section lang={language} dir={en ? "ltr" : "rtl"} class="animate-fade-in py-24 bg-background min-h-screen">
+    <div class="max-w-5xl mx-auto px-6">
+
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <Breadcrumbs language={language} items={[{ name: t('מרכז המידע', 'Heart Compass'), href: en ? '/en' : '/insights' }, { name: pain.title }]} />
+        {alternate && <LanguageLink href={alternate.href} language={alternate.language} />}
+      </div>
+
+      <!-- Hero -->
+      <header class="mb-12 text-center">
+        <h1 class="text-4xl md:text-6xl font-black text-primary font-display mb-5 drop-shadow-sm">
+          {pain.title}
+        </h1>
+        {pain.goldLine && (
+          <p class="text-accent font-bold tracking-wide mb-6 font-display text-lg md:text-xl">
+            {pain.goldLine}
+          </p>
+        )}
+        {pain.definition && (
+          <div class="max-w-3xl mx-auto mb-7 bg-white border border-foreground/10 rounded-2xl px-6 py-5 shadow-sm text-start">
+            <p class="text-accent font-display font-bold text-sm mb-2">{t(`מה זה ${pain.title}?`, 'What are automatic patterns?')}</p>
+            <p class="text-primary/80 font-body leading-relaxed">{pain.definition}</p>
+          </div>
+        )}
+        {pain.heroIntro && (
+          <p class="text-lg md:text-xl text-primary/75 font-body leading-relaxed max-w-3xl mx-auto">
+            {pain.heroIntro}
+          </p>
+        )}
+      </header>
+
+      <!-- "האם זה מוכר לך?" -->
+      {pain.painPoints?.length > 0 && (
+        <section class="mb-14 max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 md:p-10">
+          <h2 class="text-2xl font-black text-primary font-display mb-6 text-center">{t('האם זה מוכר לך?', 'Does this feel familiar?')}</h2>
+          <ul class="space-y-3">
+            {pain.painPoints.map((p: string) => (
+              <li class="flex items-start gap-3 text-primary/80 font-body text-lg">
+                <span class="text-accent mt-1">◆</span>
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <!-- גוף מורחב -->
+      {pain.body && (
+        <div class="prose prose-lg max-w-3xl mx-auto bg-white rounded-[2rem] shadow-lg border border-foreground/5 p-8 md:p-12 mb-16">
+          <PortableText value={pain.body} filenamePrefix={slug} language={language} />
+        </div>
+      )}
+
+      <!-- Existing topic URL retained; article lists are now separated by audience. -->
+      <section class="mb-16">
+        <h2 class="text-3xl font-display font-bold text-primary mb-4">{t('מאמרים בנושא לפי קהל', 'Explore the topic in more depth')}</h2>
+        <nav aria-label={t('קהל למאמרים בנושא', 'Find relevant reading')} class="flex flex-wrap gap-3 mb-8">{groups.map(g=><a href={`#audience-${g.id}`} class="rounded-full bg-white border border-primary/20 px-5 py-3 font-bold">{g.name}</a>)}</nav>
+        {articles.length === 0 && <p>{t('בקרוב יתווספו מאמרים בנושא הזה.', 'More English articles will be added here.')}</p>}
+        <div class="space-y-12">{groups.map(g=><section id={`audience-${g.id}`} class="scroll-mt-24"><h3 class="text-2xl font-display font-bold text-primary mb-4">{g.name}</h3>{insightDomains.some(d=>d.id===g.id) && <a href={`/insights/${g.id}`} class="inline-block underline mb-5">{t('לספרייה המלאה:', 'Full library (Hebrew):')} {g.name}</a>}<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{g.articles.map(a=><InsightArticleCard article={a} language={language} />)}</div></section>)}</div>
+      </section>
+
+      <!-- FAQ -->
+      {pain.faqItems?.length > 0 && (
+        <section class="max-w-3xl mx-auto mb-16">
+          <h2 class="text-3xl font-black text-primary font-display mb-8 text-center">{t('שאלות נפוצות', 'Common questions')}</h2>
+          <div class="space-y-4">
+            {pain.faqItems.map((item: { question: string; answer: string }) => (
+              <details class="group bg-white border border-foreground/10 rounded-2xl overflow-hidden shadow-sm">
+                <summary class="px-6 py-5 cursor-pointer font-bold text-primary text-lg list-none flex justify-between items-center hover:bg-background/50 transition-colors">
+                  {item.question}
+                  <span class="text-accent text-2xl transition-transform group-open:rotate-45 ms-4">+</span>
+                </summary>
+                <div class="px-6 pb-6 pt-2 text-primary/70 font-body leading-relaxed">{item.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- CTA -->
+      {pain.cta?.heading && (
+        <section class="max-w-3xl mx-auto bg-primary text-white rounded-[2rem] shadow-xl p-10 md:p-12 text-center">
+          <h2 class="text-3xl font-black font-display mb-4">{pain.cta.heading}</h2>
+          {pain.cta.text && <p class="text-white/85 font-body text-lg mb-8 leading-relaxed">{pain.cta.text}</p>}
+          {pain.cta.buttonLabel && (
+            <a
+              href={pain.cta.buttonHref || '/contact'}
+              class="inline-block bg-accent hover:bg-gold-dark text-primary font-bold text-lg px-10 py-4 rounded-full transition-all shadow-lg"
+            >
+              {pain.cta.buttonLabel}
+            </a>
+          )}
+        </section>
+      )}
+
+    </div>
+  </section>
+</BaseLayout>

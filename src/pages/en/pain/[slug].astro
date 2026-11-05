@@ -1,0 +1,15 @@
+---
+import PainPage from '../../../components/PainPage.astro'
+import {sanity} from '../../../lib/sanity'
+import site from '../../../content/pages/site.json'
+const {slug} = Astro.params
+const [page, original] = await Promise.all([
+  sanity.fetch(`*[_type == "page" && slug.current == $slug][0]{title,excerpt,body,aiCitation,aiContext,painTags,seo,contentUpdatedAt,specialty}`, {slug:`en/pain/${slug}`}),
+  sanity.fetch(`*[_type == "pain" && slug.current == $slug][0]{_id}`, {slug}),
+])
+if (!page || !original) return new Response('Not found', {status:404})
+const articles = await sanity.fetch(`*[_type == "article" && language == "en" && references($painId)] | order(publishedAt desc){_id,title,goldLine,"slug":slug.current,excerpt,publishedAt,insightPlacement,mainImage{alt,asset->{url}}}`, {painId:original._id})
+const pain = {...page, goldLine:page.excerpt, heroIntro:page.specialty?.intro, definition:page.aiCitation, painPoints:page.painTags, painKeywords:page.painTags, faqItems:page.specialty?.faq, articles, cta:{heading:page.specialty?.practicalGuidance?.gettingStarted?.title,text:page.specialty?.practicalGuidance?.gettingStarted?.text,buttonLabel:'Yossi, I want to work on this pattern',buttonHref:'/en/contact'}}
+const languageLinks = [{language:'he',href:`${site.siteUrl}/pain/${slug}`},{language:'en',href:`${site.siteUrl}/en/pain/${slug}`}]
+---
+<PainPage pain={pain} slug={slug} language="en" languageLinks={languageLinks} />
