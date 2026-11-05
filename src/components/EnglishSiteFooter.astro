@@ -1,11 +1,12 @@
 ---
+import NewsletterForm from './NewsletterForm.astro'
 import site from '../content/pages/site.json'
 import { buildWhatsAppHref } from '../lib/whatsapp'
 const contact = buildWhatsAppHref(site.whatsAppPhone, 'Hi Yossi, I would like to talk about emotional coaching with Heart Compass.')
 ---
 <footer class="bg-[#0f172a] text-white mt-24" lang="en" dir="ltr">
   <div class="max-w-7xl mx-auto px-6 py-14">
-    <div class="grid gap-10 md:grid-cols-3">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
       <div>
         <h2 class="text-2xl font-bold mb-4">Heart Compass</h2>
         <p class="text-white/75 leading-relaxed">Emotional coaching with Yossi Medalsi. Work on the patterns holding you back and build the ability to choose, act, and handle what comes next.</p>
@@ -25,13 +26,14 @@ const contact = buildWhatsAppHref(site.whatsAppPhone, 'Hi Yossi, I would like to
         <a href={contact} class="inline-flex rounded-2xl bg-accent px-6 py-3 font-bold text-primary">Talk to Yossi on WhatsApp</a>
         <a href="mailto:yossi@heartcompass.co.il" class="mt-5 block text-white/75 hover:underline">yossi@heartcompass.co.il</a>
       </div>
+      <NewsletterForm language="en" />
     </div>
     <div class="mt-10 border-t border-white/15 pt-6 flex flex-wrap justify-between gap-5 text-sm text-white/70">
       <p>© {new Date().getFullYear()} Heart Compass. All rights reserved.</p>
-      <nav class="flex flex-wrap gap-5" aria-label="Policies in Hebrew">
-        <a href="/privacy" class="hover:underline">Privacy (Hebrew)</a>
-        <a href="/terms" class="hover:underline">Terms (Hebrew)</a>
-        <a href="/accessibility" class="hover:underline">Accessibility (Hebrew)</a>
+      <nav class="flex flex-wrap gap-5" aria-label="Policies">
+        <a href="/en/privacy" class="hover:underline">Privacy Policy</a>
+        <a href="/en/terms" class="hover:underline">Terms of Use</a>
+        <a href="/en/accessibility" class="hover:underline">Accessibility</a>
       </nav>
     </div>
   </div>

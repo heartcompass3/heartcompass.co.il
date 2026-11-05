@@ -1,4 +1,5 @@
 ---
+import NewsletterForm from './NewsletterForm.astro'
 import site from '../content/pages/site.json'
 
 const { settings = null } = Astro.props
@@ -123,31 +124,7 @@ socialIcons.tiktok = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
       </div>
 
       <div>
-        <h4 class="text-lg font-semibold mb-2">
-          אם הגעת עד לכאן, כנראה שמשהו בך כבר מחפש שינוי
-        </h4>
-        <p class="text-white/70 text-sm leading-relaxed mb-4">
-          אני לא שולח ספאם. רק תובנות חדות על דפוסים, פחדים והבחירות שאנחנו עושים מתחת לרדאר.  
-          דברים שיכולים להזיז אותך מבפנים.
-        </p>
-        <form action="/api/lead" method="POST" class="flex flex-col gap-2">
-          <label class="sr-only" for="footer-name">שם מלא</label>
-          <input id="footer-name" type="text" name="name" placeholder="איך קוראים לך?" required class="p-2 rounded text-black" />
-          <label class="sr-only" for="footer-email">כתובת מייל</label>
-          <input id="footer-email" type="email" name="email" placeholder="לאן לשלוח לך את זה?" required class="p-2 rounded text-black" />
-          <input type="hidden" name="_subject" value="ליד חדש מהאתר מצפן הלב">
-          <input type="hidden" name="_next" value="/thank-you">
-          <label class="flex items-start gap-2 text-white/60 text-xs leading-snug">
-            <input type="checkbox" name="consent" value="yes" required class="mt-0.5 shrink-0" />
-            <span>
-              אני מאשר/ת קבלת תכנים ועדכונים במייל, ומאשר/ת שקראתי את
-              <a href="/privacy" class="underline hover:text-white">מדיניות הפרטיות</a>.
-            </span>
-          </label>
-          <button type="submit" class="bg-white text-black py-2 rounded hover:bg-gray-200">
-            כן, שלח לי תובנות
-          </button>
-        </form>
+        <NewsletterForm language="he" />
       </div>
     </div>
 

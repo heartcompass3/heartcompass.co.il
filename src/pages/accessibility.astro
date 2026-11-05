@@ -1,14 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import site from '../content/pages/site.json'
+const languageLinks = [
+ {language: 'he', href: `${site.siteUrl}/accessibility`},
+ {language: 'en', href: `${site.siteUrl}/en/accessibility`},
+]
+
 
 const title = 'הצהרת נגישות | מצפן הלב'
 const description =
   'מצפן הלב מחויבת לנגישות ועושה מאמץ להנגיש את האתר בהתאם לתקן WCAG 2.0 ברמה AA. כאן תמצא פירוט התאמות ודרכי יצירת קשר.'
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout languageLinks={languageLinks} title={title} description={description}>
   <section class="max-w-3xl mx-auto px-6 py-16">
+    <a href="/en/accessibility" lang="en" dir="ltr" class="inline-block mb-6 underline text-primary">Read in English</a>
     <h1 class="font-display text-4xl leading-tight">הצהרת נגישות</h1>
 
     <p class="mt-6 font-body text-lg text-foreground/80">
@@ -27,7 +33,7 @@ const description =
       <div>
         <h2 class="font-display text-2xl text-foreground">התאמות שבוצעו</h2>
         <ul class="mt-2 list-disc pr-6 space-y-2">
-          <li>רכיב נגישות באתר (כפתור בפינה הימנית התחתונה) המאפשר הגדלת טקסט, ניגודיות גבוהה, גווני אפור, הדגשת קישורים ועצירת אנימציות.</li>
+          <li>רכיב נגישות באתר (כפתור בצד שמאל של המסך) המאפשר הגדלת טקסט, ניגודיות גבוהה, גווני אפור, הדגשת קישורים ועצירת אנימציות.</li>
           <li>קישור "דלג לתוכן הראשי" לניווט מהיר במקלדת.</li>
           <li>מבנה עמודים היררכי עם כותרות מסודרות.</li>
           <li>תמיכה בניווט מקלדת (Tab, Enter, Escape) ברכיבי תפריט וחלונות.</li>
@@ -68,7 +74,7 @@ const description =
       </div>
 
       <p class="text-sm text-foreground/60 mt-10">
-        עודכן לאחרונה: 13.07.2026
+        עודכן לאחרונה: 05.11.2026
       </p>
     </div>
   </section>

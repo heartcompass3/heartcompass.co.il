@@ -1,0 +1,25 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import site from '../content/pages/site.json'
+const { title, description, path, updated } = Astro.props
+const languageLinks = [
+  { language: 'he', href: `${site.siteUrl}/${path}` },
+  { language: 'en', href: `${site.siteUrl}/en/${path}` },
+]
+---
+<BaseLayout title={title} description={description} language="en" languageLinks={languageLinks}>
+  <section class="py-20 bg-background min-h-screen">
+    <div class="max-w-3xl mx-auto px-6">
+      <a href={`/${path}`} lang="he" dir="rtl" class="inline-block mb-6 underline text-primary">לגרסה בעברית</a>
+      <h1 class="text-4xl md:text-5xl font-black text-primary font-display mb-3">{title}</h1>
+      <p class="text-primary/60 font-body mb-10">Last updated: {updated} · English translation: 5 November 2026</p>
+      <div class="policy-copy space-y-8 font-body leading-relaxed text-primary/80 text-lg"><slot /></div>
+    </div>
+  </section>
+</BaseLayout>
+<style is:global>
+  .policy-copy h2 { font-size: 1.5rem; font-weight: 800; color: #0f2c36; margin-bottom: .75rem; }
+  .policy-copy ul { list-style: disc; padding-inline-start: 1.5rem; }
+  .policy-copy li + li, .policy-copy p + p { margin-top: .75rem; }
+  .policy-copy a { text-decoration: underline; text-underline-offset: 3px; }
+</style>

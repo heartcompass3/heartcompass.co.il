@@ -1,19 +1,24 @@
 ---
-const consentKey = 'hc_cookie_consent'
+const { language = 'he' } = Astro.props
+const isEn = language === 'en'
+const t = (en: string, he: string) => isEn ? en : he
+
 ---
 
 <div
   class="fixed bottom-4 right-4 left-4 md:left-auto md:w-[420px] z-[999] hidden"
+  lang={language}
+  dir={isEn ? 'ltr' : 'rtl'}
   data-cookie-banner
   role="dialog"
   aria-live="polite"
-  aria-label="הגדרות עוגיות"
+  aria-label={t('Cookie settings', 'הגדרות עוגיות')}
 >
   <div class="rounded-2xl border border-accent/20 bg-white shadow-elegant p-4">
-    <div class="font-body font-bold text-foreground">קוקיז ופרטיות</div>
+    <div class="font-body font-bold text-foreground">{t('Cookies and privacy', 'קוקיז ופרטיות')}</div>
     <p class="font-body text-sm text-muted-foreground mt-2">
-      כדי למדוד ביצועים ולהפעיל קמפיינים בעתיד, האתר עשוי להשתמש בעוגיות (Analytics ופיקסלים).
-      אפשר לאשר או לדחות. תמיד ניתן לשנות החלטה על ידי מחיקת נתוני גלישה.
+      {t('This website may use analytics and advertising cookies to measure performance and support future campaigns. You can accept or decline. Clear your browser data to change your choice.', 'כדי למדוד ביצועים ולהפעיל קמפיינים בעתיד, האתר עשוי להשתמש בעוגיות (Analytics ופיקסלים). אפשר לאשר או לדחות. תמיד ניתן לשנות החלטה על ידי מחיקת נתוני גלישה.')}
+      <a href={isEn ? '/en/privacy' : '/privacy'} class="underline">{t('Privacy policy', 'מדיניות פרטיות')}</a>
     </p>
 
     <div class="mt-4 flex gap-3 justify-end">
@@ -22,14 +27,14 @@ const consentKey = 'hc_cookie_consent'
         class="px-4 py-2 rounded-xl border border-accent/20 font-body text-sm hover:bg-accent/5 transition"
         data-cookie-decline
       >
-        דחייה
+        {t('Decline', 'דחייה')}
       </button>
       <button
         type="button"
         class="px-4 py-2 rounded-xl bg-accent text-primary font-body text-sm hover:opacity-95 transition"
         data-cookie-accept
       >
-        אישור
+        {t('Accept', 'אישור')}
       </button>
     </div>
   </div>

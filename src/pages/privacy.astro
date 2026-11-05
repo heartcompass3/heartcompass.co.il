@@ -1,8 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import site from '../content/pages/site.json'
+const languageLinks = [
+ {language: 'he', href: `${site.siteUrl}/privacy`},
+ {language: 'en', href: `${site.siteUrl}/en/privacy`},
+]
 
-const updated = '23 ביוני 2026'
+
+const updated = '5 בנובמבר 2026'
 
 // פרטי בעל מאגר המידע (נדרש לפי חוק הגנת הפרטיות, תיקון 13)
 const business = {
@@ -12,12 +17,13 @@ const business = {
 }
 ---
 
-<BaseLayout
+<BaseLayout languageLinks={languageLinks}
   title="מדיניות פרטיות"
   description={`מדיניות הפרטיות של ${site.brand} — איזה מידע נאסף, כיצד נעשה בו שימוש, עוגיות וזכויותיך לפי חוק הגנת הפרטיות.`}
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-3xl mx-auto px-6">
+    <a href="/en/privacy" lang="en" dir="ltr" class="inline-block mb-6 underline text-primary">Read in English</a>
       <h1 class="text-4xl md:text-5xl font-black text-primary font-display mb-3">מדיניות פרטיות</h1>
       <p class="text-primary/50 font-body mb-10">עודכן לאחרונה: {updated}</p>
 
@@ -40,7 +46,7 @@ const business = {
         <div>
           <h2 class="text-2xl font-black text-primary font-display mb-3">איזה מידע נאסף</h2>
           <ul class="list-disc pr-6 space-y-2">
-            <li><strong>מידע שאתה מוסר ביוזמתך</strong> — שם, טלפון, אימייל ותוכן ההודעה כשאתה פונה דרך WhatsApp, מייל, טופס יצירת קשר או טופס הדיוור.</li>
+            <li><strong>מידע שאתה מוסר ביוזמתך</strong> — שם, טלפון, אימייל, שפה מועדפת ותוכן ההודעה כשאתה פונה דרך WhatsApp, מייל, טופס יצירת קשר או טופס הדיוור.</li>
             <li><strong>מידע טכני אנונימי</strong> — נתוני שימוש כלליים (סוג דפדפן, עמודים שנצפו, מקור הגעה) הנאספים באמצעות עוגיות וכלי אנליטיקה, ללא זיהוי אישי.</li>
           </ul>
           <p class="mt-3">אנו אוספים את המידע המינימלי הנדרש למטרות המפורטות בלבד (עקרון מזעור המידע).</p>
