@@ -104,6 +104,7 @@ export const GET: APIRoute = async () => {
     // מרכז הכלים — עכשיו יעד של עשרות קישורים פנימיים ("אבחון קצר"), חייב להיות באינדקס
     { url: '/tools', lastmod: buildDate },
     { url: '/videos', lastmod: buildDate },
+    ...['/contact', '/en/contact'].map(url => ({url, lastmod: '2026-11-05'})),
     ...['/privacy', '/terms', '/accessibility', '/en/privacy', '/en/terms', '/en/accessibility'].map(url => ({url, lastmod: '2026-11-05'}))
   ]
 
