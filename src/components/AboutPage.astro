@@ -20,12 +20,17 @@ const metaDescription =
 const heading = page?.title?.trim() || (en ? 'Hi, I’m Yossi Medalsi.' : `נעים להכיר, אני ${site.fullName}.`)
 const professionalLine = t('מאמן רגשי ומפתח שיטת מ.ס.ע.', 'Emotional coach and creator of the M.S.A. approach.')
 const audienceLine = t('מלווה בני ובנות נוער בגילאי 11–18, הורים, זוגות ומבוגרים בתהליכים אישיים.', 'Online coaching for teens aged 11–18, parents, couples and adults.')
+const translatedPages = en ? await sanity.fetch(`*[_type == "page" && slug.current in $slugs]{"slug": slug.current}`, {slugs: ['en/specialties/youth', 'en/specialties/parents', 'en/specialties/couples', 'en/specialties/personal']}) : []
+const translatedSlugs = new Set(translatedPages.map((page: any) => page.slug))
 const audienceLinks = [
   { label: t('נוער 11–18', 'Teens 11–18'), href: '/specialties/youth' },
   { label: t('הורים', 'Parents'), href: '/specialties/parents' },
   { label: t('זוגות', 'Couples'), href: '/specialties/couples' },
   { label: t('תהליך אישי', 'Personal coaching'), href: '/specialties/personal' },
 ]
+for (const link of audienceLinks) {
+  if (en && translatedSlugs.has(`en${link.href}`)) link.href = `/en${link.href}`
+}
 const moreDetailsHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(t('היי יוסי, קראתי את דף האודות. יש משהו שאני רוצה לשנות ואשמח לדבר איתך עליו.', 'Hi Yossi, I read your About page. There is something I want to change and I would like to talk with you about it.'))}`
 
 // פתיחה (הזהוב)
