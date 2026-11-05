@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Breadcrumbs from './Breadcrumbs.astro'
+import LanguageLink from './LanguageLink.astro'
+import PortableText from './PortableText.astro'
+import InsightsSearch from './InsightsSearch.astro'
+import InsightArticleCard from './InsightArticleCard.astro'
+import domains from '../content/insights-domains.json'
+import fallbackTaxonomy from '../content/insights-taxonomy.json'
+import topics from '../content/insights-topics.json'
+import site from '../content/pages/site.json'
+import {personalLibrary, libraryIntroSections} from '../lib/knowledgeLibrary.mjs'
+const {page, articles, language = 'he', hasCounterpart = false} = Astro.props
+const en = language === 'en'
+const t = (he: string, english: string) => en ? english : he
+const path = `${en ? '/en' : ''}/insights/personal`
+const canonical = `${site.siteUrl}${path}`
+const {groups, articles: unique} = personalLibrary(articles, fallbackTaxonomy, topics.personal, language)
+const sections = libraryIntroSections(page.body)
+const languageLinks = hasCounterpart ? ['he','en'].map(language => ({language, href: `${site.siteUrl}${language === 'en' ? '/en' : ''}/insights/personal`})) : []
+const cta = page.specialty?.practicalGuidance?.gettingStarted
+const schema = [{
+  '@context':'https://schema.org', '@type':'CollectionPage', '@id':`${canonical}#collection`,
+  url:canonical, name:page.title, description:page.seo?.description || page.excerpt,
+  inLanguage:language, abstract:page.aiCitation, dateModified:page.contentUpdatedAt,
+  ...(en ? {} : {isPartOf:{'@type':'CollectionPage',url:`${site.siteUrl}/insights`}}),
+  author:{'@type':'Person',name:en ? 'Yossi Medalsi' : 'יוסי מדלסי',url:`${site.siteUrl}${en ? '/en' : ''}/about`},
+  mainEntity:{'@type':'ItemList',numberOfItems:unique.length,itemListElement:unique.map((a,i)=>({'@type':'ListItem',position:i+1,name:a.title,url:`${site.siteUrl}${en ? '/en' : ''}/articles/${typeof a.slug === 'string' ? a.slug : a.slug.current}`}))},
+}]
+---
+<BaseLayout language={language} languageLinks={languageLinks} title={page.seo?.title || page.title} description={page.seo?.description || page.excerpt} canonical={canonical} schema={schema}>
+  <section class="py-16 md:py-24 bg-background" dir={en ? 'ltr' : 'rtl'}>
+    <div class="max-w-6xl mx-auto px-6">
+      {hasCounterpart && <div class="mb-8 flex justify-end"><LanguageLink href={en ? '/insights/personal' : '/en/insights/personal'} language={en ? 'he' : 'en'} /></div>}
+      <Breadcrumbs language={language} items={en ? [{name:page.title}] : [{name:'מרכז המידע',href:'/insights'},{name:page.title}]} />
+      <header class="max-w-3xl mb-10">
+        <p class="text-accent font-bold mb-3">{t('ספריית המאמרים של מצפן הלב', 'The Heart Compass reading library')}</p>
+        <h1 class="font-display font-black text-primary text-4xl md:text-5xl leading-tight mb-6">{page.title}</h1>
+        <p class="text-xl text-primary/80 leading-relaxed">{page.excerpt}</p>
+        {en && page.specialty?.intro && <p class="mt-5 rounded-2xl border border-primary/15 bg-white p-5 text-primary/80 leading-relaxed">{page.specialty.intro}</p>}
+        <a href="#collections" class="inline-flex mt-6 rounded-xl px-6 py-3 bg-primary text-white font-bold">{t('לבחירת נושא ומאמר', 'Browse published articles')} <span aria-hidden="true" class="ms-2">↓</span></a>
+      </header>
+      <div class="grid md:grid-cols-3 gap-5 mb-12">
+        {sections.map((section, i) => <section class="rounded-3xl border border-primary/10 bg-white p-6 md:p-8">
+          <span aria-hidden="true" class="mb-4 inline-grid place-items-center rounded-full w-9 h-9 bg-accent/15 text-primary font-bold">{i+1}</span>
+          {section.title && <h2 class="text-xl font-bold text-primary mb-4">{section.title}</h2>}
+          <div class="text-primary/80 leading-relaxed"><PortableText value={section.body} language={language} /></div>
+        </section>)}
+      </div>
+      <section id="collections" class="scroll-mt-24" aria-labelledby="library-articles-title">
+        <h2 id="library-articles-title" class="text-3xl font-bold text-primary mb-4">{t('מאמרים לפי נושאים', 'Articles in this library')}</h2>
+        <p class="text-primary/80 mb-6">{unique.length} {t('מאמרים בספרייה. אפשר לבחור נושא או לחפש במילים שלכם.', unique.length === 1 ? 'article available in English. More translations will be added.' : 'articles available in English. More translations will be added.')}</p>
+        {!en && <nav aria-label="נושאים בספרייה" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">{groups.map(g=><a href={`#${g.id}`} class="rounded-2xl border border-primary/20 bg-white p-5 font-bold text-primary hover:border-accent">{g.name}<span class="block mt-2 text-sm font-normal text-primary/70">{g.articles.length} מאמרים <span aria-hidden="true">↓</span></span></a>)}</nav>}
+        <InsightsSearch domain="personal" language={language} />
+        {en ? <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{unique.map(a=><InsightArticleCard article={a} language="en" />)}</div> : <div class="space-y-14">{groups.map(g=><section id={g.id} class="scroll-mt-24">
+          <span id={g.legacyId} aria-hidden="true"></span>
+          <h3 class="font-display text-2xl font-bold text-primary mb-3">{g.name}</h3>
+          <p class="max-w-3xl text-primary/80 leading-relaxed mb-6">{g.description}</p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{g.articles.map(a=><InsightArticleCard article={a} audience={a.insightPlacement?.domain && a.insightPlacement.domain !== 'personal' ? domains.find(d=>d.id===a.insightPlacement.domain)?.name : undefined} />)}</div>
+          <a href="#collections" class="inline-block mt-5 underline text-primary/80">חזרה לנושאים ↑</a>
+        </section>)}</div>}
+      </section>
+      {page.specialty?.faq?.length > 0 && <section class="max-w-3xl mt-16" aria-labelledby="library-faq-title">
+        <h2 id="library-faq-title" class="text-2xl font-bold text-primary mb-6">{page.specialty.faqTitle}</h2>
+        <div class="space-y-4">{page.specialty.faq.map(f=><details class="bg-white rounded-2xl border border-primary/10 p-6"><summary class="cursor-pointer text-lg font-bold text-primary">{f.question}</summary><p class="mt-4 text-primary/80 leading-relaxed">{f.answer}</p></details>)}</div>
+      </section>}
+      {cta && <section class="mt-12 rounded-3xl bg-white border border-primary/10 p-7 md:p-10 text-center">
+        <h2 class="text-2xl font-bold text-primary mb-5">{cta.title}</h2>
+        <p class="max-w-3xl mx-auto text-lg text-primary/80 leading-relaxed">{cta.text}</p>
+        <div class="flex flex-wrap justify-center gap-5 my-6">
+          <a href={en ? '/en/specialties/personal' : '/specialties/personal'} class="underline font-bold text-primary">{t('איך נראה הליווי האישי', 'Explore personal coaching')}</a>
+          <a href={en ? '/en/method' : '/method'} class="underline font-bold text-primary">{t('להסבר המלא על שיטת מ.ס.ע', 'Explore the M.S.A. approach')}</a>
+        </div>
+        {page.specialty.closing && <p class="max-w-3xl mx-auto mb-6 text-primary/80 leading-relaxed">{page.specialty.closing}</p>}
+        <a href={en ? '/en/contact' : '/contact'} data-track-event="service_cta" data-track-label={`personal_library_${language}`} class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold">{t('לשיחת היכרות עם יוסי', 'Talk to Yossi')} <span aria-hidden="true">{en ? '→' : '←'}</span></a>
+      </section>}
+      {!en && <nav aria-label="ספריות נוספות" class="mt-12 flex flex-wrap gap-6">{domains.filter(d=>d.id!=='personal').map(d=><a href={`/insights/${d.id}`} class="font-bold underline text-primary">{d.name}</a>)}</nav>}
+    </div>
+  </section>
+</BaseLayout>

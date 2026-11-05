@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../../components/Breadcrumbs.astro'
+import InsightsSearch from '../../../components/InsightsSearch.astro'
+import InsightArticleCard from '../../../components/InsightArticleCard.astro'
+import {sanity} from '../../../lib/sanity'
+import site from '../../../content/pages/site.json'
+import fallback from '../../../content/insights-taxonomy.json'
+import topics from '../../../content/insights-topics.json'
+import {LIBRARY_ARTICLES_QUERY, personalLibrary} from '../../../lib/knowledgeLibrary.mjs'
+import {searchArticles} from '../../../lib/insights-search.mjs'
+const query = (Astro.url.searchParams.get('q') || '').trim().slice(0,180)
+const all = query ? await sanity.fetch(LIBRARY_ARTICLES_QUERY, {language:'en'}) : []
+const {articles, taxonomy} = personalLibrary(all, fallback, topics.personal, 'en')
+const results = searchArticles(articles, taxonomy, query, 'personal', articles.length)
+Astro.response.headers.set('Cache-Control','private, no-store')
+---
+<BaseLayout language="en" title="Search the personal growth library | Heart Compass" description="Search published English articles about personal growth and emotional patterns." canonical={`${site.siteUrl}/en/insights/search`} noindex={true}>
+  <section class="py-16 md:py-24"><div class="max-w-6xl mx-auto px-6">
+    <Breadcrumbs language="en" items={[{name:'Personal growth library',href:'/en/insights/personal'},{name:'Search'}]} />
+    <h1 class="text-3xl md:text-5xl font-bold text-primary mb-8">Search the personal growth library</h1>
+    <InsightsSearch language="en" domain="personal" query={query} />
+    {query && <p role="status" class="text-lg text-primary mb-6">{results.length} {results.length === 1 ? 'article found' : 'articles found'} for “{query}”.</p>}
+    {results.length > 0 && <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{results.map(({article})=><InsightArticleCard article={article} language="en" />)}</div>}
+    {query && !results.length && <div class="rounded-2xl bg-white p-6 text-primary"><h2 class="text-xl font-bold mb-3">Try another word</h2><p>The English library is growing. Try a short topic such as “patterns”, or browse the published articles below.</p></div>}
+    <a href="/en/insights/personal" class="inline-block mt-10 font-bold underline text-primary">Browse all English articles in this library →</a>
+  </div></section>
+</BaseLayout>
