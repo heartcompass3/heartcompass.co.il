@@ -300,27 +300,27 @@ const schemaArray = [serviceSchema, webPageSchema, breadcrumbSchema, ...(faqSche
               </details>
             ))}
           </div>
-
-          {closing && (
-            <div class="mt-10 text-primary/75 font-body leading-relaxed text-center font-bold">
-              {closing}
-            </div>
-          )}
-
-          <div class="mt-10 text-center">
-            <a
-              href={ctaHref}
-              data-track-event="service_cta"
-              data-track-label="couples"
-              class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
-            >
-              בואו נבין יחד מה קורה ביניכם <span aria-hidden="true">←</span>
-            </a>
-          </div>
         </div>
       )}
 
       <SpecialtyArticles articles={categoryArticles} />
+
+      {closing && (
+        <div class="mt-10 text-primary/75 font-body leading-relaxed text-center font-bold">
+          {closing}
+        </div>
+      )}
+
+      <div class="mt-10 text-center pb-16">
+        <a
+          href={ctaHref}
+          data-track-event="service_cta"
+          data-track-label="couples"
+          class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold"
+        >
+          בואו נבין יחד מה קורה ביניכם <span aria-hidden="true">←</span>
+        </a>
+      </div>
     </div>
   </section>
 </BaseLayout>
