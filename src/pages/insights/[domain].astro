@@ -8,18 +8,22 @@ import fallbackTaxonomy from '../../content/insights-taxonomy.json'
 import topics from '../../content/insights-topics.json'
 import site from '../../content/pages/site.json'
 import {sanity} from '../../lib/sanity'
+import PersonalKnowledgeLibrary from '../../components/PersonalKnowledgeLibrary.astro'
+import {LIBRARY_PAGE_QUERY, LIBRARY_ARTICLES_QUERY} from '../../lib/knowledgeLibrary.mjs'
 import {ARTICLES_QUERY} from '../../lib/sanityQueries'
 import {collectionGroups, articleSlug, effectiveTaxonomy} from '../../lib/insights.mjs'
 const domain = domains.find(d => d.id === Astro.params.domain)
 if (!domain) return new Response('העמוד לא נמצא', {status:404, headers:{'Content-Type':'text/plain; charset=utf-8'}})
-const articles = await sanity.fetch(ARTICLES_QUERY)
+const articles = domain.id === 'personal' ? await sanity.fetch(LIBRARY_ARTICLES_QUERY, {language:'he'}) : await sanity.fetch(ARTICLES_QUERY)
+const personalPage = domain.id === 'personal' ? await sanity.fetch(LIBRARY_PAGE_QUERY, {slug:'insights/personal'}) : null
+const personalEnglish = personalPage ? await sanity.fetch(LIBRARY_PAGE_QUERY, {slug:'en/insights/personal'}) : null
 const taxonomy = effectiveTaxonomy(articles,fallbackTaxonomy)
 const groups = collectionGroups(articles,taxonomy,domain.id,topics[domain.id])
 const unique = [...new Map(groups.flatMap(g=>g.articles).map(a=>[articleSlug(a),a])).values()]
 const canonical = new URL(`/insights/${domain.id}`,site.siteUrl).toString()
 const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:domain.name,url:canonical,description:domain.description,inLanguage:'he',isPartOf:{'@type':'CollectionPage',url:new URL('/insights',site.siteUrl).toString()},mainEntity:{'@type':'ItemList',numberOfItems:unique.length,itemListElement:unique.map((a,i)=>({'@type':'ListItem',position:i+1,name:a.title,url:new URL(`/articles/${articleSlug(a)}`,site.siteUrl).toString()}))}}
 ---
-<BaseLayout title={`${domain.name}: מאמרים וכלים | ${site.brand}`} description={domain.description} canonical={canonical} schema={[schema]}>
+{personalPage ? <PersonalKnowledgeLibrary page={personalPage} articles={articles} hasCounterpart={!!personalEnglish} /> : <BaseLayout title={`${domain.name}: מאמרים וכלים | ${site.brand}`} description={domain.description} canonical={canonical} schema={[schema]}>
   <section class="py-16 md:py-24 bg-background"><div class="max-w-6xl mx-auto px-6">
     <Breadcrumbs items={[{name:'מרכז המידע',href:'/insights'},{name:domain.name}]} />
     <header class="max-w-3xl mb-8">
@@ -42,4 +46,4 @@ const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:do
     </section>
     <nav aria-label="ספריות נוספות" class="mt-16 border-t border-primary/15 pt-8 flex flex-wrap gap-6">{domains.filter(d=>d.id!==domain.id).map(d=><a class="font-bold underline text-primary" href={`/insights/${d.id}`}>{d.name}</a>)}</nav>
   </div></section>
-</BaseLayout>
+</BaseLayout>}

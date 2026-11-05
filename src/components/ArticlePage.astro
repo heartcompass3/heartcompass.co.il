@@ -25,6 +25,8 @@ const allArticles = en ? [] : await sanity.fetch(ARTICLES_QUERY)
 const taxonomy = effectiveTaxonomy([...allArticles,article],fallbackTaxonomy)
 const placement = taxonomy[slug]
 const library = insightDomains.find(d => d.id === placement?.domain)
+const englishPersonalLibrary = en && library?.id === 'personal' ? await sanity.fetch(`*[_type == "page" && slug.current == "en/insights/personal" && coalesce(seo.noindex, false) == false][0]{_id}`) : null
+const articleLibraryLink = englishPersonalLibrary ? {name:'Personal growth and emotional patterns',href:'/en/insights/personal'} : {name:t('מאמרים', 'Articles'),href:'/articles'}
 const related = !en && library ? relatedArticles(allArticles, taxonomy, slug) : []
 
 // זמן קריאה + ספירת מילים מגוף ה-PortableText
@@ -120,13 +122,13 @@ const breadcrumbSchema = {
       '@type': 'ListItem',
       position: 1,
       name: en ? 'Heart Compass' : site.brand,
-      item: `${site.siteUrl}/`,
+      item: `${site.siteUrl}${en ? "/en" : "/"}`,
     },
     {
       '@type': 'ListItem',
       position: 2,
-      name: t('מאמרים', 'Articles in Hebrew'),
-      item: `${site.siteUrl}/articles`,
+      name: articleLibraryLink.name,
+      item: `${site.siteUrl}${articleLibraryLink.href}`,
     },
     {
       '@type': 'ListItem',
@@ -175,16 +177,17 @@ const schemas = faqSchema
   <article lang={language} dir={en ? "ltr" : "rtl"} class:list={["animate-fade-in py-24 bg-background min-h-screen", {"english-article": en}]}>
     <div class={showToc ? 'max-w-6xl mx-auto px-6' : 'max-w-5xl mx-auto px-6'}>
       <a
-        href="/articles"
+        href={en ? articleLibraryLink.href : "/articles"}
         class="flex items-center text-primary hover:text-gold-dark mb-10 font-bold transition-colors bg-white px-6 py-3 rounded-full shadow-md w-fit border border-accent/20"
       >
-        {t('← חזרה למאמרים', '← Articles in Hebrew')}
+        {t('← חזרה למאמרים', englishPersonalLibrary ? '← Back to the personal growth library' : '← Articles')}
       </a>
 
       <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-        <Breadcrumbs language={language} items={[{ name: t('מאמרים', 'Articles in Hebrew'), href: '/articles' }, { name: article.title }]} withSchema={false} />
+        <Breadcrumbs language={language} items={[{ name: articleLibraryLink.name, href: articleLibraryLink.href }, { name: article.title }]} withSchema={false} />
         {otherLanguage && <LanguageLink href={otherLanguage.href} language={otherLanguage.language} />}
       </div>
+      {englishPersonalLibrary && <p class="mb-6 text-primary/75"><a href="/en/insights/personal" class="underline font-bold">More reading: Personal growth and emotional patterns</a></p>}
       {!en && library && <p class="mb-6 text-primary/75"><a href={`/insights/${library.id}`} class="underline font-bold">למאמרים נוספים: {library.name}</a></p>}
 
       <div class={showToc ? 'lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start' : ''}>
