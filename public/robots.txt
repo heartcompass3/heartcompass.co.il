@@ -1,24 +1,13 @@
-# Robots.txt for Heart Compass (מצפן הלב) — Optimized for Search & AI
-
+# Heart Compass / מצפן הלב — one public-content policy for all crawlers.
+# Named agents share the rules below instead of overriding the wildcard group.
 User-agent: *
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
 Allow: /
 Disallow: /api/
 Disallow: /studio/
-
-# AI crawlers — full access (GEO / AEO)
-User-agent: GPTBot
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
 
 Sitemap: https://www.heartcompass.co.il/sitemap.xml
