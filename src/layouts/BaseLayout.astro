@@ -1,7 +1,7 @@
 ---
 import site from '../content/pages/site.json'
 import '../styles/global.css'
-import { AREA_SERVED } from '../lib/schema'
+import { getAreaServed, getCoachingTopics, getProfessionalCredentials } from '../lib/schema'
 import { sanity } from '../lib/sanity'
 import { SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
 
@@ -49,6 +49,7 @@ if (!resolvedSiteSettings) {
   }
 }
 
+const isEn = language === 'en'
 const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
 
 const resolvedCanonicalRaw =
@@ -85,9 +86,9 @@ const normalizeCanonical = (url: string) => {
 
 const resolvedCanonical = normalizeCanonical(resolvedCanonicalRaw)
 
-const defaultDescription =
-  site.heroDescription ||
-  'מצפן הלב הוא תהליך ברור, רגיש ומדויק שעוזר לך לבחור מתוך תשוקה ולא מתוך הפחד.'
+const defaultDescription = isEn
+  ? 'Emotional coaching with Yossi Medalsi and the M.S.A. approach: work on recurring patterns and barriers, and build direction, goals, and the ability to act.'
+  : site.heroDescription || 'מצפן הלב הוא תהליך ברור, רגיש ומדויק שעוזר לך לבחור מתוך תשוקה ולא מתוך הפחד.'
 
 const resolvedDescription = clean(description) || defaultDescription
 
@@ -112,9 +113,9 @@ const websiteSchema = {
   '@type': 'WebSite',
   '@id': `${site.siteUrl}/#website`,
   name: site.brand,
-  alternateName: [site.siteName, site.fullName],
+  alternateName: ['Heart Compass', site.siteName, site.fullName],
   url: site.siteUrl,
-  inLanguage: 'he',
+  inLanguage: ['he', 'en'],
   // עקביות עם Article.publisher: הישות שמפרסמת את האתר היא העסק, לא האדם —
   // האדם הוא founder/author, לא publisher.
   publisher: { '@id': `${site.siteUrl}/#business` },
@@ -123,8 +124,8 @@ const websiteSchema = {
 // כתובת בסיס — נתניה (העסק מתנהל אונליין; כשתיפתח קליניקה נעדכן כאן בלבד).
 const businessAddress = {
   '@type': 'PostalAddress',
-  addressLocality: 'נתניה',
-  addressRegion: 'מחוז המרכז',
+  addressLocality: isEn ? 'Netanya' : 'נתניה',
+  addressRegion: isEn ? 'Central District' : 'מחוז המרכז',
   addressCountry: 'IL',
 }
 
@@ -134,17 +135,18 @@ const defaultServiceSchema = {
   '@context': 'https://schema.org',
   '@type': ['Organization', 'LocalBusiness'],
   '@id': `${site.siteUrl}/#business`,
-  name: site.brand,
+  name: isEn ? 'Heart Compass' : site.brand,
+  alternateName: isEn ? site.brand : 'Heart Compass',
   url: site.siteUrl,
   description: resolvedDescription,
   founder: { '@id': `${site.siteUrl}/#person` },
   address: businessAddress,
-  areaServed: AREA_SERVED,
+  areaServed: getAreaServed(language),
   // knowsLanguage הוא המאפיין החוקי ל-Organization; availableLanguage שייך רק
   // ל-ContactPoint/ServiceChannel וגורם לשגיאת ולידציה על LocalBusiness.
   knowsLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
   priceRange: '₪₪',
-  slogan: site.tagline,
+  slogan: isEn ? 'Choose from passion, not from fear.' : site.tagline,
   email: site.email,
   telephone: `+${site.whatsAppPhone}`,
   image: `${site.siteUrl}/assets/og-image.jpg`,
@@ -166,49 +168,25 @@ const defaultServiceSchema = {
     // הוסר קישור Wikidata שגוי (Q140424600 / Q140424390) — אומת מול ה-API הרשמי
     // ולא קיים שום פריט כזה. אין כרגע פריט Wikidata אמיתי לעסק או למייסד.
   ],
-  knowsAbout: [
-    'אימון רגשי',
-    'אינטליגנציה רגשית',
-    'אימון רגשי לבני נוער',
-    'הדרכת הורים',
-    'זוגיות ותקשורת',
-    'שחרור דפוסים רגשיים',
-    'שיטת מ.ס.ע',
-  ],
+  knowsAbout: getCoachingTopics(language),
 }
 
 const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   '@id': `${site.siteUrl}/#person`,
-  name: site.fullName,
+  name: isEn ? 'Yossi Medalsi' : site.fullName,
+  alternateName: isEn ? site.fullName : 'Yossi Medalsi',
   // עמוד הפרופיל הקנוני של האדם — לא דף הבית (זה של העסק). עקבי עם /about
   // ועם article.author.url בעמוד המאמר.
-  url: `${site.siteUrl}/about`,
-  jobTitle: 'מאמן רגשי מוסמך',
+  url: `${site.siteUrl}${isEn ? '/en/about' : '/about'}`,
+  jobTitle: isEn ? 'Emotional coach' : 'מאמן רגשי',
   email: site.email,
   address: businessAddress,
   worksFor: { '@id': `${site.siteUrl}/#business` },
   // הסמכות = אות E-E-A-T מרכזי בגוגל.
-  hasCredential: [
-    {
-      '@type': 'EducationalOccupationalCredential',
-      credentialCategory: 'Professional Certification',
-      name: 'מאמן רגשי מוסמך',
-    },
-    {
-      '@type': 'EducationalOccupationalCredential',
-      credentialCategory: 'Specialized Training',
-      name: 'השתלמות מקצועית – אימון רגשי לבני נוער ומתבגרים',
-    },
-  ],
-  knowsAbout: [
-    'אימון רגשי',
-    'אינטליגנציה רגשית',
-    'הדרכת הורים',
-    'ליווי זוגות',
-    'בני נוער ומתבגרים',
-  ],
+  hasCredential: getProfessionalCredentials(site.siteUrl, language),
+  knowsAbout: getCoachingTopics(language),
   sameAs: [
     site.instagramUrl,
     site.facebookUrl,
@@ -228,6 +206,20 @@ const alreadyHasService = schemaArray.some(
 // אם העמוד מספק Person משלו (למשל דף "אודות" עם ביוגרפיה) — לא מזריקים את הגנרי.
 const alreadyHasPerson = schemaArray.some((s) => s && s['@type'] === 'Person')
 
+// Give every page a language-bearing WebPage entity, including policy pages.
+const pageTypes = ['WebPage', 'ProfilePage', 'AboutPage', 'ContactPage', 'CollectionPage']
+const hasWebPage = schemaArray.some((item) => pageTypes.includes(item?.['@type']))
+const defaultWebPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${resolvedCanonical}#webpage`,
+  url: resolvedCanonical,
+  name: clean(title) || (isEn ? 'Heart Compass' : site.brand),
+  description: resolvedDescription,
+  inLanguage: language,
+  isPartOf: { '@id': `${site.siteUrl}/#website` },
+}
+
 // WebSite נכנס לכל עמוד (כולל מאמרים) — פעם אחת בלבד.
 let mergedSchema
 if (isArticlePage) {
@@ -238,6 +230,12 @@ if (isArticlePage) {
   if (!alreadyHasPerson) injected.push(personSchema)
   mergedSchema = [...injected, ...schemaArray]
 }
+if (!hasWebPage) mergedSchema.push(defaultWebPageSchema)
+mergedSchema = mergedSchema.map((item) =>
+  pageTypes.includes(item?.['@type']) || item?.['@type'] === 'FAQPage'
+    ? { ...item, inLanguage: language, isPartOf: { '@id': `${site.siteUrl}/#website` } }
+    : item
+)
 ---
 
 <!doctype html>
@@ -284,6 +282,7 @@ if (isArticlePage) {
       schema={mergedSchema}
     />
 
+    <link rel="describedby" href="/llms.txt" type="text/plain" />
     <link rel="icon" href="/assets/logo.png" />
 
     <!-- Tracking Layer -->

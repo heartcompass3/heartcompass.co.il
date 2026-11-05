@@ -11,6 +11,48 @@ export const AREA_SERVED = [
   'Online',
 ]
 
+export function getAreaServed(language = 'he') {
+  return language === 'en' ? [
+    { '@type': 'City', name: 'Netanya' },
+    { '@type': 'City', name: 'Ra’anana' },
+    { '@type': 'City', name: 'Kfar Saba' },
+    { '@type': 'City', name: 'Herzliya' },
+    { '@type': 'AdministrativeArea', name: 'Sharon' },
+    { '@type': 'Country', name: 'Israel' },
+    'Online',
+  ] : AREA_SERVED
+}
+
+export function getCoachingTopics(language = 'he') {
+  return language === 'en'
+    ? ['Emotional coaching', 'Emotional intelligence', 'Parent coaching', 'Couples coaching', 'Teen coaching', 'Emotional patterns', 'The M.S.A. approach']
+    : ['אימון רגשי', 'אינטליגנציה רגשית', 'הדרכת הורים', 'ליווי זוגות', 'אימון רגשי לבני נוער', 'דפוסים רגשיים', 'שיטת מ.ס.ע']
+}
+
+// Shared with the About page. Names and dates match the published certificates.
+export function getProfessionalCredentials(siteUrl: string, language = 'he') {
+  const en = language === 'en'
+  return [
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Professional Certification',
+      name: en ? 'Parotherapy coaching training, Migdalor Campus (2026)' : 'הכשרה באימון בשיטת פארותרפיה, קמפוס מגדלור (2026)',
+      url: `${siteUrl}/assets/certificate-yossi.jpg`,
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Specialized Training',
+      name: en ? 'Specialist training in emotional coaching for teens, Migdalor Campus (2026)' : 'התמחות באימון רגשי לבני נוער, קמפוס מגדלור (2026)',
+      url: `${siteUrl}/assets/certificate-yossi-youth.jpg`,
+    },
+  ]
+}
+
+function pageLanguage(url: string) {
+  const path = new URL(url).pathname
+  return path === '/en' || path.startsWith('/en/') ? 'en' : 'he'
+}
+
 // בונה Service schema שמקשר כל עמוד התמחות לישות המוסמכת (#person)
 // ולישות העסקית (#business). מחזק את הסמכות של עמודי הדגל בגוגל וב-AI.
 export function buildServiceSchema(params: {
@@ -39,7 +81,7 @@ export function buildServiceSchema(params: {
     url,
     provider: { '@id': `${siteUrl}/#person` },
     brand: { '@id': `${siteUrl}/#business` },
-    areaServed: AREA_SERVED,
+    areaServed: getAreaServed(pageLanguage(url)),
     // Service לא תומך ב-availableLanguage ישירות — רק דרך ServiceChannel.
     ...(!new URL(url, siteUrl).pathname.startsWith('/en/') ? {
       availableChannel: {
@@ -78,6 +120,7 @@ export function buildAeoWebPageSchema(params: {
     '@id': `${url}#webpage`,
     url,
     name,
+    inLanguage: pageLanguage(url),
     ...(description ? { description } : {}),
     ...(abstract ? { abstract } : {}),
     ...(disambiguatingDescription ? { disambiguatingDescription } : {}),

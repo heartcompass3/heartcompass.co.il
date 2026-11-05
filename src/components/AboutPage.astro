@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from './Breadcrumbs.astro'
 import site from '../content/pages/site.json'
+import { getCoachingTopics, getProfessionalCredentials } from '../lib/schema'
 import { sanity, urlFor } from '../lib/sanity'
 import PortableText from './PortableText.astro'
 
@@ -72,38 +73,18 @@ const aboutPersonSchema = {
   '@id': `${site.siteUrl}/#person`,
   name: en ? 'Yossi Medalsi' : site.fullName,
   url: aboutUrl,
-  jobTitle: 'מאמן רגשי',
-  description: en ? page?.aiCitation : personDescription,
+  jobTitle: t('מאמן רגשי', 'Emotional coach'),
+  description: en ? page?.aiCitation || 'Yossi Medalsi is an emotional coach, founder of Heart Compass, and creator of the M.S.A. approach.' : personDescription,
   email: site.email,
   image: toAbsolute(imageSrc),
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'נתניה',
-    addressRegion: 'מחוז המרכז',
+    addressLocality: t('נתניה', 'Netanya'),
+    addressRegion: t('מחוז המרכז', 'Central District'),
     addressCountry: 'IL',
   },
-  hasCredential: [
-    {
-      '@type': 'EducationalOccupationalCredential',
-      credentialCategory: 'Professional Certification',
-      name: 'הכשרה באימון בשיטת פארותרפיה, קמפוס מגדלור (2026)',
-      url: `${site.siteUrl}/assets/certificate-yossi.jpg`,
-    },
-    {
-      '@type': 'EducationalOccupationalCredential',
-      credentialCategory: 'Specialized Training',
-      name: 'התמחות באימון רגשי לבני נוער, קמפוס מגדלור (2026)',
-      url: `${site.siteUrl}/assets/certificate-yossi-youth.jpg`,
-    },
-  ],
-  knowsAbout: [
-    'אימון רגשי',
-    'אינטליגנציה רגשית',
-    'הדרכת הורים',
-    'ליווי זוגות',
-    'בני נוער ומתבגרים',
-    'שיטת מ.ס.ע',
-  ],
+  hasCredential: getProfessionalCredentials(site.siteUrl, language),
+  knowsAbout: getCoachingTopics(language),
   sameAs: [
     site.instagramUrl,
     site.facebookUrl,
