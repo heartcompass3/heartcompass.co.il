@@ -133,6 +133,7 @@ const whatsappSvg = `
         panel.classList.remove('hidden');
         panel.setAttribute('aria-hidden', 'false');
         btn.setAttribute('aria-expanded', 'true');
+        document.dispatchEvent(new Event('hc:whatsapp-open'));
       };
 
       const toggle = () => {
