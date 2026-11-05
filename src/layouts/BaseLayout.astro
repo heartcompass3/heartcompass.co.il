@@ -50,6 +50,9 @@ if (!resolvedSiteSettings) {
 }
 
 const isEn = language === 'en'
+// Contact/confirmation pages already provide the next step; no auto invitation.
+const showContactInvitation = !/^\/(?:en\/)?(?:contact|thank-you|unsubscribe)(?:\/|$)/.test(Astro.url.pathname)
+  && !Astro.url.pathname.startsWith('/guide/thanks')
 const clean = (v?: string) => (typeof v === 'string' ? v.trim() : '')
 
 const resolvedCanonicalRaw =
@@ -312,6 +315,6 @@ mergedSchema = mergedSchema.map((item) =>
     <BackToTop language={language} />
     <CookieBanner language={language} />
     <AccessibilityWidget language={language} />
-    <ExitIntentWhatsApp language={language} />
+    {showContactInvitation && <ExitIntentWhatsApp language={language} />}
   </body>
 </html>

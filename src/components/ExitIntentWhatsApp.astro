@@ -1,7 +1,7 @@
 ---
 import site from '../content/pages/site.json'
 
-// כרטיס צף לא־חוסם שמופיע כשגולש עומד לעזוב (דסקטופ) או אחרי דקה (מובייל).
+// Show only after 90 seconds of visible reading and 40% scroll; desktop also requires exit intent.
 // מטרה: לתפוס שאלה פתוחה לפני יציאה, בלי מודאל שמכסה מסך (בלי עונש interstitial).
 const { language = 'he' } = Astro.props
 const isEn = language === 'en'
@@ -33,7 +33,7 @@ const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(wa
     </div>
   </div>
 
-  <div id="hc-exit-title" class="hc-exit-title">{t('Before you go, is there a question on your mind?', 'לפני שתלך, עלתה לך שאלה?')}</div>
+  <div id="hc-exit-title" class="hc-exit-title">{t('Is there something you would like to ask?', 'יש משהו שתרצו לשאול?')}</div>
   <p id="hc-exit-body" class="hc-exit-body">
     {t('If something resonated while you were reading, you can message me on WhatsApp and briefly share what is happening.', 'אם משהו נגע בך תוך כדי הקריאה, אפשר לכתוב לי בוואטסאפ ולספר בקצרה מה קורה.')}
   </p>
@@ -107,68 +107,89 @@ const waHref = `https://wa.me/${site.whatsAppPhone}?text=${encodeURIComponent(wa
     const KEY = 'hc_exit_wa';
     const CONSENT_KEY = 'hc_cookie_consent';
     const CAP_DAYS = 14;
+    const MIN_READING_MS = 90000;
+    const MIN_SCROLL = 0.4;
     const root = document.querySelector('[data-exit-root]');
     if (!root) return;
 
-    // קאפ: לא להציג שוב בתוך 14 יום
-    try {
-      const seen = parseInt(localStorage.getItem(KEY) || '0', 10);
-      if (seen && Date.now() - seen < CAP_DAYS * 864e5) return;
-    } catch (e) {}
+    const recentlySeen = () => {
+      try { if (sessionStorage.getItem(KEY)) return true; } catch {}
+      try {
+        const seen = Number(localStorage.getItem(KEY) || 0);
+        return seen > 0 && Date.now() - seen < CAP_DAYS * 864e5;
+      } catch { return false; }
+    };
+    if (recentlySeen()) return;
 
     let shown = false;
-    const markSeen = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {} };
-
+    let activeReadingMs = 0;
+    let lastTick = Date.now();
+    let maxScroll = 0;
+    let timer = null;
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    const markSeen = () => {
+      try { localStorage.setItem(KEY, String(Date.now())); } catch {}
+      try { sessionStorage.setItem(KEY, 'seen'); } catch {}
+    };
     const canShow = () => {
-      // לא נערמים על באנר העוגיות: מציגים רק אחרי שהוכרעה ההסכמה
+      if (shown || recentlySeen() || document.visibilityState !== 'visible') return false;
+      if (activeReadingMs < MIN_READING_MS || maxScroll < MIN_SCROLL) return false;
       try {
         const c = localStorage.getItem(CONSENT_KEY);
         if (c !== 'accepted' && c !== 'declined') return false;
-      } catch (e) {}
-      return !shown && document.querySelector('[data-a11y-toggle]')?.getAttribute('aria-expanded') !== 'true';
+      } catch { return false; }
+      if (document.activeElement?.matches('input, textarea, select, [contenteditable="true"]')) return false;
+      return document.querySelector('[data-a11y-toggle]')?.getAttribute('aria-expanded') !== 'true'
+        && document.querySelector('[data-wa-button]')?.getAttribute('aria-expanded') !== 'true';
     };
-
     const show = () => {
       if (!canShow()) return;
       shown = true;
       markSeen();
-      // טוענים את התמונה רק ברגע ההצגה (lazy אמין, בלי loading=lazy שנתקע אחרי display:none)
-      const av = root.querySelector('.hc-exit-avatar');
-      if (av && !av.getAttribute('src') && av.dataset.src) av.setAttribute('src', av.dataset.src);
+      const avatar = root.querySelector('.hc-exit-avatar');
+      if (avatar && !avatar.getAttribute('src') && avatar.dataset.src) avatar.setAttribute('src', avatar.dataset.src);
       root.classList.remove('hidden');
       requestAnimationFrame(() => root.classList.add('hc-show'));
       cleanup();
     };
-
     const hide = () => {
       root.classList.remove('hc-show');
       setTimeout(() => root.classList.add('hidden'), 280);
     };
+    const onScroll = () => {
+      const distance = document.documentElement.scrollHeight - window.innerHeight;
+      if (distance > 0) maxScroll = Math.max(maxScroll, window.scrollY / distance);
+      if (isTouch) show();
+    };
+    const onMouseOut = (event) => {
+      if (event.clientY <= 0 && !event.relatedTarget) show();
+    };
+    const onVisibilityChange = () => { lastTick = Date.now(); };
+    const onManualWhatsApp = () => { markSeen(); hide(); cleanup(); };
+    function cleanup() {
+      if (timer !== null) clearInterval(timer);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mouseout', onMouseOut);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    }
 
     root.querySelector('[data-exit-close]')?.addEventListener('click', hide);
     root.querySelector('[data-exit-cta]')?.addEventListener('click', hide);
-    // Accessibility controls take priority over the contact invitation.
     document.addEventListener('hc:a11y-open', hide);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !root.classList.contains('hidden')) hide();
+    document.addEventListener('hc:whatsapp-open', onManualWhatsApp);
+    document.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a[href*="wa.me/"], a[href*="api.whatsapp.com/"]')) onManualWhatsApp();
     });
-
-    const isTouch = window.matchMedia('(pointer: coarse)').matches;
-    let timer = null;
-    const onMouseOut = (e) => {
-      if (e.clientY <= 0 && !e.relatedTarget) show();
-    };
-    function cleanup() {
-      document.removeEventListener('mouseout', onMouseOut);
-      if (timer) clearTimeout(timer);
-    }
-
-    if (isTouch) {
-      // מובייל: אחרי דקה
-      timer = setTimeout(show, 60000);
-    } else {
-      // דסקטופ: יציאת עכבר לכיוון סגירת הטאב
-      document.addEventListener('mouseout', onMouseOut);
-    }
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') hide(); });
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    if (!isTouch) document.addEventListener('mouseout', onMouseOut);
+    timer = setInterval(() => {
+      const now = Date.now();
+      if (document.visibilityState === 'visible') activeReadingMs += Math.min(now - lastTick, 2000);
+      lastTick = now;
+      if (isTouch) show();
+    }, 1000);
+    onScroll();
   })();
 </script>
