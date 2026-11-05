@@ -1,6 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import site from '../content/pages/site.json'
+const languageLinks = [
+ {language: 'he', href: `${site.siteUrl}/terms`},
+ {language: 'en', href: `${site.siteUrl}/en/terms`},
+]
+
 
 const updated = '23 ביוני 2026'
 
@@ -12,12 +17,13 @@ const business = {
 }
 ---
 
-<BaseLayout
+<BaseLayout languageLinks={languageLinks}
   title="תנאי שימוש"
   description={`תנאי השימוש באתר ${site.brand} ובשירותי האימון הרגשי של ${site.fullName}.`}
 >
   <section class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-3xl mx-auto px-6">
+    <a href="/en/terms" lang="en" dir="ltr" class="inline-block mb-6 underline text-primary">Read in English</a>
       <h1 class="text-4xl md:text-5xl font-black text-primary font-display mb-3">תנאי שימוש</h1>
       <p class="text-primary/50 font-body mb-10">עודכן לאחרונה: {updated}</p>
 

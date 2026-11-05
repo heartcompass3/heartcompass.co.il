@@ -1,4 +1,7 @@
 ---
+const { language = 'he' } = Astro.props
+const isEn = language === 'en'
+const t = (en: string, he: string) => isEn ? en : he
 // ווידג'ט נגישות קל משלנו (ללא צד שלישי / ללא איסוף מידע).
 // שולט על: גודל טקסט, ניגודיות גבוהה, גווני אפור, הדגשת קישורים, עצירת אנימציות.
 // ההעדפות נשמרות ב-localStorage ומיושמות בטעינה לפני צביעה.
@@ -19,11 +22,11 @@
   })()
 </script>
 
-<div class="a11y-root">
+<div class="a11y-root" lang={language} dir={isEn ? 'ltr' : 'rtl'}>
   <button
     type="button"
     class="a11y-toggle"
-    aria-label="פתיחת תפריט נגישות"
+    aria-label={t('Open accessibility menu', 'פתיחת תפריט נגישות')}
     aria-expanded="false"
     aria-controls="a11y-panel"
     data-a11y-toggle
@@ -33,29 +36,29 @@
     </svg>
   </button>
 
-  <div id="a11y-panel" class="a11y-panel hidden" role="dialog" aria-label="הגדרות נגישות" data-a11y-panel>
+  <div id="a11y-panel" class="a11y-panel hidden" role="dialog" aria-label={t('Accessibility settings', 'הגדרות נגישות')} data-a11y-panel>
     <div class="a11y-head">
-      <span class="a11y-title">נגישות</span>
-      <button type="button" class="a11y-close" aria-label="סגירת תפריט נגישות" data-a11y-close>×</button>
+      <span class="a11y-title">{t('Accessibility', 'נגישות')}</span>
+      <button type="button" class="a11y-close" aria-label={t('Close accessibility menu', 'סגירת תפריט נגישות')} data-a11y-close>×</button>
     </div>
 
     <div class="a11y-group">
-      <span class="a11y-label">גודל טקסט</span>
+      <span class="a11y-label">{t('Text size', 'גודל טקסט')}</span>
       <div class="a11y-row">
-        <button type="button" class="a11y-btn" data-a11y="font-dec" aria-label="הקטנת טקסט">א−</button>
-        <button type="button" class="a11y-btn" data-a11y="font-reset" aria-label="איפוס גודל טקסט">איפוס</button>
-        <button type="button" class="a11y-btn" data-a11y="font-inc" aria-label="הגדלת טקסט">א+</button>
+        <button type="button" class="a11y-btn" data-a11y="font-dec" aria-label={t('Decrease text size', 'הקטנת טקסט')}>{t('A−', 'א−')}</button>
+        <button type="button" class="a11y-btn" data-a11y="font-reset" aria-label={t('Reset text size', 'איפוס גודל טקסט')}>{t('Reset', 'איפוס')}</button>
+        <button type="button" class="a11y-btn" data-a11y="font-inc" aria-label={t('Increase text size', 'הגדלת טקסט')}>{t('A+', 'א+')}</button>
       </div>
     </div>
 
-    <button type="button" class="a11y-item" data-a11y="contrast" aria-pressed="false">ניגודיות גבוהה</button>
-    <button type="button" class="a11y-item" data-a11y="grayscale" aria-pressed="false">גווני אפור</button>
-    <button type="button" class="a11y-item" data-a11y="links" aria-pressed="false">הדגשת קישורים</button>
-    <button type="button" class="a11y-item" data-a11y="motion" aria-pressed="false">עצירת אנימציות</button>
+    <button type="button" class="a11y-item" data-a11y="contrast" aria-pressed="false">{t('High contrast', 'ניגודיות גבוהה')}</button>
+    <button type="button" class="a11y-item" data-a11y="grayscale" aria-pressed="false">{t('Grayscale', 'גווני אפור')}</button>
+    <button type="button" class="a11y-item" data-a11y="links" aria-pressed="false">{t('Highlight links', 'הדגשת קישורים')}</button>
+    <button type="button" class="a11y-item" data-a11y="motion" aria-pressed="false">{t('Stop animations', 'עצירת אנימציות')}</button>
 
-    <button type="button" class="a11y-reset" data-a11y="reset">איפוס כל ההגדרות</button>
+    <button type="button" class="a11y-reset" data-a11y="reset">{t('Reset all settings', 'איפוס כל ההגדרות')}</button>
 
-    <a href="/accessibility" class="a11y-statement">להצהרת הנגישות המלאה</a>
+    <a href={isEn ? '/en/accessibility' : '/accessibility'} class="a11y-statement">{t('Read the accessibility statement', 'להצהרת הנגישות המלאה')}</a>
   </div>
 </div>
 
@@ -111,7 +114,7 @@
     background: #fff; color: #0f2c36;
     border: 1px solid rgba(15,44,54,.15); border-radius: 1rem;
     box-shadow: 0 10px 30px rgba(0,0,0,.2); padding: 1rem;
-    font-family: 'Assistant', sans-serif; text-align: right; direction: rtl;
+    font-family: 'Assistant', sans-serif; text-align: start; direction: inherit;
   }
   .a11y-panel.hidden { display: none; }
 
@@ -129,7 +132,7 @@
   .a11y-btn:hover { background: #eceff1; }
 
   .a11y-item {
-    display: block; width: 100%; text-align: right; padding: .55rem .6rem; margin-top: .35rem;
+    display: block; width: 100%; text-align: start; padding: .55rem .6rem; margin-top: .35rem;
     border: 1px solid rgba(15,44,54,.15); border-radius: .5rem; background: #fff; cursor: pointer;
     font-size: .9rem; color: #0f2c36;
   }

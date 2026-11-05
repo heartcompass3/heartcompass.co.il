@@ -1,0 +1,46 @@
+---
+const { language = 'he' } = Astro.props
+const isEn = language === 'en'
+---
+<div lang={language} dir={isEn ? 'ltr' : 'rtl'}>
+  <h2 class="text-lg font-semibold mb-2">
+    {isEn ? 'Something in you is ready for change' : 'אם הגעת עד לכאן, כנראה שמשהו בך כבר מחפש שינוי'}
+  </h2>
+  <p class="text-white/70 text-sm leading-relaxed mb-4">
+    {isEn ? 'Insights on the patterns, fears, and everyday choices that shape your life. A chance to pause, recognise what holds you back, and consider your next step.' : 'אני לא שולח ספאם. רק תובנות חדות על דפוסים, פחדים והבחירות שאנחנו עושים מתחת לרדאר. דברים שיכולים להזיז אותך מבפנים.'}
+  </p>
+  {isEn && <p id="newsletter-language" class="text-white/80 text-sm mb-4">The newsletter is currently sent in Hebrew. You can unsubscribe at any time.</p>}
+  <form action="/api/lead" method="POST" accept-charset="UTF-8" class="flex flex-col gap-2" data-newsletter-form data-language={language} aria-describedby={isEn ? 'newsletter-language' : undefined}>
+    <label class="sr-only" for="footer-name">{isEn ? 'Full name' : 'שם מלא'}</label>
+    <input id="footer-name" type="text" name="name" autocomplete="name" placeholder={isEn ? 'Your name' : 'איך קוראים לך?'} required class="p-2 rounded text-black" />
+    <label class="sr-only" for="footer-email">{isEn ? 'Email address' : 'כתובת מייל'}</label>
+    <input id="footer-email" type="email" name="email" autocomplete="email" dir="ltr" placeholder={isEn ? 'Your email address' : 'לאן לשלוח לך את זה?'} required class="p-2 rounded text-black" />
+    <input type="hidden" name="language" value={isEn ? 'en' : 'he'} />
+    <input type="hidden" name="_subject" value={isEn ? 'New newsletter signup from Heart Compass (English page)' : 'ליד חדש מהאתר מצפן הלב'} />
+    <input type="hidden" name="_next" value={isEn ? '/en/thank-you' : '/thank-you'} />
+    <label class="flex items-start gap-2 text-white/80 text-xs leading-snug">
+      <input type="checkbox" name="consent" value="yes" required class="mt-0.5 shrink-0" />
+      <span>
+        {isEn ? 'I agree to receive the Hebrew newsletter and email updates, and confirm that I have read the ' : 'אני מאשר/ת קבלת תכנים ועדכונים במייל, ומאשר/ת שקראתי את '}
+        <a href={isEn ? '/en/privacy' : '/privacy'} class="underline hover:text-white">{isEn ? 'Privacy Policy' : 'מדיניות הפרטיות'}</a>.
+      </span>
+    </label>
+    <button type="submit" class="bg-white text-black py-2 rounded hover:bg-gray-200">{isEn ? 'Subscribe to the newsletter' : 'כן, שלח לי תובנות'}</button>
+  </form>
+</div>
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-newsletter-form]').forEach((form) => {
+    if (form.dataset.language !== 'en') return
+    form.querySelectorAll<HTMLInputElement>('input[required]').forEach((input) => {
+      input.addEventListener('invalid', () => {
+        input.setCustomValidity(input.type === 'checkbox'
+          ? 'Please agree to receive the Hebrew newsletter and email updates to continue.'
+          : input.type === 'email'
+            ? 'Please enter a valid email address.'
+            : 'Please enter your name.')
+      })
+      input.addEventListener('input', () => input.setCustomValidity(''))
+      input.addEventListener('change', () => input.setCustomValidity(''))
+    })
+  })
+</script>

@@ -19,17 +19,19 @@ function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string))
 }
 
-function errorPage(message: string, status = 502) {
+type Language = 'he' | 'en'
+function errorPage(message: string, status = 502, language: Language = 'he') {
+  const isEn = language === 'en'
   return new Response(
-    `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>שגיאה</title>
+    `<!doctype html><html lang="${language}" dir="${isEn ? 'ltr' : 'rtl'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${isEn ? 'Registration error' : 'שגיאה'}</title>
     <meta name="robots" content="noindex,nofollow">
     <style>body{font-family:Assistant,sans-serif;background:#f8f7f4;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}
     .box{background:#fff;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:40px;max-width:420px;text-align:center}
     a{display:inline-block;margin-top:20px;background:#25D366;color:#fff;text-decoration:none;font-weight:800;padding:12px 24px;border-radius:12px}</style>
     </head><body><div class="box">
-    <h1 style="color:#0f2c36">אופס, הייתה תקלה</h1>
+    <h1 style="color:#0f2c36">${isEn ? 'Something went wrong' : 'אופס, הייתה תקלה'}</h1>
     <p style="color:#40525a">${escapeHtml(message)}</p>
-    <a href="https://wa.me/972544580285">לכתוב לי בוואטסאפ במקום</a>
+    <a href="https://wa.me/972544580285">${isEn ? 'Contact Yossi on WhatsApp' : 'לכתוב לי בוואטסאפ במקום'}</a>
     </div></body></html>`,
     { status, headers: { 'content-type': 'text/html; charset=utf-8' } }
   )
@@ -45,6 +47,7 @@ const FIELD_LABELS: Record<string, string> = {
   tool_category: 'סוג כלי',
   consent: 'אישור תכנים ועדכונים במייל ובוואטסאפ',
   privacy_ack: 'אישור מדיניות פרטיות',
+  language: 'שפה מועדפת',
 }
 
 async function sendNotification(fields: Record<string, string>) {
@@ -111,14 +114,14 @@ async function getAudienceId(): Promise<string | null> {
   return discoveredAudienceId
 }
 
-async function addToAudience(name: string, email: string) {
+async function addToAudience(name: string, email: string, language: Language) {
   const audienceId = await getAudienceId()
   if (!audienceId) {
     console.error('audience-not-found: contact not added', email)
     return false
   }
   const [firstName, ...rest] = (name || '').trim().split(/\s+/)
-  const res = await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
+  const res = await fetch('https://api.resend.com/contacts', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${RESEND_API_KEY}`,
@@ -129,6 +132,8 @@ async function addToAudience(name: string, email: string) {
       first_name: firstName || undefined,
       last_name: rest.join(' ') || undefined,
       unsubscribed: false,
+      segments: [{ id: audienceId }],
+      properties: { preferred_language: language },
     }),
   }).catch(() => null)
   if (res && !res.ok) {
@@ -139,10 +144,6 @@ async function addToAudience(name: string, email: string) {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  if (!RESEND_API_KEY) {
-    return errorPage('המערכת עדיין לא הוגדרה במלואה. אפשר לפנות ישירות בוואטסאפ.')
-  }
-
   // מפענחים ידנית עם URLSearchParams במקום request.formData(): על ריצת ה-Vercel שלנו
   // formData() החליף תווי UTF-8 רב-בייט (עברית) ב-U+FFFD (איבוד מידע בלתי הפיך).
   // URLSearchParams מפענח application/x-www-form-urlencoded לפי התקן, ותקין ל-UTF-8.
@@ -154,33 +155,43 @@ export const POST: APIRoute = async ({ request }) => {
       fields[key] = value
     }
   } catch {
-    return errorPage('לא הצלחנו לקרוא את הטופס. נסה שוב.')
+    const englishReferrer = (() => { try { return new URL(request.headers.get('referer') || '').pathname.startsWith('/en/') } catch { return false } })()
+    return errorPage(englishReferrer ? 'We could not read the form. Please try again.' : 'לא הצלחנו לקרוא את הטופס. נסה שוב.', 400, englishReferrer ? 'en' : 'he')
+  }
+
+  const language: Language = fields.language === 'en' ? 'en' : 'he'
+  fields.language = language
+  const fail = (en: string, he: string, status = 502) => errorPage(language === 'en' ? en : he, status, language)
+  if (!RESEND_API_KEY) {
+    return fail('Registration is temporarily unavailable. Please contact Yossi on WhatsApp.', 'המערכת עדיין לא הוגדרה במלואה. אפשר לפנות ישירות בוואטסאפ.')
   }
 
   const name = fields.name?.trim()
   const email = fields.email?.trim()
-  const next = fields._next || '/'
+  const requestedNext = fields._next || (language === 'en' ? '/en/thank-you' : '/')
+  const next = requestedNext.startsWith('/') && !requestedNext.startsWith('//') && !/[\\\r\n]/.test(requestedNext)
+    ? requestedNext : (language === 'en' ? '/en/thank-you' : '/')
 
   if (!name || !email) {
-    return errorPage('חסרים שם או מייל בטופס.')
+    return fail('Please enter your name and email address.', 'חסרים שם או מייל בטופס.', 400)
   }
 
   // אישור פרטיות בלבד אינו הרשמה לעדכונים. כל טופסי ההרשמה שולחים consent=yes.
   // בודקים גם בשרת כדי שלא תתאפשר המשך הרשמה באמצעות טופס ישן או עקיפת required.
   if (fields.consent !== 'yes') {
-    return errorPage('כדי להמשיך, חזרו לטופס וסמנו את האישור לקבלת תכנים ועדכונים.', 400)
+    return fail('To continue, return to the form and tick the box to agree to receive the newsletter and email updates.', 'כדי להמשיך, חזרו לטופס וסמנו את האישור לקבלת תכנים ועדכונים.', 400)
   }
 
   const notified = await sendNotification(fields)
 
   if (!notified.ok) {
-    return errorPage('לא הצלחנו לשלוח את הפנייה כרגע. נסה שוב או כתוב לנו בוואטסאפ.')
+    return fail('We could not send your registration. Please try again or contact Yossi on WhatsApp.', 'לא הצלחנו לשלוח את הפנייה כרגע. נסה שוב או כתוב לנו בוואטסאפ.', 502)
   }
 
   // לא מציגים הצלחה או מעבירים למדריך כאשר הסנכרון לרשימת התפוצה נכשל.
-  const subscribed = await addToAudience(name, email)
+  const subscribed = await addToAudience(name, email, language)
   if (!subscribed) {
-    return errorPage('הפנייה התקבלה, אך ההרשמה לעדכונים לא הושלמה. חזרו לטופס ונסו שוב בעוד רגע.')
+    return fail('Your request was received, but your newsletter subscription could not be completed. Please return to the form and try again shortly.', 'הפנייה התקבלה, אך ההרשמה לעדכונים לא הושלמה. חזרו לטופס ונסו שוב בעוד רגע.', 502)
   }
 
   return new Response(null, { status: 302, headers: { Location: next } })

@@ -309,10 +309,10 @@ if (isArticlePage) {
       <slot />
     </main>
     {language === 'en' ? <EnglishSiteFooter /> : <div lang="he" dir="rtl"><Footer settings={resolvedSiteSettings} /></div>}
-    <WhatsAppFloat settings={resolvedSiteSettings} />
-    <BackToTop />
-    <CookieBanner />
-    <AccessibilityWidget />
-    <ExitIntentWhatsApp />
+    <WhatsAppFloat settings={resolvedSiteSettings} language={language} />
+    <BackToTop language={language} />
+    <CookieBanner language={language} />
+    <AccessibilityWidget language={language} />
+    <ExitIntentWhatsApp language={language} />
   </body>
 </html>

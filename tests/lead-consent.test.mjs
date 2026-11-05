@@ -39,9 +39,38 @@ test('explicit consent registers the contact before redirecting to the guide', a
   const { response, calls } = await submit({ consent: 'yes' }, () => Response.json({ id: 'test-id' }))
   assert.equal(response.status, 302)
   assert.equal(response.headers.get('location'), '/guide/thanks/test')
-  assert.deepEqual(calls.map(c => new URL(c.url).pathname), ['/emails', '/audiences/test-segment/contacts'])
+  assert.deepEqual(calls.map(c => new URL(c.url).pathname), ['/emails', '/contacts'])
   assert.equal(JSON.parse(calls[1].options.body).email, 'lead@example.test')
+  assert.deepEqual(JSON.parse(calls[1].options.body).segments, [{ id: 'test-segment' }])
+  assert.deepEqual(JSON.parse(calls[1].options.body).properties, { preferred_language: 'he' })
   assert.match(JSON.parse(calls[0].options.body).html, /שם בדיקה/)
+})
+
+test('English signup persists the language and redirects to the English thank-you page', async () => {
+  const { response, calls } = await submit({ consent: 'yes', language: 'en', _next: '/en/thank-you' }, () => Response.json({ id: 'test-id' }))
+  assert.equal(response.status, 302)
+  assert.equal(response.headers.get('location'), '/en/thank-you')
+  assert.deepEqual(JSON.parse(calls[1].options.body).properties, { preferred_language: 'en' })
+  assert.match(JSON.parse(calls[0].options.body).html, /en/)
+})
+
+test('English validation and external-service failures render English errors', async () => {
+  const noConsent = await submit({ language: 'en' }, () => { throw new Error('Must not call external services') })
+  assert.equal(noConsent.response.status, 400)
+  assert.equal(noConsent.calls.length, 0)
+  assert.match(await noConsent.response.text(), /lang="en" dir="ltr"/)
+  const failed = await submit({ consent: 'yes', language: 'en' }, url =>
+    url.endsWith('/contacts') ? Response.json({ error: 'invalid' }, { status: 400 }) : Response.json({ id: 'test-id' }))
+  assert.equal(failed.response.status, 502)
+  const html = await failed.response.text()
+  assert.match(html, /subscription could not be completed/)
+  assert.doesNotMatch(html, /[\u0590-\u05ff]/)
+})
+
+test('unsupported languages fall back to Hebrew and redirects stay on the site', async () => {
+  const { response, calls } = await submit({ consent: 'yes', language: '<script>', _next: '//external.test' }, () => Response.json({ id: 'test-id' }))
+  assert.equal(response.headers.get('location'), '/')
+  assert.deepEqual(JSON.parse(calls[1].options.body).properties, { preferred_language: 'he' })
 })
 
 test('a rejected contact registration cannot redirect to the guide', async () => {

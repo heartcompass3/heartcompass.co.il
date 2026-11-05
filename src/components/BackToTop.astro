@@ -1,8 +1,13 @@
+---
+const { language = 'he' } = Astro.props
+const isEn = language === 'en'
+const t = (en: string, he: string) => isEn ? en : he
+---
 <button
   type="button"
   class="fixed bottom-6 right-6 z-[140] flex h-11 w-11 translate-y-3 items-center justify-center rounded-full border border-white/20 bg-primary text-white opacity-0 shadow-lg transition-all duration-200 pointer-events-none hover:bg-accent hover:text-primary focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent"
-  aria-label="חזרה לראש העמוד"
-  title="חזרה למעלה"
+  aria-label={t('Back to top of page', 'חזרה לראש העמוד')}
+  title={t('Back to top', 'חזרה למעלה')}
   data-back-to-top
 >
   <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">

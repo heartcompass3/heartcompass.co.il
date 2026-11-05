@@ -1,7 +1,9 @@
 ---
 import site from '../content/pages/site.json'
 
-const { settings = null } = Astro.props
+const { settings = null, language = 'he' } = Astro.props
+const isEn = language === 'en'
+const t = (en: string, he: string) => isEn ? en : he
 
 // קישור בסיס לוואטסאפ (חי מהסאניטי אם קיים)
 const baseHref =
@@ -10,7 +12,13 @@ const baseHref =
 
 // Warmups מהסאניטי אם יהיה בעתיד שדה כזה (whatsappWarmups)
 // אם לא קיים – fallback קשיח כדי שלא ייעלם
-const warmups =
+const englishWarmups = [
+  { label: 'Communication with my child', message: 'Hi Yossi, I found Heart Compass online. I am finding communication with my child difficult and would like to learn about parent coaching.' },
+  { label: 'My teen is withdrawing', message: 'Hi Yossi, I am looking for emotional coaching for a teen who is withdrawing, feeling anxious, or struggling with confidence.' },
+  { label: 'Difficulties in my relationship', message: 'Hi Yossi, I am struggling with patterns in my relationship and would like to understand how coaching with you works.' },
+  { label: 'A pattern I keep repeating', message: 'Hi Yossi, I feel stuck in a recurring pattern and would like to explore how to move forward.' },
+]
+const warmups = isEn ? englishWarmups :
   Array.isArray(settings?.whatsappWarmups) && settings.whatsappWarmups.length > 0
     ? settings.whatsappWarmups
         .filter((w) => w?.label && w?.message)
@@ -43,8 +51,9 @@ const warmups =
 
 const buildWhatsAppLink = (msg) => {
   if (!msg) return baseHref
-  const sep = baseHref.includes('?') ? '&' : '?'
-  return `${baseHref}${sep}text=${encodeURIComponent(msg)}`
+  const url = new URL(baseHref)
+  url.searchParams.set('text', msg)
+  return url.toString()
 }
 
 const whatsappSvg = `
@@ -55,15 +64,16 @@ const whatsappSvg = `
 `
 ---
 
-<div class="fixed bottom-6 left-6 z-[150]" data-wa-root>
+<div class="fixed bottom-6 left-6 z-[150]" data-wa-root lang={language} dir={isEn ? 'ltr' : 'rtl'}>
   <div
     class="hidden mb-3 w-72 rounded-2xl bg-white shadow-elegant border border-accent/10 overflow-hidden"
+    id="wa-panel"
     data-wa-panel
     aria-hidden="true"
   >
     <div class="px-4 pt-4 pb-3 border-b border-accent/10">
-      <div class="font-body font-bold text-foreground">מה בא לך לכתוב?</div>
-      <div class="font-body text-sm text-muted-foreground mt-1">בחר שאלה ונפתח הודעה מוכנה</div>
+      <div class="font-body font-bold text-foreground">{t('What would you like to talk about?', 'מה בא לך לכתוב?')}</div>
+      <div class="font-body text-sm text-muted-foreground mt-1">{t('Choose a topic to start a message', 'בחר שאלה ונפתח הודעה מוכנה')}</div>
     </div>
 
     <div class="p-3 flex flex-col gap-2">
@@ -88,7 +98,7 @@ const whatsappSvg = `
         rel="noopener noreferrer"
         class="px-3 py-2 rounded-xl border border-accent/15 hover:bg-accent/5 transition font-body text-sm text-foreground"
       >
-        לפתוח וואטסאפ בלי שאלה
+        {t('Open WhatsApp without a topic', 'לפתוח וואטסאפ בלי שאלה')}
       </a>
     </div>
   </div>
@@ -97,7 +107,8 @@ const whatsappSvg = `
     type="button"
     class="w-14 h-14 rounded-full bg-[#25D366] text-white shadow-elegant hover:brightness-95 transition flex items-center justify-center"
     data-wa-button
-    aria-label="פתח וואטסאפ"
+    aria-label={t('Open WhatsApp', 'פתח וואטסאפ')}
+    aria-controls="wa-panel"
     aria-expanded="false"
   >
     <span class="w-7 h-7" set:html={whatsappSvg}></span>
