@@ -21,7 +21,7 @@ const toAbs = (href?: string) => {
 }
 
 // הבית תמיד ראשון
-const trail = [{ name: language === "en" ? "Heart Compass" : site.brand, href: '/' }, ...items]
+const trail = [{ name: language === "en" ? "Heart Compass" : site.brand, href: language === "en" ? "/en" : "/" }, ...items]
 
 const breadcrumbSchema = withSchema
   ? {
