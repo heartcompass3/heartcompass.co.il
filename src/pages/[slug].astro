@@ -7,8 +7,14 @@ import site from '../content/pages/site.json'
 import { sanity, urlFor } from '../lib/sanity'
 import { buildBreadcrumbListSchema } from '../lib/breadcrumbs'
 import PortableText from '../components/PortableText.astro'
+import LanguageLink from '../components/LanguageLink.astro'
 
 const { slug } = Astro.params
+const englishVersion = slug === 'who-is-it-for' ? await sanity.fetch(`*[_type == "page" && slug.current == "en/who-is-it-for" && coalesce(seo.noindex, false) == false][0]{_id}`) : null
+const languageLinks = englishVersion ? [
+  {language: 'he', href: `${site.siteUrl}/who-is-it-for`},
+  {language: 'en', href: `${site.siteUrl}/en/who-is-it-for`},
+] : []
 
 const page = await sanity.fetch(
   `*[_type == "page" && slug.current == $slug][0]{
@@ -88,9 +94,11 @@ const schemaArray = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]
   ogImage={ogImageUrl}
   ogImageAlt={ogImageAlt}
   schema={schemaArray}
+  languageLinks={languageLinks}
 >
   <article class="animate-fade-in py-24 bg-background min-h-screen">
     <div class="max-w-4xl mx-auto px-6">
+      {englishVersion && <div class="mb-8 flex justify-end"><LanguageLink href="/en/who-is-it-for" language="en" /></div>}
       <header class="text-center mb-12">
         <h1 class="text-5xl md:text-6xl font-black text-primary font-display leading-tight">
           {heading}

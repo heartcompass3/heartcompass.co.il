@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import PortableText from './PortableText.astro'
+import LanguageLink from './LanguageLink.astro'
+import SpecialtyDecisionCards from './SpecialtyDecisionCards.astro'
+import SpecialtyOutcomeCards from './SpecialtyOutcomeCards.astro'
+import site from '../content/pages/site.json'
+import { sanity, urlFor } from '../lib/sanity'
+
+const { page, hebrewPath } = Astro.props
+const canonical = page.seo?.canonical || `${site.siteUrl}/en${hebrewPath}`
+// A language switch must never lead visitors to an unpublished counterpart.
+const original = await sanity.fetch(`*[_type == "page" && slug.current == $slug && coalesce(seo.noindex, false) == false][0]{_id}`, {slug: hebrewPath.slice(1)})
+const languageLinks = original && !page.seo?.noindex ? [
+  {language: 'he', href: `${site.siteUrl}${hebrewPath}`},
+  {language: 'en', href: canonical},
+] : []
+const faq = page.specialty?.faq || []
+const guidance = page.specialty?.practicalGuidance
+const stages = page.specialty?.stages || []
+const schema = [{
+  '@context': 'https://schema.org', '@type': 'WebPage', url: canonical,
+  name: page.title, description: page.seo?.description, inLanguage: 'en',
+  abstract: page.aiCitation, disambiguatingDescription: page.aiContext,
+  keywords: (page.painTags || []).join(', '),
+}, ...(faq.length ? [{
+  '@context': 'https://schema.org', '@type': 'FAQPage', '@id': `${canonical}#faq`,
+  mainEntity: faq.map((q: any) => ({'@type':'Question', name:q.question, acceptedAnswer:{'@type':'Answer', text:q.answer}})),
+}] : [])]
+---
+<BaseLayout language="en" languageLinks={languageLinks} title={page.seo?.title || page.title} description={page.seo?.description || page.excerpt} canonical={canonical} noindex={page.seo?.noindex} ogImage={page.seo?.ogImage ? urlFor(page.seo.ogImage).width(1200).height(630).fit('crop').url() : undefined} ogImageAlt={page.seo?.ogImage?.alt} schema={schema}>
+  <article class="mx-auto max-w-4xl px-6 py-16 md:py-24">
+    {original && <div class="mb-8 flex justify-end"><LanguageLink href={hebrewPath} language="he" /></div>}
+    <header class="mb-12 text-center">
+      <h1 class="text-4xl font-black leading-tight text-primary md:text-5xl">{page.title}</h1>
+      {page.excerpt && <p class="mt-7 text-xl font-bold leading-relaxed text-accent">{page.excerpt}</p>}
+    </header>
+    {page.specialty?.intro && <p class="mb-10 text-lg leading-relaxed text-primary/80">{page.specialty.intro}</p>}
+    <div class="rounded-3xl border border-primary/10 bg-white p-6 text-lg leading-relaxed text-primary/80 md:p-12">
+      <PortableText value={page.body || []} language="en" />
+    </div>
+    {guidance && <div class="mt-12">
+      <SpecialtyDecisionCards gettingStarted={guidance.gettingStarted} fitNote={guidance.withoutTeen} safety={guidance.safety} professionalTrust={guidance.professionalTrust} sectionLabel="BEFORE YOUR FIRST SESSION" sectionTitle="What to know before starting" aboutHref="/en/about" aboutLabel="About Yossi and my background" isEn={true} />
+      <SpecialtyOutcomeCards label={guidance.label} title={guidance.title} outcomes={guidance.steps || []} />
+    </div>}
+    {stages.length > 0 && <section class="mt-12">
+      <h2 class="mb-7 text-3xl font-bold text-primary">{page.specialty.stagesTitle}</h2>
+      <div class="grid gap-5 md:grid-cols-3">{stages.map((stage: any) => <div class="rounded-2xl bg-white p-6 shadow-sm">
+        <h3 class="mb-3 text-xl font-bold text-primary">{stage.title}</h3><p class="leading-relaxed">{stage.text}</p>
+      </div>)}</div>
+    </section>}
+    {faq.length > 0 && <section class="mt-12">
+      <h2 class="mb-7 text-3xl font-bold text-primary">{page.specialty.faqTitle}</h2>
+      {faq.map((q: any) => <details class="mb-4 rounded-2xl border border-primary/10 bg-white p-6">
+        <summary class="cursor-pointer text-lg font-bold text-primary">{q.question}</summary><p class="mt-4 leading-relaxed">{q.answer}</p>
+      </details>)}
+    </section>}
+    {page.specialty?.closing && <p class="mt-10 text-lg font-bold leading-relaxed text-primary">{page.specialty.closing}</p>}
+  </article>
+</BaseLayout>
