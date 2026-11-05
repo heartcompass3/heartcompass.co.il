@@ -18,6 +18,8 @@ const t = (he: string, english: string) => en ? english : he
 const alternates = [{language, slug: article.slug}, ...(article.translations || [])].filter(a => a.slug?.current)
 const languageLinks = alternates.map(a => ({language: a.language || "he", href: new URL(`${a.language === "en" ? "/en" : ""}/articles/${a.slug.current}`, site.siteUrl).toString()}))
 const otherLanguage = languageLinks.find(a => a.language !== language)
+const painTranslations = en && article.pains?.length ? await sanity.fetch(`*[_type == "page" && slug.current in $slugs && coalesce(seo.noindex, false) == false]{title,"slug":slug.current}`, {slugs:article.pains.map((pain: any) => `en/pain/${pain.slug}`)}) : []
+const painLinks = en ? painTranslations.map((pain: any) => ({title:pain.title,href:`/${pain.slug}`})) : (article.pains || []).map((pain: any) => ({title:pain.title,href:`/pain/${pain.slug}`}))
 // Related reading stays within the body-reviewed primary audience and shared topics.
 const allArticles = en ? [] : await sanity.fetch(ARTICLES_QUERY)
 const taxonomy = effectiveTaxonomy([...allArticles,article],fallbackTaxonomy)
@@ -238,11 +240,11 @@ const schemas = faqSchema
           </div>
 
           {/* ─── מוקדי כאב (צ'יפים → /pain/[slug]) — הקשר נושאי מוקדם ─── */}
-          {!en && article.pains?.length > 0 && (
+          {painLinks.length > 0 && (
             <div class="flex flex-wrap items-center justify-center gap-2.5 mt-6">
-              {article.pains.map((p: any) => (
+              {painLinks.map((p: any) => (
                 <a
-                  href={`/pain/${p.slug}`}
+                  href={p.href}
                   class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent/10 text-accent font-bold text-sm font-body hover:bg-accent hover:text-primary transition-colors"
                 >
                   <span aria-hidden="true">🩹</span>{p.title}
