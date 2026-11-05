@@ -1,0 +1,42 @@
+---
+const { title, links = [], language = 'he' } = Astro.props
+const en = language === 'en'
+const paths = links.filter(link => /\/specialties\//.test(link.href))
+const contact = links.find(link => link.href.startsWith('https://wa.me/'))
+const resources = links.filter(link => !paths.includes(link) && link !== contact)
+---
+{links.length > 0 && <section class="next-steps" dir={en ? 'ltr' : 'rtl'} aria-label={title}>
+  <p class="eyebrow">{en ? 'YOUR NEXT STEP' : 'הצעד הבא שלכם'}</p>
+  <h2>{title}</h2>
+  <div class="paths">
+    {paths.map((link, i) => <a href={link.href} class="path">
+      <span class="number" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+      <span class="path-copy"><strong>{link.label}</strong><span>{en ? 'Explore this coaching path' : 'להכיר את התהליך'}</span></span>
+      <span class="arrow" aria-hidden="true">{en ? '→' : '←'}</span>
+    </a>)}
+  </div>
+  {resources.length > 0 && <nav class="resources" aria-label={en ? 'Explore further' : 'להעמקה'}>
+    {resources.map(link => <a href={link.href}>{link.label}<span aria-hidden="true"> ↗</span></a>)}
+  </nav>}
+  {contact && <a href={contact.href} class="contact"><span>{contact.label}</span><span aria-hidden="true">{en ? '→' : '←'}</span></a>}
+</section>}
+<style>
+  .next-steps{margin-block:3rem;padding:clamp(1.25rem,4vw,2.5rem);background:#f6f3ed;border:1px solid #c8a96e44;border-radius:2rem;color:#153d45}
+  .eyebrow{margin:0 0 .6rem;color:#82602d;font-size:.8rem;font-weight:800;letter-spacing:.06em}
+  h2{margin:0 0 1.75rem;font-size:clamp(1.65rem,4vw,2.1rem);font-weight:800;line-height:1.3}
+  .paths{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+  a{text-decoration:none;overflow-wrap:anywhere}
+  .path{display:flex;align-items:center;gap:.85rem;min-height:112px;padding:1.25rem;background:#fff;border:1px solid #153d451a;border-radius:1.25rem;transition:border-color .2s,box-shadow .2s}
+  .path:hover{border-color:#99743d;box-shadow:0 6px 18px #153d4510}
+  .number{font-size:.8rem;font-weight:800;color:#99743d;background:#c8a96e1f;border-radius:50%;width:2.25rem;height:2.25rem;display:grid;place-items:center;flex-shrink:0}
+  .path-copy{display:flex;flex-direction:column;gap:.4rem;flex:1}
+  strong{font-size:1.1rem;line-height:1.4}.path-copy>span{font-size:.85rem;color:#53676b}.arrow{color:#99743d}
+  .resources{display:flex;flex-wrap:wrap;gap:.75rem;margin-block:1.5rem}
+  .resources a{padding:.65rem 1rem;border:1px solid #153d4526;border-radius:999px;font-size:.95rem;background:#ffffff88}
+  .resources a:hover{background:white;border-color:#99743d}
+  .contact{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#153d45;color:white;border-radius:1rem;padding:1.1rem 1.4rem;font-size:1.05rem;font-weight:700;line-height:1.5}
+  .contact:hover{background:#23545d}
+  a:focus-visible{outline:3px solid #99743d;outline-offset:4px}
+  @media(max-width:640px){.paths{grid-template-columns:1fr}.path{min-height:96px}.resources{flex-direction:column}.resources a{border-radius:1rem}}
+  @media(prefers-reduced-motion:reduce){.path{transition:none}}
+</style>
