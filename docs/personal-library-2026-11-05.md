@@ -23,4 +23,4 @@ Follow-up: clean redundant `(Hebrew)` markers in English content links, preservi
 
 ## Validation
 
-37 Node tests and production build pass before publication. Live checks cover routes, reciprocal language links, structured data, sitemap, retained anchors, contextual links and English search. Browser verification is at the available desktop viewport; a physical mobile-browser check is not claimed.
+37 Node tests and production build pass before publication. Live checks cover routes, reciprocal language links, structured data, sitemap, retained anchors, contextual links and English search. Live preservation check: all 71 Hebrew article URLs and all six topic anchors retained; one English article in the English collection. Reciprocal hreflang, self-canonicals, one sitemap entry per library and noindex search verified. Live search testing caught the English query route missing from ISR exclusions; added it alongside Hebrew search so query parameters reach the renderer. Browser verification is at the available desktop viewport; a physical mobile-browser check is not claimed.
