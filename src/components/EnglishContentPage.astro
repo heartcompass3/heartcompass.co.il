@@ -6,10 +6,13 @@ import { splitNextSteps } from '../lib/nextSteps'
 import LanguageLink from './LanguageLink.astro'
 import SpecialtyDecisionCards from './SpecialtyDecisionCards.astro'
 import SpecialtyOutcomeCards from './SpecialtyOutcomeCards.astro'
+import { buildWhatsAppHref } from '../lib/whatsapp'
 import site from '../content/pages/site.json'
 import { sanity, urlFor } from '../lib/sanity'
 
 const { page, hebrewPath } = Astro.props
+const isCouples = hebrewPath === '/specialties/couples'
+const couplesCtaHref = buildWhatsAppHref(site.whatsAppPhone, 'Hi Yossi, I visited the couples coaching page. We would like to understand the patterns affecting our relationship and explore whether coaching is right for us.')
 const nextSteps = hebrewPath === '/who-is-it-for' ? splitNextSteps(page.body || []) : { body: page.body || [], title: '', links: [] }
 const canonical = page.seo?.canonical || `${site.siteUrl}/en${hebrewPath}`
 // A language switch must never lead visitors to an unpublished counterpart.
@@ -60,5 +63,10 @@ const schema = [{
       </details>)}
     </section>}
     {page.specialty?.closing && <p class="mt-10 text-lg font-bold leading-relaxed text-primary">{page.specialty.closing}</p>}
+    {isCouples && <div class="mt-10 text-center pb-16">
+      <a href={couplesCtaHref} data-track-event="service_cta" data-track-label="couples_en" class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold">
+        Let’s talk about your relationship <span aria-hidden="true">&rarr;</span>
+      </a>
+    </div>}
   </article>
 </BaseLayout>
