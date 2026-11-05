@@ -1,0 +1,15 @@
+---
+import KnowledgeLibrary from '../../../components/KnowledgeLibrary.astro'
+import {sanity} from '../../../lib/sanity'
+import {LIBRARY_PAGE_QUERY, LIBRARY_ARTICLES_QUERY} from '../../../lib/knowledgeLibrary.mjs'
+const domain = Astro.params.domain
+if (!['personal','parents','youth','relationships'].includes(domain)) return new Response('Not found', {status:404})
+const [page, original, articles, siblings] = await Promise.all([
+  sanity.fetch(LIBRARY_PAGE_QUERY, {slug:`en/insights/${domain}`}),
+  sanity.fetch(LIBRARY_PAGE_QUERY, {slug:`insights/${domain}`}),
+  sanity.fetch(LIBRARY_ARTICLES_QUERY, {language:'en'}),
+  sanity.fetch(`*[_type == "page" && slug.current in $slugs && coalesce(seo.noindex, false) == false]{title,"slug":slug.current}`, {slugs:['personal','parents','youth','relationships'].map(id=>`en/insights/${id}`)}),
+])
+if (!page) return new Response('Not found', {status:404})
+---
+<KnowledgeLibrary page={page} articles={articles} domain={domain} language="en" siblings={siblings} hasCounterpart={!!original} />
