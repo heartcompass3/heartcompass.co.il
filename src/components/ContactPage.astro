@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import LanguageLink from './LanguageLink.astro'
+import site from '../content/pages/site.json'
+import { sanity } from '../lib/sanity'
+import { CONTACT_PAGE_QUERY, SITE_SETTINGS_QUERY } from '../lib/sanityQueries'
+import { buildWhatsAppHref } from '../lib/whatsapp'
+
+const { language = 'he' } = Astro.props
+const en = language === 'en'
+const t = (he: string, english: string) => en ? english : he
+// Legacy contact copy is replaced by the reviewed bilingual page. Retain CMS
+// site settings, indexability and social image without changing published data.
+const results = await Promise.allSettled([
+  sanity.fetch(SITE_SETTINGS_QUERY), sanity.fetch(CONTACT_PAGE_QUERY),
+])
+const settings = results[0].status === 'fulfilled' ? results[0].value : null
+const contact = results[1].status === 'fulfilled' ? results[1].value : null
+const email = settings?.contact?.email || site.email
+const canonical = `${site.siteUrl}${en ? '/en/contact' : '/contact'}`
+const title = t('מתחילים בצעד אחד | צור קשר עם יוסי מדלסי', 'Start with one step | Contact Yossi Medalsi')
+const description = t('מפגש ראשון אונליין במחיר היכרות, ללא התחייבות למסלול. מתחילים להבין מה אתם רוצים לשנות ומה עוצר אתכם, ובוחרים יחד את ההמשך.', 'A first online coaching session at an introductory rate, with no commitment to a programme. Explore what you want to change, what holds you back, and the next step.')
+const firstSessionHref = buildWhatsAppHref(site.whatsAppPhone, t('היי יוסי, אשמח לתאם מפגש ראשון במחיר היכרות. אפשר לקבל את פרטי המפגש והמחיר?', 'Hi Yossi, I would like to arrange a first session at the introductory rate. Could you send me the session details and price?'))
+const questionHref = buildWhatsAppHref(site.whatsAppPhone, t('היי יוסי, קראתי איך מתחילים ויש לי שאלה לפני קביעת מפגש.', 'Hi Yossi, I read how to get started and have a question before arranging a session.'))
+const topics = [
+  { icon: '01', title: t('בשביל עצמי', 'For myself'), text: t('דפוס שחוזר, החלטה שנדחית או שינוי שרוצים להגשים.', 'A recurring pattern, a postponed decision, or a change you want to make.'), href: en ? '/en/specialties/personal' : '/specialties/personal' },
+  { icon: '02', title: t('כהורה', 'As a parent'), text: t('לשמור על קשר, להציב גבולות ולהרגיש בטוחים יותר בהורות.', 'Build connection, maintain boundaries, and feel more confident as a parent.'), href: en ? '/en/specialties/parents' : '/specialties/parents' },
+  { icon: '03', title: t('עבור נער או נערה', 'For my teen'), text: t('לתת מקום למה שעובר עליהם ולבנות אמון, שייכות ומסוגלות.', 'Make room for their experience and build trust, belonging, and confidence.'), href: en ? '/en/specialties/youth' : '/specialties/youth' },
+  { icon: '04', title: t('בתוך הזוגיות', 'In my relationship'), text: t('להבין מה כל אחד מביא לקשר ולבחור איך מתקדמים יחד.', 'Explore what each partner brings to the relationship and how to move forward.'), href: '/specialties/couples', hebrew: true },
+]
+const steps = [
+  { title: t('מגדירים מה רוצים לשנות', 'Start with what matters'), text: t('נקשיב למה שקורה היום ולמה שהייתם רוצים שיהיה אחרת. אפשר להגיע גם כשהמילים עדיין לא מסודרות.', 'We explore what is happening now and what you would like to be different. You can arrive without having it all figured out.') },
+  { title: t('מתחילים למפות מה עוצר', 'Begin mapping what holds you back'), text: t('נסתכל על מצב שחוזר וננסה להבין את המשמעות, הפחד או הדפוס שפועלים בו. זה הבסיס לבחירת מוקד העבודה.', 'We look at a recurring situation and begin understanding the meanings, fears, or patterns involved. This helps us choose a focus for the work.') },
+  { title: t('בוחרים יחד את ההמשך', 'Choose the next step together'), text: t('נבחן מה מתאים לכם ואיך יכולה להיראות העבודה בהמשך. המפגש הראשון עומד בפני עצמו, ללא התחייבות למסלול.', 'We consider what fits your needs and how further coaching could work. The first session stands on its own, with no commitment to a programme.') },
+]
+const faqs = [
+  { q: t('צריך לדעת מראש בדיוק מה הבעיה?', 'Do I need to know exactly what the problem is?'), a: t('מספיק לדעת שמשהו חוזר, מכביד או עוצר אתכם. נתחיל מדוגמה אחת מהחיים וממה שהייתם רוצים לשנות. את ההבנה נבנה יחד.', 'It is enough to notice something recurring, weighing on you, or holding you back. We start with one example from your life and what you would like to change, and build understanding together.') },
+  { q: t('מה כולל מחיר ההיכרות?', 'What does the introductory rate cover?'), a: t('מחיר ההיכרות מיועד למפגש הראשון. לפני אישור המועד אשלח את פרטי המפגש, המחיר ותנאי התיאום, כדי שתוכלו להחליט כשכל הפרטים ברורים.', 'The introductory rate applies to the first session. Before confirming an appointment, I will send the session details, price, and booking terms so you can make an informed decision.') },
+  { q: t('חייבים להתחייב לכל התהליך?', 'Do I have to commit to a full programme?'), a: t('אפשר להתחיל במפגש ראשון בתשלום, ללא התחייבות למסלול. בסיום נבחן יחד אם ואיך ממשיכים, בהתאם למטרה ולמה שיעלה במפגש.', 'You can begin with a paid first session without committing to a programme. At the end, we consider whether and how to continue, based on your goals and what emerges in the session.') },
+  { q: t('אפשר להתחיל גם אם המתבגר לא רוצה להגיע?', 'Can parents start if their teen does not want to attend?'), a: t('כן. אפשר להתחיל בעבודה עם ההורים על הקשר, הגבולות והתגובות שביכולתם לשנות. אם בהמשך עולה אפשרות לליווי הנער או הנערה, בודקים אותה איתם ובהסכמתם.', 'Yes. Parents can begin by working on connection, boundaries, and the responses they can change. If individual teen coaching becomes an option later, we explore it with the teen and with their agreement.') },
+  { q: t('איך מתקיימים המפגשים, ומה לגבי מגורים בחו״ל?', 'How do sessions work, including if I live abroad?'), a: t('המפגשים מתקיימים אונליין בזום, ממקום שקט ופרטי. אפשר לתאם גם מחו״ל בהתאם לאזורי הזמן. התאמה לעבודה באנגלית נבדקת לפני קביעת המפגש.', 'Sessions take place online via Zoom, from a quiet and private space. We can arrange sessions across time zones. Suitability for working in English is discussed before booking.') },
+]
+const schema = [{
+  '@context': 'https://schema.org', '@type': 'ContactPage', '@id': `${canonical}#webpage`,
+  url: canonical, name: title, description, inLanguage: language,
+  mainEntity: { '@id': `${site.siteUrl}/#person` },
+}]
+---
+<BaseLayout language={language} title={title} description={description} canonical={canonical} noindex={contact?.seo?.noindex}
+  ogImage={contact?.seo?.ogImage?.asset?.url} ogImageAlt={contact?.seo?.ogImage?.alt} siteSettings={settings}
+  languageLinks={[{language:'he',href:`${site.siteUrl}/contact`},{language:'en',href:`${site.siteUrl}/en/contact`}]} schema={schema}>
+  <article class="contact-page" lang={language} dir={en ? 'ltr' : 'rtl'}>
+    <div class="contact-wrap">
+      <div class="contact-topline"><span>{t('מצפן הלב · הצעד הראשון', 'HEART COMPASS · YOUR FIRST STEP')}</span><LanguageLink href={en ? '/contact' : '/en/contact'} language={en ? 'he' : 'en'} /></div>
+      <section class="contact-hero" aria-labelledby="contact-title">
+        <div class="hero-copy">
+          <p class="eyebrow">{t('לבחור מתוך תשוקה, לא מתוך פחד', 'CHOOSE FROM PASSION, NOT FROM FEAR')}</p>
+          <h1 id="contact-title">{t('לא צריך לראות את כל הדרך.', 'You don’t need to see the whole path.')}<span>{t('אפשר להתחיל בצעד אחד.', 'Start with one step.')}</span></h1>
+          <p class="hero-intro">{t('יש משהו שאתם רוצים לשנות, ושוב משהו עוצר אתכם. נתחיל ממה שקורה בחיים שלכם ונבין יחד מה מבקש להשתנות.', 'There is something you want to change, yet something keeps holding you back. We start with what is happening in your life and explore what needs to change.')}</p>
+          <div class="first-session"><span class="offer-dot" aria-hidden="true"></span><div><strong>{t('מפגש ראשון במחיר היכרות', 'A first session at an introductory rate')}</strong><p>{t('אונליין בזום · ללא התחייבות למסלול', 'Online via Zoom · No programme commitment')}</p></div></div>
+          <a class="contact-primary" href={firstSessionHref} target="_blank" rel="noopener noreferrer" data-track-event="whatsapp_click" data-track-label={`contact_${language}_first_session`}>{t('לתיאום מפגש ראשון', 'Arrange a first session')}<span aria-hidden="true">{en ? '↗' : '↖'}</span></a>
+          <a class="contact-question" href={questionHref} target="_blank" rel="noopener noreferrer" data-track-event="whatsapp_click" data-track-label={`contact_${language}_question`}>{t('יש לי שאלה לפני שקובעים', 'I have a question before booking')}</a>
+          <p class="hero-note">{t('התיאום בוואטסאפ. כל פרטי המפגש והמחיר יימסרו לפני אישור המועד.', 'Arrange your session on WhatsApp. You will receive all session and pricing details before confirming an appointment.')}</p>
+        </div>
+        <div class="hero-portrait">
+          <img src="/assets/yossi-about.jpg" alt={t('יוסי מדלסי, מייסד מצפן הלב', 'Yossi Medalsi, founder of Heart Compass')} width="800" height="1000" fetchpriority="high" />
+          <div class="portrait-caption"><strong>{t('יוסי מדלסי', 'Yossi Medalsi')}</strong><span>{t('מאמן רגשי ומפתח שיטת מ.ס.ע', 'Emotional coach · Creator of the M.S.A. approach')}</span></div>
+        </div>
+      </section>
+      <section class="contact-section" aria-labelledby="first-meeting-title">
+        <div class="section-heading"><p class="eyebrow">{t('פחות סימני שאלה, יותר בהירות', 'A CLEARER WAY TO BEGIN')}</p><h2 id="first-meeting-title">{t('מה קורה במפגש הראשון?', 'What happens in the first session?')}</h2><p>{t('מתחילים להכיר את מה שעוצר אתכם, ואת הכיוון שאתם רוצים לבנות.', 'We begin understanding what holds you back and the direction you want to build.')}</p></div>
+        <ol class="session-steps">{steps.map((step,i)=><li><span class="step-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol>
+      </section>
+      <section class="contact-section topic-section" aria-labelledby="contact-topics-title">
+        <div class="section-heading"><p class="eyebrow">{t('כל אדם מגיע מנקודה אחרת', 'DIFFERENT STARTING POINTS')}</p><h2 id="contact-topics-title">{t('במה הייתם רוצים להתחיל?', 'Where would you like to start?')}</h2><p>{t('אם תרצו להכיר קודם את דרך העבודה שמתאימה לכם, אפשר להתחיל כאן.', 'If you would like to explore the coaching that fits your situation first, start here.')}</p></div>
+        <div class="topic-grid">{topics.map(topic=><a class="topic-card" href={topic.href}><span class="topic-marker" aria-hidden="true">✦</span><h3>{topic.title}</h3><p>{topic.text}</p><span class="topic-link">{en && topic.hebrew ? 'Explore coaching (Hebrew)' : t('להכיר את הליווי', 'Explore coaching')} <span aria-hidden="true">{en ? '→' : '←'}</span></span></a>)}</div>
+      </section>
+      <section class="contact-section contact-details" aria-labelledby="contact-faq-title">
+        <div class="direct-contact"><p class="eyebrow">{t('אפשר גם פשוט לכתוב', 'YOU CAN JUST SAY HELLO')}</p><h2>{t('לא בטוחים מה לכתוב?', 'Not sure what to write?')}</h2><p>{t('״יש משהו שאני רוצה לשנות, ואני רוצה להבין איך מתחילים.״ זה מספיק כדי לפתוח את השיחה.', '“There is something I want to change, and I would like to understand how to start.” That is enough to begin the conversation.')}</p><a class="email-link" href={`mailto:${email}`} dir="ltr">{email}</a><a href={`tel:+${site.whatsAppPhone}`} dir="ltr">+972 54 458 0285</a><a class="about-link" href={en ? '/en/about' : '/about'}>{t('להכיר אותי ואת הדרך', 'Get to know me and my approach')} <span aria-hidden="true">{en ? '→' : '←'}</span></a></div>
+        <div class="contact-faq"><h2 id="contact-faq-title">{t('עוד כמה דברים לפני שמתחילים', 'A few things before you begin')}</h2>{faqs.map(item=><details><summary>{item.q}<span class="faq-plus" aria-hidden="true">+</span></summary><p>{item.a}</p></details>)}</div>
+      </section>
+      <section class="closing-invite"><div><p class="eyebrow">{t('הצעד הבא יכול להיות פשוט', 'YOUR NEXT STEP CAN BE SIMPLE')}</p><h2>{t('מתחילים ממה שחשוב לכם.', 'Start with what matters to you.')}</h2><p>{t('מפגש ראשון במחיר היכרות. מקום להבין, להתחיל לעבוד ולבחור את ההמשך.', 'A first session at an introductory rate. Space to understand, begin the work, and choose what comes next.')}</p></div><a class="contact-primary" href={firstSessionHref} target="_blank" rel="noopener noreferrer" data-track-event="whatsapp_click" data-track-label={`contact_${language}_closing`}>{t('לתיאום מפגש ראשון', 'Arrange a first session')} <span aria-hidden="true">{en ? '↗' : '↖'}</span></a></section>
+    </div>
+  </article>
+</BaseLayout>
+<style>
+  .contact-page{--ink:#183d43;--muted:#53666a;--gold:#c8a96e;--paper:#fbf8f2;background:var(--paper);color:var(--ink);padding:32px 0 12px;font-family:'Assistant',sans-serif}
+  .contact-wrap{max-width:1160px;margin:auto;padding:0 28px}.contact-topline{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}.contact-topline>span{font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+  .contact-hero{display:grid;grid-template-columns:1.2fr 1fr;background:#fff;border:1px solid #dfd8cb;border-radius:28px;overflow:hidden;box-shadow:0 18px 50px #183d4307}.hero-copy{padding:46px 40px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:.05em;color:#8b6a34;margin:0 0 16px}.hero-copy h1{font-size:clamp(31px,3.4vw,46px);font-weight:800;line-height:1.2;letter-spacing:-.025em;margin:0}.hero-copy h1 span{display:block;color:#597d75;margin-top:5px}.hero-intro{font-size:19px;line-height:1.7;color:var(--muted);margin:24px 0}.first-session{display:flex;align-items:center;gap:12px;padding:17px 18px;background:#f4f2e9;border-radius:12px;margin:26px 0 20px}.offer-dot{width:8px;height:8px;background:#ac8845;flex:none;border-radius:50%}.first-session strong{font-size:19px}.first-session p{font-size:14px;color:var(--muted);margin:4px 0 0}
+  .contact-primary{display:inline-flex;align-items:center;justify-content:center;gap:30px;background:#c8a96e;color:#173a40;border:1px solid #b89a62;border-radius:11px;padding:15px 23px;font-size:17px;font-weight:800;text-decoration:none;transition:background .2s;min-height:52px}.contact-primary:hover{background:#d9bd87}.hero-copy>.contact-primary{display:flex;width:100%;justify-content:space-between}.contact-question{display:block;width:fit-content;margin:15px auto;text-decoration:underline;text-underline-offset:4px;font-weight:600;font-size:15px}.hero-note{font-size:12px;line-height:1.6;color:var(--muted);text-align:center;margin:0}.hero-portrait{position:relative;min-height:560px;background:#d8ded8}.hero-portrait>img{width:100%;height:100%;object-fit:cover;object-position:center 28%;position:absolute;inset:0}.hero-portrait:after{content:'';position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#0d2d36d9)}.portrait-caption{position:absolute;bottom:30px;inset-inline:28px;z-index:1;color:white;display:flex;flex-direction:column;gap:5px}.portrait-caption strong{font-size:25px;font-weight:800}.portrait-caption span{font-size:15px;color:#ffffffe0;line-height:1.5}
+  .contact-section{padding-top:74px}.section-heading{max-width:650px;margin-bottom:30px}.section-heading h2,.contact-details h2,.closing-invite h2{font-size:30px;font-weight:800;line-height:1.25;margin:0 0 12px}.section-heading>p:last-child{font-size:18px;line-height:1.6;color:var(--muted);margin:0}.session-steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,1fr);gap:30px}.session-steps li{border-top:1px solid #d9c9a8;padding-top:20px}.step-number{font-size:13px;font-weight:800;letter-spacing:.06em;color:#9a773b}.session-steps h3,.topic-card h3{font-size:21px;line-height:1.4;font-weight:800;margin:12px 0}.session-steps p,.topic-card p{color:var(--muted);line-height:1.75;font-size:16px;margin:0}.topic-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.topic-card{display:flex;flex-direction:column;border:1px solid #dfd8cb;border-radius:16px;padding:24px 20px;text-decoration:none;background:#ffffff80;transition:background .2s,border-color .2s}.topic-card:hover{background:#fff;border-color:#a58c60}.topic-marker{font-size:21px;color:#ab8746}.topic-card p{font-size:15px;margin-bottom:22px}.topic-link{font-size:14px;font-weight:700;margin-top:auto}.topic-link>span{margin-inline-start:6px}
+  .contact-details{display:grid;grid-template-columns:.85fr 1.4fr;gap:64px}.direct-contact{background:#eef0e9;border-radius:18px;padding:30px;align-self:start}.direct-contact>p:not(.eyebrow){font-size:17px;line-height:1.8;color:var(--muted);margin:18px 0 25px}.direct-contact>a{display:block;overflow-wrap:anywhere;font-size:16px;margin-top:12px;width:fit-content;text-decoration:underline;text-underline-offset:4px}.direct-contact .about-link{font-size:15px;font-weight:700;margin-top:25px}.contact-faq>h2{margin:0 0 22px;font-size:27px}.contact-faq details{border-bottom:1px solid #ddd8ce}.contact-faq summary{display:flex;gap:16px;justify-content:space-between;align-items:center;font-size:18px;line-height:1.5;font-weight:700;padding:20px 0;cursor:pointer;list-style:none}.contact-faq summary::-webkit-details-marker{display:none}.faq-plus{font-size:24px;font-weight:400;color:#8b713e;flex-shrink:0}.contact-faq details[open] .faq-plus{transform:rotate(45deg)}.contact-faq details>p{font-size:16px;color:var(--muted);line-height:1.85;margin:0 0 22px;padding-inline-end:25px}
+  .closing-invite{margin-top:70px;background:#183d43;color:white;border-radius:20px;padding:35px 36px;display:flex;align-items:center;justify-content:space-between;gap:30px}.closing-invite .eyebrow{color:#d7bd8c}.closing-invite h2{font-size:29px}.closing-invite p:last-child{font-size:17px;line-height:1.65;color:#ffffffc9;margin:0;max-width:620px}.closing-invite>a{flex-shrink:0}.contact-page a:focus-visible,.contact-page summary:focus-visible{outline:3px solid #ae823a;outline-offset:5px}
+  @media(max-width:850px){.hero-copy{padding:30px 25px}.hero-copy h1{font-size:34px}.hero-portrait{min-height:550px}.hero-intro{font-size:17px}.topic-grid{grid-template-columns:repeat(2,1fr)}.contact-details{gap:28px;grid-template-columns:1fr 1.3fr}.closing-invite{align-items:start;flex-direction:column}}
+  @media(max-width:600px){.contact-page{padding-top:22px}.contact-wrap{padding:0 20px}.contact-topline{margin-bottom:20px}.contact-topline>span{font-size:11px}.contact-hero{grid-template-columns:1fr;border-radius:20px}.hero-copy{padding:30px 24px}.hero-copy h1{font-size:34px}.hero-portrait{min-height:330px}.hero-portrait>img{object-position:center 28%}.portrait-caption{bottom:20px;inset-inline:24px}.portrait-caption strong{font-size:23px}.contact-section{padding-top:48px}.section-heading h2,.contact-details h2{font-size:27px}.section-heading>p:last-child{font-size:17px}.session-steps{grid-template-columns:1fr;gap:25px}.session-steps li{position:relative;padding-inline-start:39px;padding-top:12px}.step-number{position:absolute;inset-inline-start:0;top:26px}.session-steps h3{margin:8px 0;font-size:20px}.topic-grid{gap:12px}.topic-card{padding:20px 16px}.topic-card h3{font-size:19px}.topic-card p{font-size:15px}.contact-details{grid-template-columns:1fr;gap:38px}.direct-contact{order:2;padding:27px}.contact-faq>h2{font-size:26px}.contact-faq summary{font-size:17px}.closing-invite{padding:29px 25px;margin-top:45px}.closing-invite>a{width:100%}.closing-invite h2{font-size:27px}}
+  @media(prefers-reduced-motion:reduce){.contact-primary,.topic-card{transition:none}}
+</style>
