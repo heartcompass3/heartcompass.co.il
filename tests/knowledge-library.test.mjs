@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {personalLibrary, libraryIntroSections} from '../src/lib/knowledgeLibrary.mjs';
+import {personalLibrary, knowledgeLibrary, libraryIntroSections} from '../src/lib/knowledgeLibrary.mjs';
 import {searchArticles} from '../src/lib/insights-search.mjs';
 const category = 'דפוסים חוזרים, דחיינות ושינוי אישי';
 const make = (slug, language, domain='personal', extra={}) => ({slug:{current:slug},language,title:'Why do I repeat patterns?',insightPlacement:{domain,category:domain==='personal'?category:'כשההורים נפרדים',secondary:[]},...extra});
@@ -19,4 +19,23 @@ test('Hebrew migration retains legacy taxonomy and category anchor', () => {
 test('intro grouping preserves text before headings and all following blocks', () => {
   const p={style:'normal',children:[{text:'Intro'}]},h={style:'h2',children:[{text:'How?'}]};
   assert.deepEqual(libraryIntroSections([p,h,p]),[{title:'',body:[p]},{title:'How?',body:[p]}]);
+});
+
+const firstTopics = {
+  personal:'דפוסים חוזרים, דחיינות ושינוי אישי',
+  parents:'הורות בזמן פרידה וגירושין',
+  youth:'כשההורים נפרדים',
+  relationships:'פרידה וגירושין',
+};
+for (const domain of Object.keys(firstTopics)) {
+  test(`library ${domain} keeps its audience and language separate`, () => {
+    const input=Object.entries(firstTopics).flatMap(([id,category])=>['he','en'].map(language=>({slug:`${id}-${language}`,title:id,language,insightPlacement:{domain:id,category,secondary:[]}})));
+    const result=knowledgeLibrary(input,{}, {},'en',domain);
+    assert.deepEqual(result.articles.map(a=>a.slug),[`${domain}-en`]);
+  });
+}
+test('opened Hebrew topics retain anchors even before their first article', () => {
+  const topics={'כשההורים נפרדים':{anchor:'when-parents-separate',showWhenEmpty:true}};
+  assert.equal(knowledgeLibrary([],{},topics,'he','youth').groups[0].id,'when-parents-separate');
+  assert.equal(knowledgeLibrary([],{},topics,'en','youth').groups.length,0);
 });

@@ -7,22 +7,27 @@ import {sanity} from '../../../lib/sanity'
 import site from '../../../content/pages/site.json'
 import fallback from '../../../content/insights-taxonomy.json'
 import topics from '../../../content/insights-topics.json'
-import {LIBRARY_ARTICLES_QUERY, personalLibrary} from '../../../lib/knowledgeLibrary.mjs'
+import {LIBRARY_ARTICLES_QUERY, knowledgeLibrary} from '../../../lib/knowledgeLibrary.mjs'
+import domains from '../../../content/insights-domains.json'
+import {effectiveTaxonomy} from '../../../lib/insights.mjs'
 import {searchArticles} from '../../../lib/insights-search.mjs'
 const query = (Astro.url.searchParams.get('q') || '').trim().slice(0,180)
+const domain = domains.find(d=>d.id === Astro.url.searchParams.get('domain'))
 const all = query ? await sanity.fetch(LIBRARY_ARTICLES_QUERY, {language:'en'}) : []
-const {articles, taxonomy} = personalLibrary(all, fallback, topics.personal, 'en')
-const results = searchArticles(articles, taxonomy, query, 'personal', articles.length)
+const collection = domain ? knowledgeLibrary(all, fallback, topics[domain.id], 'en', domain.id) : null
+const articles = collection?.articles || all
+const taxonomy = collection?.taxonomy || effectiveTaxonomy(all, fallback)
+const results = searchArticles(articles, taxonomy, query, domain?.id || '', articles.length)
 Astro.response.headers.set('Cache-Control','private, no-store')
 ---
-<BaseLayout language="en" title="Search the personal growth library | Heart Compass" description="Search published English articles about personal growth and emotional patterns." canonical={`${site.siteUrl}/en/insights/search`} noindex={true}>
+<BaseLayout language="en" title="Search the knowledge libraries | Heart Compass" description="Search published articles in the Heart Compass knowledge libraries." canonical={`${site.siteUrl}/en/insights/search`} noindex={true}>
   <section class="py-16 md:py-24"><div class="max-w-6xl mx-auto px-6">
-    <Breadcrumbs language="en" items={[{name:'Personal growth library',href:'/en/insights/personal'},{name:'Search'}]} />
-    <h1 class="text-3xl md:text-5xl font-bold text-primary mb-8">Search the personal growth library</h1>
-    <InsightsSearch language="en" domain="personal" query={query} />
-    {query && <p role="status" class="text-lg text-primary mb-6">{results.length} {results.length === 1 ? 'article found' : 'articles found'} for “{query}”.</p>}
+    <Breadcrumbs language="en" items={domain ? [{name:domain.nameEn,href:`/en/insights/${domain.id}`},{name:'Search'}] : [{name:'Search'}]} />
+    <h1 class="text-3xl md:text-5xl font-bold text-primary mb-8">Search the knowledge libraries</h1>
+    <InsightsSearch language="en" domain={domain?.id || ''} query={query} />
+    {query && <p role="status" class="text-lg text-primary mb-6">Results for “{query}”.</p>}
     {results.length > 0 && <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{results.map(({article})=><InsightArticleCard article={article} language="en" />)}</div>}
-    {query && !results.length && <div class="rounded-2xl bg-white p-6 text-primary"><h2 class="text-xl font-bold mb-3">Try another word</h2><p>The English library is growing. Try a short topic such as “patterns”, or browse the published articles below.</p></div>}
-    <a href="/en/insights/personal" class="inline-block mt-10 font-bold underline text-primary">Browse all English articles in this library →</a>
+    {query && !results.length && <div class="rounded-2xl bg-white p-6 text-primary"><h2 class="text-xl font-bold mb-3">Try another word</h2><p>The library is currently being developed. Try a short topic such as “patterns”, or return to a library.</p></div>}
+    <nav class="mt-10 flex flex-wrap gap-5" aria-label="Knowledge libraries">{domains.map(d=><a href={`/en/insights/${d.id}`} class="font-bold underline text-primary">{d.nameEn}</a>)}</nav>
   </div></section>
 </BaseLayout>

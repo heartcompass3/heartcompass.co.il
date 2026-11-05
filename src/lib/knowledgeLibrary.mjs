@@ -2,13 +2,16 @@ import {articleSlug, effectiveTaxonomy, collectionGroups} from './insights.mjs';
 
 // Use the existing reviewed taxonomy, including secondary placements. Language
 // filtering happens before grouping so an untranslated article cannot leak in.
-export function personalLibrary(articles, fallback, topics, language = 'he') {
+export function knowledgeLibrary(articles, fallback, topics, language = 'he', domain = 'personal') {
   const eligible = articles.filter(a => (a.language || 'he') === language && !a.seo?.noindex);
   const taxonomy = effectiveTaxonomy(eligible, fallback);
-  const groups = collectionGroups(eligible, taxonomy, 'personal', topics).filter(g => g.articles.length);
+  const groups = collectionGroups(eligible, taxonomy, domain, topics).filter(g => language === 'he' || g.articles.length);
   const unique = [...new Map(groups.flatMap(g => g.articles).map(a => [articleSlug(a), a])).values()];
   return {groups, articles: unique, taxonomy};
 }
+
+// Backwards-compatible API for the first migrated collection.
+export const personalLibrary = (articles, fallback, topics, language = 'he') => knowledgeLibrary(articles, fallback, topics, language, 'personal');
 
 // Introductory sections stay editable as ordinary Portable Text in Sanity.
 export function libraryIntroSections(body = []) {
