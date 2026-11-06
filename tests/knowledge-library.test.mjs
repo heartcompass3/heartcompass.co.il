@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {personalLibrary, knowledgeLibrary, libraryIntroSections} from '../src/lib/knowledgeLibrary.mjs';
+import {personalLibrary, knowledgeLibrary, libraryIntroSections, splitLibraryContent} from '../src/lib/knowledgeLibrary.mjs';
 import {searchArticles} from '../src/lib/insights-search.mjs';
 const category = 'דפוסים חוזרים, דחיינות ושינוי אישי';
 const make = (slug, language, domain='personal', extra={}) => ({slug:{current:slug},language,title:'Why do I repeat patterns?',insightPlacement:{domain,category:domain==='personal'?category:'כשההורים נפרדים',secondary:[]},...extra});
@@ -19,6 +19,16 @@ test('Hebrew migration retains legacy taxonomy and category anchor', () => {
 test('intro grouping preserves text before headings and all following blocks', () => {
   const p={style:'normal',children:[{text:'Intro'}]},h={style:'h2',children:[{text:'How?'}]};
   assert.deepEqual(libraryIntroSections([p,h,p]),[{title:'',body:[p]},{title:'How?',body:[p]}]);
+});
+
+test('CMS topic copy keeps existing anchors and links separate from intro cards', () => {
+  const intro = [{_key:'b0',style:'h2',children:[{text:'Where to start?'}]},{_key:'b1',style:'normal',children:[{text:'Start here.'}]}];
+  const linked = {_key:'p1',style:'normal',children:[{text:'Boundaries',marks:['link']}],markDefs:[{_key:'link',_type:'link',href:'#people-pleasing-boundaries'}]};
+  const result = splitLibraryContent([...intro,{_key:'topic-self-worth',style:'h2',children:[{text:'Self-worth'}]},linked,{_key:'topic-people-pleasing-boundaries',style:'h2',children:[{text:'Boundaries'}]},linked]);
+  assert.deepEqual(result.intro,intro);
+  assert.deepEqual(result.topics.map(t=>t.id),['self-worth','people-pleasing-boundaries']);
+  assert.equal(result.topics[0].body[0],linked);
+  assert.deepEqual(splitLibraryContent(intro),{intro,topics:[]});
 });
 
 const firstTopics = {
