@@ -3,10 +3,11 @@ import { toHTML } from '@portabletext/to-html'
 import { urlFor } from '../lib/sanity'
 import { slugify } from '../lib/slug'
 import { withFilename } from '../lib/img'
+import site from '../content/pages/site.json'
 
 // filenamePrefix (בד"כ slug הדף/המאמר) — בסיס לשם קובץ תיאורי לתמונות בגוף
 // (Sanity vanity filename). אופציונלי: בלי זה, תמונות הגוף נשארות עם hash גולמי.
-const { value, filenamePrefix, language = "he" } = Astro.props
+const { value, filenamePrefix, language = "he", internalLinksInSameTab = false } = Astro.props
 let inlineImageIndex = 0
 
 const headingId = (v: any) => slugify((v?.children || []).map((c: any) => c.text || '').join(''))
@@ -78,7 +79,9 @@ const components = {
     highlight: ({ children }) => `<mark class="hc-highlight">${children}</mark>`,
     link: ({ children, value }) => {
       const href = value?.href || '#'
-      return `<a href="${href}" target="_blank" rel="noopener">${children}</a>`
+      const internal = href.startsWith('#') || /^\/(?!\/)/.test(href) || href.startsWith(`${site.siteUrl}/`)
+      const target = internalLinksInSameTab && internal ? '' : ' target="_blank" rel="noopener"'
+      return `<a href="${href}"${target}>${children}</a>`
     },
   },
 }
