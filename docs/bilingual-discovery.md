@@ -7,7 +7,7 @@ Updated 5 November 2026.
   exclusions. Existing public-content and AI crawler access is preserved.
 - `public/llms.txt` contains Hebrew and English summaries and links to published
   pages. It reflects the current Heart Compass charter and the two published
-  Migdalor Campus certificates. Previous unsupported claims of individual ICF
+  Migdalor Campus certificates. Previous unsupported claims of international
   certification and more than ten years of professional coaching were replaced
   by the actual course names, dates, and hours.
 - `BaseLayout` links to `/llms.txt` with `rel="describedby"`. Website schema lists

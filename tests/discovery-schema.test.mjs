@@ -31,8 +31,12 @@ test('credential translations refer to the same published qualifications', () =>
   const en = schema.getProfessionalCredentials(siteUrl, 'en')
   const he = schema.getProfessionalCredentials(siteUrl, 'he')
   assert.deepEqual(en.map(c => c.url), he.map(c => c.url))
+  assert.deepEqual(en.map(c => c.name), [
+    'Parotherapy coaching training, Migdalor Campus (2026)',
+    'Specialist training in emotional coaching for teens, Migdalor Campus (2026)',
+  ])
   for (const credential of en) {
     assert.match(credential.name, /Migdalor Campus \(2026\)/)
-    assert.doesNotMatch(credential.name, /ICF|10 years/)
+    assert.doesNotMatch(credential.name, /international certification|10 years/i)
   }
 })
