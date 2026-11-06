@@ -89,7 +89,7 @@ const schema = [{
           <a href={en ? '/en/method' : '/method'} class="underline font-bold text-primary">{t('להסבר המלא על שיטת מ.ס.ע', 'Explore the M.S.A. approach')}</a>
         </div>
         {page.specialty.closing && <p class="max-w-3xl mx-auto mb-6 text-primary/80 leading-relaxed">{page.specialty.closing}</p>}
-        <a href={action?.href || (en ? '/en/contact' : '/contact')} data-track-event="service_cta" data-track-label={`${domain}_library_${language}`} class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold">{action?.label || t('לשיחת היכרות עם יוסי', 'Talk to Yossi')} <span aria-hidden="true">{en ? '→' : '←'}</span></a>
+        <a href={action?.href || (en ? '/en/contact' : '/contact')} data-track-event="service_cta" data-track-label={`${domain}_library_${language}`} class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold">{action?.label || t('לפרטי מפגש ראשון', 'First session details')} <span aria-hidden="true">{en ? '→' : '←'}</span></a>
       </section>}
       {!en && <nav aria-label="ספריות נוספות" class="mt-12 flex flex-wrap gap-6">{domains.filter(d=>d.id!==domain).map(d=><a href={`/insights/${d.id}`} class="font-bold underline text-primary">{d.name}</a>)}</nav>}
       {en && siblings.length > 0 && <nav aria-label="More knowledge libraries" class="mt-12 flex flex-wrap gap-6">{siblings.filter(p=>p.slug!==`en/insights/${domain}`).map(p=><a href={`/${p.slug}`} class="font-bold underline text-primary">{p.title}</a>)}</nav>}
