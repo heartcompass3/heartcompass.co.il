@@ -32,7 +32,7 @@
 
 ## מידע נוסף
 - **מאמרים:** https://www.heartcompass.co.il/articles
-- **מרכז המידע (מוקדי כאב):** https://www.heartcompass.co.il/pain
+- **מרכז המידע:** https://www.heartcompass.co.il/insights
 - **אודות:** https://www.heartcompass.co.il/about
 - **יצירת קשר:** https://www.heartcompass.co.il/contact
 - **וואטסאפ:** https://wa.me/972544580285

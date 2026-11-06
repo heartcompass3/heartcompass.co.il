@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+const { language = 'he' } = Astro.props
+const en = language === 'en'
+---
+<BaseLayout language={language} title={en ? 'Page not found | Heart Compass' : 'העמוד לא נמצא | מצפן הלב'} noindex={true}>
+  <section class="mx-auto max-w-3xl px-6 py-24 text-center">
+    <p class="mb-4 font-bold text-accent">404</p>
+    <h1 class="mb-6 text-4xl font-black text-primary">{en ? 'We couldn’t find this page' : 'לא מצאנו את העמוד הזה'}</h1>
+    <p class="mb-8 text-lg text-primary/80">{en ? 'The link may be out of date. You can browse our information centre or return to the home page.' : 'ייתכן שהקישור ישן או שהכתובת השתנתה. אפשר לחפש במאגר המאמרים או לחזור לדף הבית.'}</p>
+    <div class="flex flex-wrap justify-center gap-6">
+      <a class="font-bold text-primary underline" href={en ? '/en/insights/search' : '/articles'}>{en ? 'Search articles' : 'לכל המאמרים והחיפוש'}</a>
+      <a class="font-bold text-primary underline" href={en ? '/en' : '/'}>{en ? 'Home page' : 'לדף הבית'}</a>
+    </div>
+  </section>
+</BaseLayout>

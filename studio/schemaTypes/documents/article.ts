@@ -336,7 +336,7 @@ export default defineType({
       title: 'מקורות',
       type: 'array',
       description:
-        'מחקרים/מקורות שהמאמר מתבסס עליהם. מוצגים לקורא בתחתית המאמר וממופים ל-citation ב-JSON-LD. בנוסף, יש לקשר בגוף המאמר את הטענה הרלוונטית למקור המדויק באמצעות Link; הרשימה כאן אינה מחליפה קישור בהקשר.',
+        'מחקרים ומקורות שהמאמר מתבסס עליהם. קישורים למקורות חיצוניים מופיעים רק ברשימה הזאת בתחתית המאמר וממופים ל-citation ב-JSON-LD. בגוף המאמר אפשר לציין את שם החוקר או המחקר בטקסט, ללא קישור חיצוני.',
       of: [
         {
           type: 'object',
@@ -412,34 +412,22 @@ export default defineType({
       type: 'blockContent',
       validation: (Rule) => [
         Rule.required(),
-        Rule.custom((body, context) => {
-          if (!usesNewSourceLinkPolicy(context.document)) return true
-          const document = context.document as
-            | { _createdAt?: string; sources?: Array<{ url?: string }> }
-            | undefined
-          const sourceUrls = (document?.sources || [])
-            .map((source) => source?.url)
-            .filter((url): url is string => Boolean(url))
-
-          if (sourceUrls.length === 0) return true
-
-          const inlineUrls = new Set(
-            ((body as Array<{ _markDefs?: Array<{ href?: string }> }> | undefined) || [])
-              .flatMap((block) => block?._markDefs || [])
-              .map((mark) => mark?.href)
-              .filter((href): href is string => Boolean(href))
-          )
-          const missingCount = sourceUrls.filter((url) => !inlineUrls.has(url)).length
-
-          if (missingCount === 0) return true
-          if (missingCount === sourceUrls.length) {
-            return 'יש למאמר מקורות, אבל אין אליהם קישורים בתוך גוף המאמר. קשרו כל טענה מחקרית למקור המדויק באמצעות Link.'
-          }
-          return `ל-${missingCount} מקורות עדיין אין קישור ליד הטענה הרלוונטית בגוף המאמר.`
+        Rule.custom((body) => {
+          const blocks = (body || []) as Array<{ markDefs?: Array<{ href?: string }> }>
+          const hasExternalSource = blocks.flatMap(block => block.markDefs || []).some(mark => {
+            if (!mark.href || !/^(https?:)?\/\//i.test(mark.href)) return false
+            try {
+              const host = new URL(mark.href, 'https://www.heartcompass.co.il').hostname
+              return !['www.heartcompass.co.il', 'heartcompass.co.il', 'wa.me', 'api.whatsapp.com'].includes(host)
+            } catch {
+              return true
+            }
+          })
+          return hasExternalSource ? 'קישורים למקורות חיצוניים יש להעביר לרשימת המקורות בתחתית המאמר. בגוף המאמר משאירים את הטקסט וקישורים פנימיים.' : true
         }).warning(),
       ],
       description:
-        'תוכן המאמר. בטענה מחקרית או עובדתית מסמנים את הביטוי הרלוונטי ומוסיפים Link למקור המדויק; רשימת המקורות נשארת גם בתחתית. ניתן להוסיף תמונות דרך כפתור "הוסף תמונה".',
+        'תוכן המאמר. קישורים למאמרים ולכלים באתר נשארים בגוף הטקסט. קישורים למחקרים ולמקורות חיצוניים מוסיפים רק ברשימת המקורות בתחתית. ניתן להוסיף תמונות דרך כפתור "הוסף תמונה".',
     }),
 
     // ─── חדש: בלוק קריאה לפעולה (אופציונלי) ──────────────────────

@@ -1,0 +1,6 @@
+---
+import NotFoundPage from '../components/NotFoundPage.astro'
+Astro.response.status = 404
+const language = Astro.url.pathname.startsWith('/en/') ? 'en' : 'he'
+---
+<NotFoundPage language={language} />

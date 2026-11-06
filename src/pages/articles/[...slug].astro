@@ -1,5 +1,6 @@
 ---
 import ArticlePage from "../../components/ArticlePage.astro"
+import NotFoundPage from "../../components/NotFoundPage.astro"
 import { sanity } from "../../lib/sanity"
 import { ARTICLE_BY_SLUG_QUERY } from "../../lib/sanityQueries"
 const rawSlug = Astro.params.slug
@@ -21,7 +22,6 @@ const OLD_SLUG_REDIRECTS: Record<string, string> = {
   'מתקיעות לתנועה': 'stop-repeating-the-script',
   'דיכאון, תקיעות ואנרגיה': 'hidden-cost-of-hypervigilance',
   'automating-the-soul-future-of-': 'automating-the-soul-future-of',
-  'teen-diagnosis-does-it-mean-something-is-wrong-with-me': 'adhd-diagnosis-for-teens-does-it-mean-something-is-wrong-with-me',
   'midlife-crisis-in-men': 'midlife-crisis-external-escapes-psychology',
 }
 
@@ -31,8 +31,8 @@ if (!article) {
   if (slug && OLD_SLUG_REDIRECTS[slug]) {
     return Astro.redirect(`/articles/${OLD_SLUG_REDIRECTS[slug]}`, 301)
   }
-  return Astro.redirect('/articles', 302)
+  Astro.response.status = 404
 }
 
 ---
-<ArticlePage article={article} slug={slug} language="he" />
+{article ? <ArticlePage article={article} slug={slug} language="he" /> : <NotFoundPage language="he" />}

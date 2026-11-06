@@ -1,50 +1,44 @@
-# מצפן הלב – Astro + Keystatic (סטטי, SEO חזק, עריכה מלאה)
+# מצפן הלב
 
-מה יש כאן:
-- אתר **סטטי** (Astro) עם HTML אמיתי לכל עמוד (SEO חזק כברירת מחדל).
-- **Keystatic** כבק אופיס פשוט: עריכת טקסטים, הוספת מאמרים, העלאת תמונות, יצירת דפים.
-- עיצוב **זהה בקו** למה שהבאת: רקע ‎#FDFCF8, ירוק כהה ‎#0F2C36, זהב ‎#D4AF37, פונטים Assistant (כותרות) ו-Heebo (טקסט).
-- דף בית כולל: Hero, 3 תחומים לחיצים, מודל מ.ס.ע (מ־ס־ע, וה־ס = סילוק), FAQ.
-- בלוג מוכן (Markdown) + עמוד מאמר דינמי.
-- כפתור וואטסאפ מרחף עם שאלות מובנות.
+אתר אימון רגשי של יוסי מדלסי, עם תוכן בעברית ובאנגלית.
 
-## התקנה מקומית
+## טכנולוגיות ותוכן
+
+- Astro 5 במצב שרת, עם רכיבי React ו-Tailwind CSS.
+- Sanity מנהל את הדפים, המאמרים, המקורות, הכלים והסרטונים. קוד ה-Studio נמצא ב-`studio/`.
+- Vercel מארח את האתר. HTML נשמר ב-ISR למשך 10 דקות; נתיבי API ונתיבים אישיים מוחרגים בהתאם ל-`astro.config.mjs`.
+- שפות התוכן נפרדות: עברית בנתיבים הראשיים ואנגלית תחת `/en`. זמינות התוכן באנגלית אינה קובעת את שפת המפגשים.
+
+## עבודה מקומית
+
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-## Keystatic (עריכה)
+יש להגדיר `PUBLIC_SANITY_PROJECT_ID` ו-`PUBLIC_SANITY_DATASET` לפי `.env.example`. פעולות שרת כגון הרשמה לדיוור דורשות גם את ההגדרות המתאימות המפורטות שם. אין לשמור סודות ברפוזיטורי.
+
 ```bash
-npm run dev
+node --test tests/*.test.mjs
+npm run build
 ```
-ואז להיכנס:
-- אתר: `http://localhost:4321`
-- Keystatic: `http://localhost:4321/keystatic`
 
-### מצב GitHub (כדי שהעריכות יישמרו בריפו)
-ב-Vercel מוסיפים Environment Variables:
-- `KEYSTATIC_STORAGE=github`
-- `KEYSTATIC_GITHUB_REPO=<owner>/<repo>`
-- `KEYSTATIC_GITHUB_TOKEN=<github token>`
-- `KEYSTATIC_GITHUB_BRANCH=main`
+## מבנה האתר
 
-## מדיה (תמונות, PDF, אודיו)
-- קבצים קטנים אפשר לשים ב-`public/`.
-- קבצים כבדים (אודיו ארוך / PDF כבד) מומלץ לאחסן ב-Cloudflare R2 / S3 / Bunny / Vimeo / YouTube, ולהטמיע באתר.
+- `/` ו-`/en`: דפי הבית.
+- `/about`, `/method`, `/who-is-it-for`: אודות, השיטה והתאמה לליווי.
+- `/specialties/*`: דפי השירות.
+- `/insights`: מרכז המידע לפי תחומים; `/articles`: מאגר המאמרים והחיפוש.
+- `/articles/<slug>`: מאמר בעברית; `/en/articles/<slug>`: גרסה באנגלית כאשר קיימת.
+- `/tools` ו-`/guide/<slug>`: כלים ומדריכים.
+- `/videos`: ספריית הסרטונים; `/contact`: יצירת קשר.
+- `/sitemap.xml`, `/robots.txt`, `/llms.txt`: גילוי ואינדוקס.
 
-## עמודים קיימים
-- `/` דף בית
-- `/about` מי אני
-- `/method` השיטה
-- `/method/couples` אימון זוגי בשיטה
-- `/method/career` קריירה ועסקים בשיטה
-- `/method/personal` התפתחות אישית בשיטה
-- `/blog` מאמרים
-- `/blog/<slug>` מאמר
-- `/contact` צור קשר
+מקורות חיצוניים וקישוריהם מופיעים ברשימת המקורות בתחתית כל מאמר. קישורים פנימיים יכולים להופיע בגוף הטקסט. הפניות 301 לכתובות ישנות נשמרות; מאמר שלא קיים מחזיר 404 עם אפשרויות חיפוש וניווט.
 
-## שינוי טקסטים בלי לגעת בקוד
-כרגע הטקסטים המרכזיים יושבים ב:
-- `src/content/pages/site.json`
-ובהמשך נעביר הכל ל-Keystatic (חלק כבר מחובר).
+## תיעוד נוסף
+
+- `docs/bilingual-discovery.md`: סכימות וגילוי בשתי שפות.
+- `docs/english-localization.md`: מבנה התרגומים.
+- `docs/insights-maintenance.md`: תחזוקת מרכז המידע.
+- `docs/video-library.md`: סנכרון ספריית הסרטונים.
