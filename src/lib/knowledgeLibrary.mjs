@@ -17,15 +17,19 @@ export const personalLibrary = (articles, fallback, topics, language = 'he') => 
 // ordinary editable Portable Text, separate from the introductory cards.
 export function splitLibraryContent(body = []) {
   const intro = [], topics = [];
-  let current;
+  let current, cta;
   for (const block of body) {
-    if (block.style === 'h2' && block._key?.startsWith('topic-')) {
+    if (block._key === 'library-cta') {
+      const link = block.markDefs?.find(mark => mark._type === 'link' && /^(\/(?!\/)|https?:\/\/)/.test(mark.href || ''));
+      const label = link && (block.children || []).filter(span => span.marks?.includes(link._key)).map(span => span.text || '').join('').trim();
+      if (label) cta = {href: link.href, label};
+    } else if (block.style === 'h2' && block._key?.startsWith('topic-')) {
       current = {id: block._key.slice(6), title: (block.children || []).map(c => c.text || '').join(''), body: []};
       topics.push(current);
     } else if (current) current.body.push(block);
     else intro.push(block);
   }
-  return {intro, topics};
+  return {intro, topics, ...(cta ? {cta} : {})};
 }
 
 // Introductory sections stay editable as ordinary Portable Text in Sanity.
@@ -39,5 +43,5 @@ export function libraryIntroSections(body = []) {
   return sections;
 }
 
-export const LIBRARY_PAGE_QUERY = `*[_type == "page" && slug.current == $slug && coalesce(seo.noindex, false) == false][0]{title,excerpt,body,contentUpdatedAt,aiCitation,seo,specialty{intro,faqTitle,faq,closing,practicalGuidance{gettingStarted}}}`;
+export const LIBRARY_PAGE_QUERY = `*[_type == "page" && slug.current == $slug && coalesce(seo.noindex, false) == false][0]{title,excerpt,body,contentUpdatedAt,aiCitation,aiContext,painTags,seo,specialty{intro,faqTitle,faq,closing,practicalGuidance{gettingStarted}}}`;
 export const LIBRARY_ARTICLES_QUERY = `*[_type == "article" && coalesce(language, "he") == $language && coalesce(seo.noindex, false) == false] | order(coalesce(publishedAt, _createdAt) desc){_id,title,goldLine,slug,excerpt,language,seo{noindex},insightPlacement,searchPhrases,painTags,tags,mainImage{alt,asset->{url}}}`;

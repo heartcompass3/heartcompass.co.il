@@ -16,7 +16,7 @@ const t = (he: string, english: string) => en ? english : he
 const path = `${en ? '/en' : ''}/insights/${domain}`
 const canonical = `${site.siteUrl}${path}`
 const {groups, articles: unique} = knowledgeLibrary(articles, fallbackTaxonomy, topics[domain], language, domain)
-const {intro, topics: topicContent} = splitLibraryContent(page.body)
+const {intro, topics: topicContent, cta: action} = splitLibraryContent(page.body)
 const sections = libraryIntroSections(intro)
 const topicById = new Map(topicContent.map(topic => [topic.id, topic]))
 const languageLinks = hasCounterpart ? ['he','en'].map(language => ({language, href: `${site.siteUrl}${language === 'en' ? '/en' : ''}/insights/${domain}`})) : []
@@ -29,6 +29,8 @@ const schema = [{
   '@context':'https://schema.org', '@type':'CollectionPage', '@id':`${canonical}#collection`,
   url:canonical, name:page.title, description:page.seo?.description || page.excerpt,
   inLanguage:language, abstract:page.aiCitation, dateModified:page.contentUpdatedAt,
+  disambiguatingDescription:page.aiContext,
+  keywords:page.painTags,
   ...(en ? {} : {isPartOf:{'@type':'CollectionPage',url:`${site.siteUrl}/insights`}}),
   author:{'@type':'Person',name:en ? 'Yossi Medalsi' : 'יוסי מדלסי',url:`${site.siteUrl}${en ? '/en' : ''}/about`},
   ...(unique.length ? {mainEntity:{'@type':'ItemList',numberOfItems:unique.length,itemListElement:unique.map((a,i)=>({'@type':'ListItem',position:i+1,name:a.title,url:`${site.siteUrl}${en ? '/en' : ''}/articles/${typeof a.slug === 'string' ? a.slug : a.slug.current}`}))}} : {}),
@@ -87,7 +89,7 @@ const schema = [{
           <a href={en ? '/en/method' : '/method'} class="underline font-bold text-primary">{t('להסבר המלא על שיטת מ.ס.ע', 'Explore the M.S.A. approach')}</a>
         </div>
         {page.specialty.closing && <p class="max-w-3xl mx-auto mb-6 text-primary/80 leading-relaxed">{page.specialty.closing}</p>}
-        <a href={en ? '/en/contact' : '/contact'} data-track-event="service_cta" data-track-label={`${domain}_library_${language}`} class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold">{t('לשיחת היכרות עם יוסי', 'Talk to Yossi')} <span aria-hidden="true">{en ? '→' : '←'}</span></a>
+        <a href={action?.href || (en ? '/en/contact' : '/contact')} data-track-event="service_cta" data-track-label={`${domain}_library_${language}`} class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl gradient-gold text-primary font-bold shadow-gold">{action?.label || t('לשיחת היכרות עם יוסי', 'Talk to Yossi')} <span aria-hidden="true">{en ? '→' : '←'}</span></a>
       </section>}
       {!en && <nav aria-label="ספריות נוספות" class="mt-12 flex flex-wrap gap-6">{domains.filter(d=>d.id!==domain).map(d=><a href={`/insights/${d.id}`} class="font-bold underline text-primary">{d.name}</a>)}</nav>}
       {en && siblings.length > 0 && <nav aria-label="More knowledge libraries" class="mt-12 flex flex-wrap gap-6">{siblings.filter(p=>p.slug!==`en/insights/${domain}`).map(p=><a href={`/${p.slug}`} class="font-bold underline text-primary">{p.title}</a>)}</nav>}

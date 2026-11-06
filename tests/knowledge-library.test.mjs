@@ -31,6 +31,21 @@ test('CMS topic copy keeps existing anchors and links separate from intro cards'
   assert.deepEqual(splitLibraryContent(intro),{intro,topics:[]});
 });
 
+test('CMS contact action stays outside the last topic and intro, preserving its label and destination', () => {
+  const heading={_key:'topic-burnout-meaning',style:'h2',children:[{text:'Meaning'}]};
+  const paragraph={_key:'p',style:'normal',children:[{text:'Topic copy'}]};
+  const action={_key:'library-cta',style:'normal',children:[{text:'Discuss what you want to change',marks:['contact']}],markDefs:[{_key:'contact',_type:'link',href:'/en/contact'}]};
+  const result=splitLibraryContent([heading,paragraph,action]);
+  assert.deepEqual(result.intro,[]);
+  assert.deepEqual(result.topics[0].body,[paragraph]);
+  assert.deepEqual(result.cta,{href:'/en/contact',label:'Discuss what you want to change'});
+  for (const href of ['javascript:alert(1)','//untrusted.test','']) {
+    const invalid={...action,markDefs:[{_key:'contact',_type:'link',href}]};
+    assert.equal(splitLibraryContent([heading,paragraph,invalid]).cta,undefined);
+    assert.deepEqual(splitLibraryContent([heading,paragraph,invalid]).topics[0].body,[paragraph]);
+  }
+});
+
 const firstTopics = {
   personal:'דפוסים חוזרים, דחיינות ושינוי אישי',
   parents:'הורות בזמן פרידה וגירושין',
