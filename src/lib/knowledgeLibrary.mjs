@@ -13,6 +13,21 @@ export function knowledgeLibrary(articles, fallback, topics, language = 'he', do
 // Backwards-compatible API for the first migrated collection.
 export const personalLibrary = (articles, fallback, topics, language = 'he') => knowledgeLibrary(articles, fallback, topics, language, 'personal');
 
+// Topic headings use the library's existing stable anchors. Their copy remains
+// ordinary editable Portable Text, separate from the introductory cards.
+export function splitLibraryContent(body = []) {
+  const intro = [], topics = [];
+  let current;
+  for (const block of body) {
+    if (block.style === 'h2' && block._key?.startsWith('topic-')) {
+      current = {id: block._key.slice(6), title: (block.children || []).map(c => c.text || '').join(''), body: []};
+      topics.push(current);
+    } else if (current) current.body.push(block);
+    else intro.push(block);
+  }
+  return {intro, topics};
+}
+
 // Introductory sections stay editable as ordinary Portable Text in Sanity.
 export function libraryIntroSections(body = []) {
   const sections = [];
