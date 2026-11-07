@@ -157,7 +157,7 @@ const fmtDate = (d?: string) =>
         <h2 class="text-3xl font-display font-bold text-primary mb-4">{t('מאמרים בנושא לפי קהל', 'Explore the topic in more depth')}</h2>
         <nav aria-label={t('קהל למאמרים בנושא', 'Find relevant reading')} class="flex flex-wrap gap-3 mb-8">{groups.map(g=><a href={`#audience-${g.id}`} class="rounded-full bg-white border border-primary/20 px-5 py-3 font-bold">{g.name}</a>)}</nav>
         {articles.length === 0 && <p>{t('בקרוב יתווספו מאמרים בנושא הזה.', 'More English articles will be added here.')}</p>}
-        <div class="space-y-12">{groups.map(g=><section id={`audience-${g.id}`} class="scroll-mt-24"><h3 class="text-2xl font-display font-bold text-primary mb-4">{g.name}</h3>{insightDomains.some(d=>d.id===g.id) && <a href={`/insights/${g.id}`} class="inline-block underline mb-5">{t('לספרייה המלאה:', 'Full library:')} {g.name}</a>}<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{g.articles.map(a=><InsightArticleCard article={a} language={language} />)}</div></section>)}</div>
+        <div class="space-y-12">{groups.map(g=><section id={`audience-${g.id}`} class="scroll-mt-24"><h3 class="text-2xl font-display font-bold text-primary mb-4">{g.name}</h3>{insightDomains.some(d=>d.id===g.id) && <a href={`${en ? "/en" : ""}/insights/${g.id}`} class="inline-block underline mb-5">{t('לספרייה המלאה:', 'Full library:')} {g.name}</a>}<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{g.articles.map(a=><InsightArticleCard article={a} language={language} />)}</div></section>)}</div>
       </section>
 
       <!-- FAQ -->
