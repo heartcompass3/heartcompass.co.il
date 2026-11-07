@@ -11,10 +11,21 @@ import { slugify } from '../lib/slug'
 import fallbackTaxonomy from '../content/insights-taxonomy.json'
 import insightDomains from '../content/insights-domains.json'
 import { relatedArticles, effectiveTaxonomy } from '../lib/insights.mjs'
+import { englishArticleLinkResolver, linkedHebrewArticleSlugs, PUBLISHED_ARTICLE_TRANSLATIONS_QUERY } from '../lib/article-links.mjs'
 
 const { article, slug, language = "he" } = Astro.props
 const en = language === "en"
 const t = (he: string, english: string) => en ? english : he
+const linkedSlugs = en ? linkedHebrewArticleSlugs(article.body, site.siteUrl) : []
+let resolveBodyLink: ((href: string) => string) | undefined
+if (linkedSlugs.length) {
+  try {
+    const translations = await sanity.withConfig({ perspective: 'published' }).fetch(PUBLISHED_ARTICLE_TRANSLATIONS_QUERY, { slugs: linkedSlugs })
+    resolveBodyLink = englishArticleLinkResolver(translations, site.siteUrl)
+  } catch (error) {
+    console.warn('Could not resolve English article links:', error)
+  }
+}
 const alternates = [{language, slug: article.slug}, ...(article.translations || [])].filter(a => a.slug?.current)
 const languageLinks = alternates.map(a => ({language: a.language || "he", href: new URL(`${a.language === "en" ? "/en" : ""}/articles/${a.slug.current}`, site.siteUrl).toString()}))
 const otherLanguage = languageLinks.find(a => a.language !== language)
@@ -303,7 +314,7 @@ const schemas = faqSchema
         )}
 
         <div class="mt-14 prose prose-xl max-w-none text-primary/80 font-body leading-9">
-          <PortableText value={article.body} filenamePrefix={slug} language={language} />
+          <PortableText value={article.body} filenamePrefix={slug} language={language} resolveLink={resolveBodyLink} />
         </div>
 
         {/* ─── שאלות נפוצות ──────────────────────────────────────── */}
