@@ -194,5 +194,8 @@ export const POST: APIRoute = async ({ request }) => {
     return fail('Your request was received, but your newsletter subscription could not be completed. Please return to the form and try again shortly.', 'הפנייה התקבלה, אך ההרשמה לעדכונים לא הושלמה. חזרו לטופס ונסו שוב בעוד רגע.', 502)
   }
 
-  return new Response(null, { status: 302, headers: { Location: next } })
+  // The fragment is emitted only after Resend has accepted the registration.
+  // It is removed in the browser and never sent as part of the HTTP request.
+  const location = next !== requestedNext || next.includes('#') ? next : `${next}#hc-newsletter-registered`
+  return new Response(null, { status: 302, headers: { Location: location } })
 }

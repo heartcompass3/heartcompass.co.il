@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro'
+import { timingSafeEqual } from 'node:crypto'
 import site from '../../content/pages/site.json'
 
 export const prerender = false
@@ -8,9 +9,10 @@ export const prerender = false
 const INDEXNOW_KEY =
   import.meta.env.INDEXNOW_KEY || '0b363f322a284df29f956bf0997d06ea'
 
-// סוד אופציונלי לאימות שהקריאה הגיעה מ-Sanity ולא מגורם זר.
-// אם מוגדר INDEXNOW_SECRET — נדרוש אותו ב-header/קוורי.
-const SECRET = import.meta.env.INDEXNOW_SECRET
+// Vercel Cron sends CRON_SECRET as a Bearer token. Sanity and manual
+// submissions use a separate secret, passed only in a request header.
+const CRON_SECRET = process.env.CRON_SECRET
+const INDEXNOW_SECRET = process.env.INDEXNOW_SECRET
 
 const host = new URL(site.siteUrl).host
 const keyLocation = `${site.siteUrl}/${INDEXNOW_KEY}.txt`
@@ -18,27 +20,38 @@ const keyLocation = `${site.siteUrl}/${INDEXNOW_KEY}.txt`
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: { 'content-type': 'application/json; charset=utf-8' },
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
   })
 }
 
-function authorized(request: Request, url: URL) {
-  // קריאות Vercel Cron הן פנימיות ומהימנות — מזוהות לפי ה-header הזה.
-  if (request.headers.get('x-vercel-cron')) return true
-  if (!SECRET) return true
-  const provided =
-    request.headers.get('x-indexnow-secret') || url.searchParams.get('secret')
-  return provided === SECRET
+function matchesSecret(provided: string | null, expected?: string) {
+  if (!provided || !expected) return false
+  const actual = Buffer.from(provided)
+  const secret = Buffer.from(expected)
+  return actual.length === secret.length && timingSafeEqual(actual, secret)
+}
+
+function hasIndexNowSecret(request: Request) {
+  return matchesSecret(request.headers.get('x-indexnow-secret'), INDEXNOW_SECRET)
+}
+
+function isSiteUrl(value: string) {
+  try {
+    const target = new URL(value)
+    return target.origin === new URL(site.siteUrl).origin && !target.username && !target.password
+  } catch {
+    return false
+  }
 }
 
 // שולח רשימת כתובות ל-IndexNow (Bing + מנועים תומכים).
 async function submit(urls: string[]) {
-  const urlList = [...new Set(urls.filter(Boolean))]
+  const urlList = [...new Set(urls.filter(isSiteUrl))]
   if (urlList.length === 0) return { ok: false, reason: 'no-urls' as const }
 
   const res = await fetch('https://api.indexnow.org/indexnow', {
     method: 'POST',
-    headers: { 'content-type': 'application/json; charset=utf-8' },
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
     body: JSON.stringify({ host, key: INDEXNOW_KEY, keyLocation, urlList }),
   })
 
@@ -71,8 +84,8 @@ function urlForDoc(doc: any): string | null {
 }
 
 // POST — מיועד ל-Sanity webhook (פרסום/עדכון מסמך).
-export const POST: APIRoute = async ({ request, url }) => {
-  if (!authorized(request, url)) return json({ ok: false, error: 'unauthorized' }, 401)
+export const POST: APIRoute = async ({ request }) => {
+  if (!hasIndexNowSecret(request)) return json({ ok: false, error: 'unauthorized' }, 401)
 
   let body: any = {}
   try {
@@ -82,7 +95,7 @@ export const POST: APIRoute = async ({ request, url }) => {
   }
 
   const target = urlForDoc(body)
-  if (!target) return json({ ok: false, error: 'could-not-resolve-url', body }, 400)
+  if (!target) return json({ ok: false, error: 'could-not-resolve-url' }, 400)
 
   const result = await submit([target])
   return json(result, result.ok ? 200 : 502)
@@ -92,18 +105,24 @@ export const POST: APIRoute = async ({ request, url }) => {
 //   /api/indexnow?url=https://heartcompass.co.il/articles/xxx   (כתובת בודדת)
 //   /api/indexnow?all=1                                              (כל ה-sitemap — "בעיטת התנעה")
 export const GET: APIRoute = async ({ request, url }) => {
-  if (!authorized(request, url)) return json({ ok: false, error: 'unauthorized' }, 401)
+  const isCron = Boolean(CRON_SECRET) && matchesSecret(
+    request.headers.get('authorization'), `Bearer ${CRON_SECRET}`
+  )
+  if (!isCron && !hasIndexNowSecret(request)) {
+    return json({ ok: false, error: 'unauthorized' }, 401)
+  }
 
   const one = url.searchParams.get('url')
   if (one) {
+    if (!isSiteUrl(one)) return json({ ok: false, error: 'invalid-url' }, 400)
     const result = await submit([one])
     return json(result, result.ok ? 200 : 502)
   }
 
   // Vercel Cron מפעיל את ה-endpoint ללא פרמטרים → דחיפת כל ה-sitemap.
-  const isCron = !!request.headers.get('x-vercel-cron')
   if (isCron || url.searchParams.get('all')) {
     const sm = await fetch(`${site.siteUrl}/sitemap.xml`)
+    if (!sm.ok) return json({ ok: false, error: 'sitemap-unavailable' }, 502)
     const xml = await sm.text()
     const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
     const result = await submit(urls)

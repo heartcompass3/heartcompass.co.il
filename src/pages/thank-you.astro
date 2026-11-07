@@ -1,4 +1,7 @@
 ---
+import Tracking from '../components/Tracking.astro'
+import CookieBanner from '../components/CookieBanner.astro'
+import '../styles/global.css'
 ---
 
 <html lang="he" dir="rtl">
@@ -6,7 +9,8 @@
     <meta charset="UTF-8" />
     <meta name="robots" content="noindex,nofollow" />
     <title>תודה</title>
-  </head>
+    <Tracking />
+</head>
 
   <body style="margin:0; font-family:Arial; background:#0f172a; color:white;">
 
@@ -41,5 +45,6 @@
 
     </div>
 
-  </body>
+    <CookieBanner />
+</body>
 </html>

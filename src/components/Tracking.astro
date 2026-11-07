@@ -61,19 +61,36 @@ const consentGatedSnippet =
   gaId || gtmId || metaPixelId
     ? `(function(){
         var KEY='hc_cookie_consent';
+        var registrationComplete=location.hash==='#hc-newsletter-registered';
+        if(registrationComplete){
+          history.replaceState(history.state,'',location.pathname+location.search);
+        }
+        function sendEvent(name,label){
+          if(typeof window.gtag==='function'){
+            window.gtag('event',name,{event_category:'engagement',event_label:label});
+          }
+          if(typeof window.fbq==='function'){
+            if(name==='newsletter_signup'){
+              window.fbq('track','CompleteRegistration');
+            }else if(name==='whatsapp_click'){
+              window.fbq('trackCustom','WhatsAppClick',{placement:label});
+            }
+          }
+        }
         function loadTracking(){
           if(window.__hcTrackingLoaded)return;
           window.__hcTrackingLoaded=true;
           ${gtmSnippet}
           ${gaSnippet}
           ${metaSnippet}
+          if(registrationComplete){
+            sendEvent('newsletter_signup',location.pathname.startsWith('/guide/')?'guide':'newsletter');
+            registrationComplete=false;
+          }
           document.addEventListener('click',function(event){
-            var target=event.target.closest('[data-track-event]');
-            if(!target || typeof window.gtag!=='function')return;
-            window.gtag('event',target.getAttribute('data-track-event'),{
-              event_category:'engagement',
-              event_label:target.getAttribute('data-track-label')||target.textContent.trim().slice(0,80)
-            });
+            var target=event.target instanceof Element && event.target.closest('[data-track-event]');
+            if(!target)return;
+            sendEvent(target.getAttribute('data-track-event'),target.getAttribute('data-track-label')||'site');
           });
         }
         function check(){

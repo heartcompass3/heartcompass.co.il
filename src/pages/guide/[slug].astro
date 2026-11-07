@@ -1,4 +1,6 @@
 ---
+import Tracking from '../../components/Tracking.astro'
+import CookieBanner from '../../components/CookieBanner.astro'
 import { sanity } from '../../lib/sanity'
 import PortableText from '../../components/PortableText.astro'
 import '../../styles/global.css'
@@ -44,7 +46,7 @@ const ogTitle = `${pageData.title} | מצפן הלב`;
 const canonicalUrl = `https://www.heartcompass.co.il/guide/${slug}`;
 
 // כאן הקסם: אנחנו שולחים את הגולש לדף התודה בתוספת מזהה המדריך הספציפי
-const nextUrl = `https://www.heartcompass.co.il/guide/thanks/${slug}`;
+const nextUrl = `/guide/thanks/${slug}`;
 
 // כלי חיצוני (שאלון/משחק): דף הנחיתה מחמם ומעביר ישר לכלי, בלי טופס חובה.
 // לכידת הליד קורית בתוך הכלי, במסך התוצאה (רגע ה-high intent).
@@ -98,6 +100,7 @@ const faqSchema = pageData.faqItems?.length > 0
   </style>
   <script is:inline src="https://cdn.tailwindcss.com"></script>
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+  <Tracking />
 </head>
 <body class="bg-slate-50 text-slate-900 font-['Assistant',sans-serif] antialiased">
 
@@ -197,5 +200,6 @@ const faqSchema = pageData.faqItems?.length > 0
     )}
     {/* ───────────────────────────────────────────────────────── */}
   </main>
+  <CookieBanner />
 </body>
 </html>

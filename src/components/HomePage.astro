@@ -182,6 +182,8 @@ const brandDeep = '#295157'
             {primaryCtaHref && (
               <a
                 href={primaryCtaHrefWithMessage}
+                data-track-event={/^https:\/\/(?:wa\.me|api\.whatsapp\.com)\//i.test(primaryCtaHrefWithMessage) ? "whatsapp_click" : "service_cta"}
+                data-track-label={`home_hero_${language}`}
                 class="h-14 min-w-[240px] inline-flex items-center justify-center rounded-2xl bg-accent px-10 font-body font-bold text-primary shadow hover:opacity-90 transition"
               >
                 {primaryCtaLabel}
@@ -221,6 +223,8 @@ const brandDeep = '#295157'
             {primaryCtaHref && (
               <a
                 href={primaryCtaHrefWithMessage}
+                data-track-event={/^https:\/\/(?:wa\.me|api\.whatsapp\.com)\//i.test(primaryCtaHrefWithMessage) ? "whatsapp_click" : "service_cta"}
+                data-track-label={`home_hero_${language}`}
                 class="h-14 inline-flex items-center justify-center rounded-2xl bg-accent px-8 font-body font-bold text-primary shadow hover:opacity-90 transition"
               >
                 {primaryCtaLabel}
@@ -345,6 +349,8 @@ const brandDeep = '#295157'
     <section class="container mx-auto px-6 pb-24 text-center">
       <a
         href={bottomCtaHref}
+        data-track-event={/^https:\/\/(?:wa\.me|api\.whatsapp\.com)\//i.test(bottomCtaHref) ? "whatsapp_click" : "service_cta"}
+        data-track-label={`home_bottom_${language}`}
         class="h-14 inline-flex items-center justify-center rounded-2xl bg-accent px-10 font-body font-bold text-primary shadow hover:opacity-90 transition"
       >
         {bottomCtaText}

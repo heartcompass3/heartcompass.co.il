@@ -38,7 +38,7 @@ test('missing consent and privacy-only submissions are rejected before any exter
 test('explicit consent registers the contact before redirecting to the guide', async () => {
   const { response, calls } = await submit({ consent: 'yes' }, () => Response.json({ id: 'test-id' }))
   assert.equal(response.status, 302)
-  assert.equal(response.headers.get('location'), '/guide/thanks/test')
+  assert.equal(response.headers.get('location'), '/guide/thanks/test#hc-newsletter-registered')
   assert.deepEqual(calls.map(c => new URL(c.url).pathname), ['/emails', '/contacts'])
   assert.equal(JSON.parse(calls[1].options.body).email, 'lead@example.test')
   assert.deepEqual(JSON.parse(calls[1].options.body).segments, [{ id: 'test-segment' }])
@@ -49,7 +49,7 @@ test('explicit consent registers the contact before redirecting to the guide', a
 test('English signup persists the language and redirects to the English thank-you page', async () => {
   const { response, calls } = await submit({ consent: 'yes', language: 'en', _next: '/en/thank-you' }, () => Response.json({ id: 'test-id' }))
   assert.equal(response.status, 302)
-  assert.equal(response.headers.get('location'), '/en/thank-you')
+  assert.equal(response.headers.get('location'), '/en/thank-you#hc-newsletter-registered')
   assert.deepEqual(JSON.parse(calls[1].options.body).properties, { preferred_language: 'en' })
   assert.match(JSON.parse(calls[0].options.body).html, /en/)
 })
