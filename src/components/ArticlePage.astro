@@ -36,8 +36,12 @@ const allArticles = en ? [] : await sanity.fetch(ARTICLES_QUERY)
 const taxonomy = effectiveTaxonomy([...allArticles,article],fallbackTaxonomy)
 const placement = taxonomy[slug]
 const library = insightDomains.find(d => d.id === placement?.domain)
-const englishLibrary = en && library ? await sanity.fetch(`*[_type == "page" && slug.current == $slug && coalesce(seo.noindex, false) == false][0]{_id,title}`, {slug:`en/insights/${library.id}`}) : null
-const articleLibraryLink = englishLibrary ? {name:englishLibrary.title,href:`/en/insights/${library.id}`} : {name:t('מאמרים', 'Articles'),href:'/articles'}
+const libraryRoot = en ? '/en/insights' : '/insights'
+const englishLibrary = en && library ? await sanity.fetch(`*[_type == "page" && slug.current == $slug && coalesce(seo.noindex, false) == false][0]{title}`, {slug:`en/insights/${library.id}`}) : null
+const libraryTitle = en ? englishLibrary?.title : library?.name
+const articleLibraryLink = library && libraryTitle
+  ? {name:libraryTitle,href:`${libraryRoot}/${library.id}`}
+  : {name:t('מרכז המידע', 'Reading Library'),href:libraryRoot}
 const related = !en && library ? relatedArticles(allArticles, taxonomy, slug) : []
 
 // זמן קריאה + ספירת מילים מגוף ה-PortableText
@@ -191,15 +195,14 @@ const schemas = faqSchema
         href={en ? articleLibraryLink.href : "/articles"}
         class="flex items-center text-primary hover:text-gold-dark mb-10 font-bold transition-colors bg-white px-6 py-3 rounded-full shadow-md w-fit border border-accent/20"
       >
-        {t('← חזרה למאמרים', englishLibrary ? '← Back to the library' : '← Articles')}
+        {t('← חזרה למאמרים', '← Back to the library')}
       </a>
 
       <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <Breadcrumbs language={language} items={[{ name: articleLibraryLink.name, href: articleLibraryLink.href }, { name: article.title }]} withSchema={false} />
         {otherLanguage && <LanguageLink href={otherLanguage.href} language={otherLanguage.language} />}
       </div>
-      {englishLibrary && <p class="mb-6 text-primary/75"><a href={articleLibraryLink.href} class="underline font-bold">More reading: {articleLibraryLink.name}</a></p>}
-      {!en && library && <p class="mb-6 text-primary/75"><a href={`/insights/${library.id}`} class="underline font-bold">למאמרים נוספים: {library.name}</a></p>}
+      <p class="mb-6 text-primary/75"><a href={articleLibraryLink.href} class="underline font-bold">{t('למאמרים נוספים', 'More reading')}: {articleLibraryLink.name}</a></p>
 
       <div class={showToc ? 'lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start' : ''}>
         {/* ─── תוכן עניינים: סיידבר דביק בצד (דסקטופ בלבד) ─────── */}
