@@ -80,8 +80,9 @@ export const GET: APIRoute = async () => {
 
     // משיכת דפי הנחיתה (מדריכים/כלים, /guide/[slug]) — מסמכי landingPage.
     // slug של קישור חיצוני מלא (base44/lovable וכו') מסונן: אין לו עמוד פנימי לאנדקס.
+    // מפענח רגעי הפיצוץ מופיע במפה בכתובת שלו תחת /tools.
     landingPages = await sanity.fetch(`
-      *[_type == "landingPage" && defined(slug.current) && !(slug.current match "http*")]{
+      *[_type == "landingPage" && defined(slug.current) && !(slug.current match "http*") && slug.current != "parent-conflict-pause"]{
         "slug": slug.current,
         _updatedAt
       }

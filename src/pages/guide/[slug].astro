@@ -7,6 +7,10 @@ import '../../styles/global.css'
 
 const { slug } = Astro.params;
 
+if (slug === 'parent-conflict-pause') {
+  return Astro.redirect('/tools/parent-conflict-pause', 301);
+}
+
 const pageData = await sanity.fetch(`
   *[_type == "landingPage" && slug.current == $slug][0]{
     title,
