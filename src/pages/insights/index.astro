@@ -5,7 +5,29 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro'
 import domains from '../../content/insights-domains.json'
 import site from '../../content/pages/site.json'
 const title = `מרכז המידע: התפתחות אישית, הורות, בני נוער וזוגיות | ${site.brand}`
-const description = 'בחרו את העולם שמעסיק אתכם: מאמרים וכלים של מצפן הלב להתפתחות אישית ושחרור דפוסים, להורות למתבגרים, לבני נוער ולזוגיות וקשרים.'
+const description = 'מצאו מאמר לפי מה שקורה בחיים שלכם. ארבע ספריות על התפתחות אישית, הורות למתבגרים, עולמם של בני נוער וזוגיות, מנקודת המבט של שיטת מ.ס.ע.'
+const featuredTopics: Record<string, { anchor: string; label: string }[]> = {
+  personal: [
+    { anchor: 'pattern-release', label: 'שחרור דפוסים ודחיינות' },
+    { anchor: 'anxiety-overthinking', label: 'חרדה וחשיבת יתר' },
+    { anchor: 'self-worth', label: 'ערך עצמי וביקורת עצמית' },
+  ],
+  parents: [
+    { anchor: 'connection-trust', label: 'קשר ואמון עם המתבגר' },
+    { anchor: 'boundaries-conflict', label: 'גבולות ומריבות בבית' },
+    { anchor: 'parenting-separation-divorce', label: 'הורות בזמן פרידה וגירושין' },
+  ],
+  youth: [
+    { anchor: 'identity-belonging', label: 'חברים, שייכות וערך עצמי' },
+    { anchor: 'anxiety-emotional-patterns', label: 'חרדה ורגשות שקשה להסביר' },
+    { anchor: 'when-parents-separate', label: 'כשההורים נפרדים' },
+  ],
+  relationships: [
+    { anchor: 'finding-a-relationship', label: 'חיפוש זוגיות ובחירת קשר' },
+    { anchor: 'closeness-boundaries-communication', label: 'קרבה, גבולות ותקשורת' },
+    { anchor: 'separation-divorce', label: 'פרידה וגירושין בזוגיות' },
+  ],
+}
 const canonical = new URL('/insights',site.siteUrl).toString()
 const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:'מרכז המידע של מצפן הלב',url:canonical,description,inLanguage:'he',mainEntity:{'@type':'ItemList',numberOfItems:domains.length,itemListElement:domains.map((d,i)=>({'@type':'ListItem',position:i+1,name:d.name,url:new URL(`/insights/${d.id}`,site.siteUrl).toString()}))}}
 ---
@@ -15,16 +37,25 @@ const schema = {'@context':'https://schema.org','@type':'CollectionPage',name:'�
     <header class="max-w-3xl mb-12">
       <p class="text-accent font-bold mb-3">הידע והדרך של מצפן הלב</p>
       <h1 class="font-display font-black text-primary text-4xl md:text-6xl mb-6">מרכז המידע של מצפן הלב</h1>
-      <p class="text-2xl font-display font-bold text-primary mb-4">להבין מה קורה. למצוא דרך להתקדם.</p>
-      <p class="text-xl text-primary/80 leading-relaxed">בחרו את העולם שמעסיק אתכם. בכל ספרייה תמצאו מאמרים לפי נושאים, הסברים על הדפוסים הרגשיים ועל העבודה לשחרורם, והתייחסות למצבים שאתם פוגשים בחיים.</p>
+      <p class="text-xl text-primary/80 leading-relaxed">אותה מריבה חוזרת? המתבגר התרחק? קשה לכם להגיד לא גם כשברור לכם שזה מה שאתם רוצים? בחרו נושא מתוך אחת מארבע הספריות או חפשו במילים שלכם. במאמרים תמצאו הסברים על מה שקורה ברגעים האלה ודוגמאות לעבודה על הדפוסים שמחזיקים אותם.</p>
     </header>
     <InsightsSearch />
     <nav aria-label="ספריות מרכז המידע" class="grid md:grid-cols-2 gap-6">
-      {domains.map(d=><a href={`/insights/${d.id}`} class="bg-white rounded-3xl p-8 border border-primary/10 shadow-sm hover:shadow-lg transition-shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><h2 class="font-display text-2xl md:text-3xl font-bold text-primary mb-4">{d.name}</h2><p class="text-primary/80 leading-relaxed mb-6">{d.description}</p><span class="font-bold text-primary">למאמרים ולנושאים בספרייה ←</span></a>)}
+      {domains.map(domain => <section class="bg-white rounded-3xl p-6 md:p-8 border border-primary/10 shadow-sm">
+        <h2 class="font-display text-2xl md:text-3xl font-bold text-primary mb-4">
+          <a href={`/insights/${domain.id}`} class="underline decoration-primary/30 underline-offset-4 hover:decoration-primary">{domain.name}</a>
+        </h2>
+        <p class="text-primary/80 leading-relaxed mb-4">{domain.description}</p>
+        <ul class="flex flex-wrap gap-x-4 gap-y-1">
+          {featuredTopics[domain.id]?.map(topic => <li>
+            <a href={`/insights/${domain.id}#${topic.anchor}`} class="inline-block py-2 text-primary font-semibold underline underline-offset-4">{topic.label}</a>
+          </li>)}
+        </ul>
+      </section>)}
     </nav>
     <section class="mt-14 rounded-3xl bg-white border border-primary/10 p-8 max-w-3xl">
-      <h2 class="font-display font-bold text-primary text-2xl mb-4">הזווית של מצפן הלב</h2>
-      <p class="text-primary/80 leading-relaxed">המאמרים של יוסי מדלסי מציגים את העבודה של מצפן הלב ושיטת מ.ס.ע: מיפוי מה שמפעיל אותנו, עבודה על שחרור הדפוסים במקור שמחזיק אותם והטמעת האיכות החדשה. לצד השחרור בונים חזון ומטרות, והבחירה והפעולה החדשות מקבלות מקום בחיים. דרך הסברים ודוגמאות מהעבודה תוכלו להבין איך הגישה פועלת ומה אפשר לעשות עם הקושי שמעסיק אתכם.</p>
+      <h2 class="font-display font-bold text-primary text-2xl mb-4">איך עובדים על דפוס שחוזר?</h2>
+      <p class="text-primary/80 leading-relaxed">נניח שבכל פעם שאתם רוצים להציב גבול, אתם מסכימים כדי שהשיחה לא תתפוצץ. בשיטת מ.ס.ע מתחילים במיפוי של הרגע הזה. מה רציתם לומר, ממה חששתם ומה המחיר של הוויתור? בהמשך עובדים על שחרור הפחד והאמונה שמחזיקים את הדפוס. בשלב העצמאות בוחרים גבול שחשוב לכם להציב, מנסים אותו בשיחה אמיתית ובודקים מה השתנה ומה תרצו לעשות בפעם הבאה.</p>
       <div class="flex flex-wrap gap-6 mt-6"><a class="font-bold underline" href="/method">להכיר את שיטת מ.ס.ע</a><a class="font-bold underline" href="/about">להכיר את יוסי מדלסי</a><a class="font-bold underline" href="/articles">לכל המאמרים וחיפוש במאגר</a></div>
     </section>
   </div></section>
