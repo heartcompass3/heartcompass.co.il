@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import InsightsSearch from './InsightsSearch.astro'
+import Breadcrumbs from './Breadcrumbs.astro'
+import LanguageLink from './LanguageLink.astro'
+import domains from '../content/insights-domains.json'
+import site from '../content/pages/site.json'
+
+interface Props {
+  language: 'he' | 'en'
+}
+
+const { language } = Astro.props
+const en = language === 'en'
+const t = (he: string, english: string) => en ? english : he
+const prefix = en ? '/en' : ''
+const hubName = t('מרכז המידע של מצפן הלב', 'Heart Compass Reading Library')
+const title = t(`מרכז המידע: התפתחות אישית, הורות, בני נוער וזוגיות | ${site.brand}`, 'Reading Library: Personal Growth, Parenting, Teens and Relationships | Heart Compass')
+const description = t(
+  'מצאו מאמר לפי מה שקורה בחיים שלכם. ארבע ספריות על התפתחות אישית, הורות למתבגרים, עולמם של בני נוער וזוגיות, מנקודת המבט של שיטת מ.ס.ע.',
+  'Find a place to start reading about personal growth, parenting teens, teen emotional life or relationships, from the perspective of the M.S.A. approach.'
+)
+const libraryContent: Record<string, { descriptionEn: string; topics: { anchor: string; he: string; en: string }[] }> = {
+  personal: {
+    descriptionEn: 'Explore emotional patterns, anxiety, people-pleasing, self-worth and feeling stuck. See what keeps a pattern in place and how working on it can free you to pursue what matters to you.',
+    topics: [
+      { anchor: 'pattern-release', he: 'שחרור דפוסים ודחיינות', en: 'Recurring patterns and procrastination' },
+      { anchor: 'anxiety-overthinking', he: 'חרדה וחשיבת יתר', en: 'Anxiety and overthinking' },
+      { anchor: 'self-worth', he: 'ערך עצמי וביקורת עצמית', en: 'Self-worth and self-criticism' },
+    ],
+  },
+  parents: {
+    descriptionEn: 'Read about boundaries, communication, school, screens and risk. Understand what your teen is going through and what happens in your own reactions, so you can stay connected while setting limits.',
+    topics: [
+      { anchor: 'connection-trust', he: 'קשר ואמון עם המתבגר', en: 'Connection and trust with your teen' },
+      { anchor: 'boundaries-conflict', he: 'גבולות ומריבות בבית', en: 'Boundaries and arguments at home' },
+      { anchor: 'parenting-separation-divorce', he: 'הורות בזמן פרידה וגירושין', en: 'Parenting through separation and divorce' },
+    ],
+  },
+  youth: {
+    descriptionEn: 'A place for teens to read about friends, belonging, self-worth, anxiety, screens, changes in your body and relationships. Start with whatever feels closest to what you are going through.',
+    topics: [
+      { anchor: 'identity-belonging', he: 'חברים, שייכות וערך עצמי', en: 'Friends, belonging and self-worth' },
+      { anchor: 'anxiety-emotional-patterns', he: 'חרדה ורגשות שקשה להסביר', en: 'Anxiety and feelings that are hard to explain' },
+      { anchor: 'when-parents-separate', he: 'כשההורים נפרדים', en: 'When your parents separate' },
+    ],
+  },
+  relationships: {
+    descriptionEn: 'Read about finding a partner, living as a couple or dealing with separation and hurt. See how old experiences and recurring reactions can shape what happens in your relationships today.',
+    topics: [
+      { anchor: 'finding-a-relationship', he: 'חיפוש זוגיות ובחירת קשר', en: 'Looking for a relationship and choosing a partner' },
+      { anchor: 'closeness-boundaries-communication', he: 'קרבה, גבולות ותקשורת', en: 'Closeness, boundaries and communication' },
+      { anchor: 'separation-divorce', he: 'פרידה וגירושין בזוגיות', en: 'Separation and divorce' },
+    ],
+  },
+}
+const libraries = domains.map(domain => ({
+  name: t(domain.name, domain.nameEn),
+  description: t(domain.description, libraryContent[domain.id].descriptionEn),
+  href: `${prefix}/insights/${domain.id}`,
+  topics: libraryContent[domain.id].topics,
+}))
+const canonical = new URL(`${prefix}/insights`, site.siteUrl).toString()
+const languageLinks = [
+  { language: 'he', href: new URL('/insights', site.siteUrl).toString() },
+  { language: 'en', href: new URL('/en/insights', site.siteUrl).toString() },
+]
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: hubName,
+  url: canonical,
+  description,
+  inLanguage: language,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: libraries.length,
+    itemListElement: libraries.map(({ name, href }, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name,
+      url: new URL(href, site.siteUrl).toString(),
+    })),
+  },
+}
+---
+<BaseLayout title={title} language={language} languageLinks={languageLinks} description={description} canonical={canonical} schema={[schema]}>
+  <section class="bg-background py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 mb-4">
+        <Breadcrumbs language={language} items={[{ name: t('מרכז המידע', 'Reading Library') }]} />
+        <LanguageLink href={en ? '/insights' : '/en/insights'} language={en ? 'he' : 'en'} />
+      </div>
+      <header class="max-w-3xl mb-12">
+        <p class="text-accent font-bold mb-3">{t('הידע והדרך של מצפן הלב', 'Insights from Heart Compass')}</p>
+        <h1 class="font-display font-black text-primary text-4xl md:text-6xl mb-6">{hubName}</h1>
+        <p class="text-xl text-primary/80 leading-relaxed">{t(
+          'אותה מריבה חוזרת? המתבגר התרחק? קשה לכם להגיד לא גם כשברור לכם שזה מה שאתם רוצים? בחרו נושא מתוך אחת מארבע הספריות או חפשו במילים שלכם. במאמרים תמצאו הסברים על מה שקורה ברגעים האלה ודוגמאות לעבודה על הדפוסים שמחזיקים אותם.',
+          'Having the same argument again? Has your teenager pulled away? Do you still find it hard to say no, even when you know you want to? Pick a topic from one of the four libraries or search in your own words. You’ll find explanations of what happens in those moments and examples of how we work on the patterns that keep them going.'
+        )}</p>
+      </header>
+      <InsightsSearch language={language} />
+      <nav aria-label={t('ספריות מרכז המידע', 'Browse the reading libraries')} class="grid md:grid-cols-2 gap-6">
+        {libraries.map(library => <section class="bg-white rounded-3xl p-6 md:p-8 border border-primary/10 shadow-sm">
+          <h2 class="font-display text-2xl md:text-3xl font-bold text-primary mb-4">
+            <a href={library.href} class="underline decoration-primary/30 underline-offset-4 hover:decoration-primary">{library.name}</a>
+          </h2>
+          <p class="text-primary/80 leading-relaxed mb-4">{library.description}</p>
+          <ul class="flex flex-wrap gap-x-4 gap-y-1">
+            {library.topics.map(topic => <li>
+              <a href={`${library.href}#${topic.anchor}`} class="inline-block py-2 text-primary font-semibold underline underline-offset-4">{topic[language]}</a>
+            </li>)}
+          </ul>
+        </section>)}
+      </nav>
+      <section class="mt-14 rounded-3xl bg-white border border-primary/10 p-8 max-w-3xl">
+        <h2 class="font-display font-bold text-primary text-2xl mb-4">{t('איך עובדים על דפוס שחוזר?', 'How do you work on a pattern that keeps repeating?')}</h2>
+        <p class="text-primary/80 leading-relaxed">{t(
+          'נניח שבכל פעם שאתם רוצים להציב גבול, אתם מסכימים כדי שהשיחה לא תתפוצץ. בשיטת מ.ס.ע מתחילים במיפוי של הרגע הזה. מה רציתם לומר, ממה חששתם ומה המחיר של הוויתור? בהמשך עובדים על שחרור הפחד והאמונה שמחזיקים את הדפוס. בשלב העצמאות בוחרים גבול שחשוב לכם להציב, מנסים אותו בשיחה אמיתית ובודקים מה השתנה ומה תרצו לעשות בפעם הבאה.',
+          'Say you want to set a boundary, but you keep agreeing because you’re afraid the conversation will blow up. In the M.S.A. approach, we start by mapping that moment. What did you want to say? What were you afraid might happen? What did giving in cost you? Then we work on letting go of the fear and belief that keep the pattern in place. As you move towards greater independence, you choose a boundary that matters to you, try it in a real conversation, and look at what changed and what you want to do next time.'
+        )}</p>
+        <div class="flex flex-wrap gap-6 mt-6">
+          <a class="font-bold underline" href={`${prefix}/method`}>{t('להכיר את שיטת מ.ס.ע', 'Explore the M.S.A. approach')}</a>
+          <a class="font-bold underline" href={`${prefix}/about`}>{t('להכיר את יוסי מדלסי', 'Meet Yossi Medalsi')}</a>
+          {en
+            ? <a class="font-bold underline" href="#insights-query">Search English articles</a>
+            : <a class="font-bold underline" href="/articles">לכל המאמרים וחיפוש במאגר</a>}
+        </div>
+      </section>
+    </div>
+  </section>
+</BaseLayout>

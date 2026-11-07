@@ -13,7 +13,8 @@ import {knowledgeLibrary, libraryIntroSections, splitLibraryContent} from '../li
 const {page, articles, domain = 'personal', language = 'he', hasCounterpart = false, siblings = []} = Astro.props
 const en = language === 'en'
 const t = (he: string, english: string) => en ? english : he
-const path = `${en ? '/en' : ''}/insights/${domain}`
+const hubPath = en ? '/en/insights' : '/insights'
+const path = `${hubPath}/${domain}`
 const canonical = `${site.siteUrl}${path}`
 const {groups, articles: unique} = knowledgeLibrary(articles, fallbackTaxonomy, topics[domain], language, domain)
 const {intro, topics: topicContent, cta: action} = splitLibraryContent(page.body)
@@ -31,7 +32,7 @@ const schema = [{
   inLanguage:language, abstract:page.aiCitation, dateModified:page.contentUpdatedAt,
   disambiguatingDescription:page.aiContext,
   keywords:page.painTags,
-  ...(en ? {} : {isPartOf:{'@type':'CollectionPage',url:`${site.siteUrl}/insights`}}),
+  isPartOf:{'@type':'CollectionPage',url:`${site.siteUrl}${hubPath}`},
   author:{'@type':'Person',name:en ? 'Yossi Medalsi' : 'יוסי מדלסי',url:`${site.siteUrl}${en ? '/en' : ''}/about`},
   ...(unique.length ? {mainEntity:{'@type':'ItemList',numberOfItems:unique.length,itemListElement:unique.map((a,i)=>({'@type':'ListItem',position:i+1,name:a.title,url:`${site.siteUrl}${en ? '/en' : ''}/articles/${typeof a.slug === 'string' ? a.slug : a.slug.current}`}))}} : {}),
 }]
@@ -40,7 +41,7 @@ const schema = [{
   <section class="py-16 md:py-24 bg-background" dir={en ? 'ltr' : 'rtl'}>
     <div class="max-w-6xl mx-auto px-6">
       {hasCounterpart && <div class="mb-8 flex justify-end"><LanguageLink href={`${en ? '' : '/en'}/insights/${domain}`} language={en ? 'he' : 'en'} /></div>}
-      <Breadcrumbs language={language} items={en ? [{name:page.title}] : [{name:'מרכז המידע',href:'/insights'},{name:page.title}]} />
+      <Breadcrumbs language={language} items={[{name:t('מרכז המידע', 'Reading Library'),href:hubPath},{name:page.title}]} />
       <header class="max-w-3xl mb-10">
         <p class="text-accent font-bold mb-3">{t('ספריית המאמרים של מצפן הלב', 'The Heart Compass reading library')}</p>
         <h1 class="font-display font-black text-primary text-4xl md:text-5xl leading-tight mb-6">{page.title}</h1>

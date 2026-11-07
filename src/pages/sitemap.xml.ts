@@ -100,7 +100,7 @@ export const GET: APIRoute = async () => {
     { url: '/about', lastmod: aboutUpdatedAt || buildDate },
     { url: '/method', lastmod: methodUpdatedAt || buildDate },
     { url: '/articles', lastmod: buildDate },
-    ...['/insights', '/insights/personal', '/insights/parents', '/insights/youth', '/insights/relationships'].map(url => ({url, lastmod: ''})),
+    ...['/insights', '/en/insights', '/insights/personal', '/insights/parents', '/insights/youth', '/insights/relationships'].map(url => ({url, lastmod: ''})),
     { url: '/specialties', lastmod: buildDate },
     // מרכז הכלים — עכשיו יעד של עשרות קישורים פנימיים ("אבחון קצר"), חייב להיות באינדקס
     { url: '/tools', lastmod: buildDate },

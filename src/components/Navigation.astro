@@ -54,6 +54,7 @@ if (isEn) {
       { label: 'Teen coaching', href: '/en/specialties/youth' },
       { label: 'Couples coaching', href: '/en/specialties/couples' },
     ] },
+    { label: 'Reading Library', href: '/en/insights' },
     { label: 'Get started', href: '/en/contact' },
     { label: 'עברית', href: '/', },
   ]
@@ -85,7 +86,7 @@ const isActive = (href) => {
       </a>
 
       <!-- Desktop -->
-      <div class="hidden md:flex gap-8 items-center">
+      <div class:list={['hidden items-center', isEn ? 'lg:flex gap-4 xl:gap-8' : 'md:flex gap-8']}>
         {nav.map((item) => {
 
           const childrenFromSanity = Array.isArray(item.children) ? item.children : []
@@ -158,7 +159,7 @@ const isActive = (href) => {
       </div>
 
       <!-- Mobile -->
-      <div class="md:hidden">
+      <div class={isEn ? 'lg:hidden' : 'md:hidden'}>
 
         <button
           type="button"
