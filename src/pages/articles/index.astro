@@ -140,8 +140,6 @@ const searchIndex = (articles ?? []).map((a) => ({
   const countEl = document.getElementById('search-count')
   const countNum = document.getElementById('search-count-num')
 
-  if (!input) return
-
   // Normalise Hebrew/English text for comparison
   const normalise = (str) =>
     (str || '')
@@ -149,7 +147,7 @@ const searchIndex = (articles ?? []).map((a) => ({
       .replace(/[\u05b0-\u05c7]/g, '') // strip niqqud
       .trim()
 
-  input.addEventListener('input', () => {
+  input?.addEventListener('input', () => {
     const query = normalise(input.value)
 
     if (!query) {
@@ -158,7 +156,7 @@ const searchIndex = (articles ?? []).map((a) => ({
         c.style.display = ''
         c.style.opacity = ''
       })
-      noResults.classList.add('hidden')
+      noResults?.classList.add('hidden')
       countEl.classList.add('hidden')
       return
     }
@@ -184,7 +182,7 @@ const searchIndex = (articles ?? []).map((a) => ({
     })
 
     // Show/hide no-results + count
-    noResults.classList.toggle('hidden', visible > 0)
+    noResults?.classList.toggle('hidden', visible > 0)
     countEl.classList.toggle('hidden', !query)
     if (countNum) countNum.textContent = String(visible)
   })
