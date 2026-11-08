@@ -17,7 +17,7 @@ export default defineType({
       name: 'language', title: 'שפת המאמר', type: 'string', initialValue: 'he',
       options: {list: [{title: 'עברית', value: 'he'}, {title: 'English', value: 'en'}]},
       description: 'מאמרים ללא ערך נחשבים לעברית. אנגלית אינה מופיעה ברשימות בעברית.',
-      validation: (Rule) => Rule.valid('he', 'en'),
+      validation: (Rule) => Rule.valid(['he', 'en']),
     }),
     defineField({
       name: 'translationOf', title: 'תרגום של המאמר', type: 'reference', to: [{type: 'article'}],
