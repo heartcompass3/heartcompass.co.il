@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {personalLibrary, knowledgeLibrary, libraryIntroSections, splitLibraryContent} from '../src/lib/knowledgeLibrary.mjs';
+import {personalLibrary, knowledgeLibrary, libraryIntroSections, localizedLibraryTopics, splitLibraryContent} from '../src/lib/knowledgeLibrary.mjs';
 import {searchArticles} from '../src/lib/insights-search.mjs';
 const category = 'דפוסים חוזרים, דחיינות ושינוי אישי';
 const make = (slug, language, domain='personal', extra={}) => ({slug:{current:slug},language,title:'Why do I repeat patterns?',insightPlacement:{domain,category:domain==='personal'?category:'כשההורים נפרדים',secondary:[]},...extra});
@@ -63,4 +63,28 @@ test('opened Hebrew topics retain anchors even before their first article', () =
   const topics={'כשההורים נפרדים':{anchor:'when-parents-separate',showWhenEmpty:true}};
   assert.equal(knowledgeLibrary([],{},topics,'he','youth').groups[0].id,'when-parents-separate');
   assert.equal(knowledgeLibrary([],{},topics,'en','youth').groups.length,0);
+});
+
+test('translated topics keep their anchors and show published cards within each matching topic', () => {
+  const secondaryCategory = 'ערך עצמי וביקורת עצמית';
+  const article = make('english', 'en', 'personal', {
+    insightPlacement:{domain:'personal',category,secondary:[{domain:'personal',category:secondaryCategory}]},
+  });
+  const definitions = {
+    [category]:{anchor:'pattern-release'},
+    [secondaryCategory]:{anchor:'self-worth'},
+  };
+  const {groups, articles} = personalLibrary([article,make('hebrew','he')],{},definitions,'en');
+  const copy = [
+    {id:'self-worth',title:'Self-worth',body:[]},
+    {id:'anxiety-overthinking',title:'Anxiety and overthinking',body:[]},
+    {id:'pattern-release',title:'Recurring patterns',body:[]},
+  ];
+  const topics = localizedLibraryTopics(groups,copy,'en');
+  assert.deepEqual(topics.map(topic=>[topic.id,topic.title,topic.articles.map(a=>a.slug.current)]),[
+    ['self-worth','Self-worth',['english']],
+    ['anxiety-overthinking','Anxiety and overthinking',[]],
+    ['pattern-release','Recurring patterns',['english']],
+  ]);
+  assert.equal(articles.length,1);
 });
