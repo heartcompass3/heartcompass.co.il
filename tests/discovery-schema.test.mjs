@@ -15,7 +15,7 @@ test('WebPage language follows the English route boundary and keeps its service 
   }
 })
 
-test('translated service metadata preserves provider identity without promising English sessions', () => {
+test('service metadata preserves provider identity across page languages', () => {
   const english = schema.buildServiceSchema({ siteUrl, url: `${siteUrl}/en/specialties/parents`, name: 'Parent coaching' })
   const hebrew = schema.buildServiceSchema({ siteUrl, url: `${siteUrl}/specialties/parents`, name: 'הדרכת הורים' })
   assert.deepEqual(english.provider, hebrew.provider)
@@ -23,7 +23,7 @@ test('translated service metadata preserves provider identity without promising 
   assert.equal(hebrew.areaServed[0].name, 'נתניה')
   assert.equal(english.areaServed.length, hebrew.areaServed.length)
   assert.equal(english.availableChannel, undefined)
-  assert.equal(hebrew.availableChannel.availableLanguage.alternateName, 'he')
+  assert.equal(hebrew.availableChannel, undefined)
   assert.equal(english.inLanguage, undefined)
 })
 

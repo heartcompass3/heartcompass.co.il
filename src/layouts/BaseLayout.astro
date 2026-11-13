@@ -142,9 +142,6 @@ const defaultServiceSchema = {
   founder: { '@id': `${site.siteUrl}/#person` },
   address: businessAddress,
   areaServed: getAreaServed(language),
-  // knowsLanguage הוא המאפיין החוקי ל-Organization; availableLanguage שייך רק
-  // ל-ContactPoint/ServiceChannel וגורם לשגיאת ולידציה על LocalBusiness.
-  knowsLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
   priceRange: '₪₪',
   slogan: isEn ? 'Choose from passion, not from fear.' : site.tagline,
   email: site.email,

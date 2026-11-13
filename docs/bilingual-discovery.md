@@ -17,8 +17,8 @@ Updated 5 November 2026.
   topic labels, and credentials use the page language. Generic and About-page
   credential metadata share the same source.
 - Service areas are translated without expanding their geographic coverage.
-  Website content language does not imply availability of sessions in English.
-  The existing Hebrew service-language declaration remains unchanged.
+  Page languages are declared in the website and page metadata. The service
+  metadata leaves session language to the introductory conversation.
 - Existing reciprocal HTML hreflang links are retained. No duplicate sitemap
   hreflang implementation is added. Verify that each published English URL has
   a self-canonical and a reciprocal Hebrew alternate.

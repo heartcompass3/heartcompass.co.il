@@ -82,13 +82,6 @@ export function buildServiceSchema(params: {
     provider: { '@id': `${siteUrl}/#person` },
     brand: { '@id': `${siteUrl}/#business` },
     areaServed: getAreaServed(pageLanguage(url)),
-    // Service לא תומך ב-availableLanguage ישירות — רק דרך ServiceChannel.
-    ...(!new URL(url, siteUrl).pathname.startsWith('/en/') ? {
-      availableChannel: {
-        '@type': 'ServiceChannel',
-        availableLanguage: { '@type': 'Language', name: 'Hebrew', alternateName: 'he' },
-      },
-    } : {}),
   }
 }
 

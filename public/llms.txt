@@ -9,9 +9,9 @@ Heart Compass starts with what a person wants and the recurring pattern holding 
 
 מצפן הלב מתחיל ברצון של האדם ובדפוס שעוצר אותו, מתוך הבנת הדפוס כדרך הגנה שנלמדה. מ.ס.ע היא מיפוי, סילוק ועצמאות: מבררים את הרצון וממפים את החסם, עובדים בהסכמה על שחרור הדפוס שמחזיק אותו, ולאחר שחרור החסם הרלוונטי מתקדמים לעבודת חזון, מטרות וייעוד, צעדים ומעקב. בהדרכת הורים הדגש מעשי: תקשורת, גבולות ותרגול בבית, עם אפשרות לעבודה אישית לפי הצורך והרצון. ליווי זוגי מתחיל במפגשים נפרדים ובהמשך כולל עבודה משותפת על תקשורת, הסכמות וחזון זוגי.
 
-Yossi completed Parotherapy coaching training at Migdalor Campus in January 2026 (180 academic hours and 40 practicum hours), and specialist training in emotional coaching for teens in June 2026 (30 academic hours). M.S.A. is the Heart Compass approach, distinct from the training course name. The certificates are linked below. The business is based in Netanya, Israel. Coaching sessions take place online in Hebrew, including for Hebrew-speaking clients abroad by time-zone arrangement. The newsletter is currently sent in Hebrew.
+Yossi completed Parotherapy coaching training at Migdalor Campus in January 2026 (180 academic hours and 40 practicum hours), and specialist training in emotional coaching for teens in June 2026 (30 academic hours). M.S.A. is the Heart Compass approach, distinct from the training course name. The certificates are linked below. The business is based in Netanya, Israel. Coaching sessions take place online via Zoom, with scheduling across time zones for clients abroad. The newsletter is currently sent in Hebrew.
 
-יוסי השלים הכשרה באימון בשיטת פארותרפיה בקמפוס מגדלור בינואר 2026, בהיקף 180 שעות אקדמיות ו־40 שעות פרקטיקום, והתמחות באימון רגשי לבני נוער ביוני 2026, בהיקף 30 שעות אקדמיות. מ.ס.ע היא שיטת מצפן הלב ושמה נפרד משם קורס ההכשרה. התעודות מקושרות בהמשך. העסק מבוסס בנתניה והמפגשים מתקיימים אונליין בעברית, גם לדוברי עברית בחו״ל בתיאום שעות. הניוזלטר נשלח כיום בעברית.
+יוסי השלים הכשרה באימון בשיטת פארותרפיה בקמפוס מגדלור בינואר 2026, בהיקף 180 שעות אקדמיות ו־40 שעות פרקטיקום, והתמחות באימון רגשי לבני נוער ביוני 2026, בהיקף 30 שעות אקדמיות. מ.ס.ע היא שיטת מצפן הלב ושמה נפרד משם קורס ההכשרה. התעודות מקושרות בהמשך. העסק מבוסס בנתניה והמפגשים מתקיימים אונליין בזום, גם מחו״ל בתיאום שעות. הניוזלטר נשלח כיום בעברית.
 
 Coaching does not replace mental-health assessment or medical or psychological treatment when needed. Teen coaching includes age-appropriate consent, parental involvement, and agreed privacy boundaries. Articles provide general information; service details and policies appear on the linked pages.
 
@@ -24,6 +24,7 @@ Coaching does not replace mental-health assessment or medical or psychological t
 - [About Yossi](https://www.heartcompass.co.il/en/about): Background, qualifications, and approach.
 - [The M.S.A. approach](https://www.heartcompass.co.il/en/method): Mapping, emotional release with consent, and goals and purpose.
 - [Personal emotional coaching](https://www.heartcompass.co.il/en/specialties/personal): Recurring patterns, personal growth, and goals.
+- [Couples coaching](https://www.heartcompass.co.il/en/specialties/couples): Individual sessions followed by shared work on communication and agreements.
 - [Parent coaching](https://www.heartcompass.co.il/en/specialties/parents): Communication and boundaries with teenagers.
 - [Teen emotional coaching](https://www.heartcompass.co.il/en/specialties/youth): Confidence, belonging, and goals chosen with the teen.
 - [Two homes and not feeling at home](https://www.heartcompass.co.il/en/articles/my-parents-are-divorced-i-dont-feel-at-home): For teens whose parents have separated.
@@ -39,7 +40,7 @@ Coaching does not replace mental-health assessment or medical or psychological t
 - [התפתחות אישית](https://www.heartcompass.co.il/specialties/personal): שחרור דפוסים ומטרות אישיות.
 - [הדרכת הורים](https://www.heartcompass.co.il/specialties/parents): תקשורת, גבולות וקשר עם מתבגרים.
 - [אימון רגשי לנוער](https://www.heartcompass.co.il/specialties/youth): אמון, מסוגלות וביטחון עצמי.
-- [ליווי זוגי](https://www.heartcompass.co.il/specialties/couples): עבודה אישית ומשותפת. העמוד זמין כרגע בעברית.
+- [ליווי זוגי](https://www.heartcompass.co.il/specialties/couples): עבודה אישית ומשותפת.
 - [מרכז המידע](https://www.heartcompass.co.il/insights): התפתחות אישית, הורות, נוער וזוגיות וקשרים.
 - [מאמרים](https://www.heartcompass.co.il/articles): מאמרי יוסי מדלסי.
 - [כלים ומדריכים](https://www.heartcompass.co.il/tools): כלים ומדריכים לקוראי האתר.
