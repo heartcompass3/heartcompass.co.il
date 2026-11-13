@@ -10,6 +10,24 @@ export function knowledgeLibrary(articles, fallback, topics, language = 'he', do
   return {groups, articles: unique, taxonomy};
 }
 
+// Match translated topic copy to the reviewed article groups by their shared anchor.
+export function localizedLibraryTopics(groups, topicContent, language) {
+  if (language === 'en') {
+    const groupsById = new Map(groups.map(group => [group.id, group]));
+    return topicContent.map(topic => ({
+      ...topic,
+      articles: groupsById.get(topic.id)?.articles ?? [],
+    }));
+  }
+
+  const contentById = new Map(topicContent.map(topic => [topic.id, topic]));
+  return groups.map(group => ({
+    ...group,
+    title: group.name,
+    ...contentById.get(group.id),
+  }));
+}
+
 // Backwards-compatible API for the first migrated collection.
 export const personalLibrary = (articles, fallback, topics, language = 'he') => knowledgeLibrary(articles, fallback, topics, language, 'personal');
 
