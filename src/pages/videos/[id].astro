@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import site from '../../content/pages/site.json'
+import library from '../../data/videos.json'
+import { normalizeVideoDate } from '../../lib/videoDates.mjs'
+
+export const prerender = true
+export function getStaticPaths() {
+  return library.videos.map(video => ({ params: { id: video.id }, props: { video } }))
+}
+const { video } = Astro.props
+const canonical = new URL(`/videos/${video.id}`, site.siteUrl).href
+const embedUrl = `https://www.youtube.com/embed/${video.id}`
+const thumbnailUrl = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`
+const description = `צפו ביוסי מדלסי ממצפן הלב בסרטון ״${video.title}״.`
+const uploadDate = normalizeVideoDate(video.published)
+const schema = uploadDate ? [{
+  '@context': 'https://schema.org', '@type': 'VideoObject',
+  name: video.title, description, thumbnailUrl, uploadDate, embedUrl,
+  mainEntityOfPage: canonical, url: canonical,
+}] : []
+---
+<BaseLayout title={`${video.title} | מצפן הלב`} description={description} canonical={canonical} ogImage={thumbnailUrl} schema={schema}>
+  <article class="mx-auto max-w-4xl px-4 py-6 text-right">
+    <a href="/videos" class="text-primary underline">לכל הסרטונים</a>
+    <h1 class="my-4 text-3xl font-display font-black text-primary">{video.title}</h1>
+    <iframe class="w-full aspect-video rounded-xl bg-black" src={embedUrl} title={video.title} referrerpolicy="strict-origin-when-cross-origin" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    <p class="mt-4">יוסי מדלסי, מצפן הלב · <a class="underline" href={`https://www.youtube.com/watch?v=${video.id}`}>צפייה ביוטיוב</a></p>
+  </article>
+</BaseLayout>
