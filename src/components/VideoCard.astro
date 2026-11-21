@@ -25,6 +25,6 @@ const { video } = Astro.props
   </div>
   <div class="p-6 text-right">
     {video.published && <p class="text-xs text-primary/45 font-body mb-2">{new Date(video.published).toLocaleDateString('he-IL')}</p>}
-    <h2 class="text-xl font-black text-primary font-display leading-snug">{video.title}</h2>
+    <h2 class="text-xl font-black text-primary font-display leading-snug"><a class="hover:underline" href={`/videos/${video.id}`}>{video.title}</a></h2>
   </div>
 </article>
