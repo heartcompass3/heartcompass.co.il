@@ -1,5 +1,8 @@
 import type { APIRoute } from 'astro'
 import { timingSafeEqual } from 'node:crypto'
+import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook'
+import { sanity } from '../../lib/sanity'
+import { reconcile } from '../../lib/indexnow-sync'
 import site from '../../content/pages/site.json'
 
 export const prerender = false
@@ -58,47 +61,24 @@ async function submit(urls: string[]) {
   return { ok: res.ok, status: res.status, submitted: urlList }
 }
 
-// ממפה מסמך Sanity (מ-webhook) לכתובת הציבורית שלו.
-function urlForDoc(doc: any): string | null {
-  if (!doc) return null
-  const slug =
-    typeof doc.slug === 'string' ? doc.slug : doc.slug?.current || undefined
-
-  switch (doc._type) {
-    case 'homePage':
-      return `${site.siteUrl}${doc._id?.replace(/^drafts\./, '') === 'en-home-page' ? '/en' : '/'}`
-    case 'article':
-      return slug ? `${site.siteUrl}/${doc.language === "en" ? "en/" : ""}articles/${slug}` : null
-    case 'service':
-      return slug ? `${site.siteUrl}/services/${slug}` : null
-    case 'page':
-      return slug ? `${site.siteUrl}/${slug}` : null
-    case 'pain':
-      return slug ? `${site.siteUrl}/pain/${slug}` : null
-    case 'landingPage':
-      // slug של קישור חיצוני מלא (base44/lovable) אין לו עמוד פנימי לדחוף
-      return slug && !/^https?:\/\//.test(slug) ? `${site.siteUrl}/guide/${slug}` : null
-    default:
-      return slug ? `${site.siteUrl}/${slug}` : null
-  }
+async function sync(scope?: {id?: string; type?: string; slug?: string}) {
+  const token = import.meta.env.SANITY_WRITE_TOKEN
+  if (!token || process.env.VERCEL_ENV === 'preview') return json({ok:false, error:'sync-unavailable'}, 503)
+  const client = sanity.withConfig({token, useCdn:false, perspective:'raw'})
+  const result = await reconcile(client, site.siteUrl, submit, scope)
+  return json(result, result.ok ? 200 : 502)
 }
 
-// POST — מיועד ל-Sanity webhook (פרסום/עדכון מסמך).
 export const POST: APIRoute = async ({ request }) => {
-  if (!hasIndexNowSecret(request)) return json({ ok: false, error: 'unauthorized' }, 401)
-
-  let body: any = {}
-  try {
-    body = await request.json()
-  } catch {
-    return json({ ok: false, error: 'invalid-json' }, 400)
-  }
-
-  const target = urlForDoc(body)
-  if (!target) return json({ ok: false, error: 'could-not-resolve-url' }, 400)
-
-  const result = await submit([target])
-  return json(result, result.ok ? 200 : 502)
+  const raw = await request.text()
+  const signature = request.headers.get(SIGNATURE_HEADER_NAME)
+  const secret = process.env.INDEXNOW_SIGNING_SECRET
+  const signed = signature && secret && await isValidSignature(raw, signature, secret).catch(() => false)
+  if (!signed && !hasIndexNowSecret(request)) return json({ok:false, error:'unauthorized'}, 401)
+  let doc
+  try { doc = JSON.parse(raw) } catch { return json({ok:false, error:'invalid-json'}, 400) }
+  if (!doc || typeof doc._type !== 'string') return json({ok:false, error:'missing-type'}, 400)
+  return sync({id:request.headers.get('sanity-document-id') || doc._id, type:doc._type, slug:doc.slug?.current || doc.slug})
 }
 
 // GET — להפעלה ידנית:
@@ -119,8 +99,9 @@ export const GET: APIRoute = async ({ request, url }) => {
     return json(result, result.ok ? 200 : 502)
   }
 
-  // Vercel Cron מפעיל את ה-endpoint ללא פרמטרים → דחיפת כל ה-sitemap.
-  if (isCron || url.searchParams.get('all')) {
+  // Vercel Cron מפעיל את ה-endpoint ללא פרמטרים ומשלים רק שינויים שטרם דווחו.
+  if (isCron && !url.searchParams.has('all')) return sync()
+  if (url.searchParams.get('all')) {
     const sm = await fetch(`${site.siteUrl}/sitemap.xml`)
     if (!sm.ok) return json({ ok: false, error: 'sitemap-unavailable' }, 502)
     const xml = await sm.text()
